@@ -57,24 +57,24 @@ namespace NppMenuSearch
 
 		public double MatchingSimilarity(IEnumerable<string> words)
 		{
-			string text 			= Text.Replace("&", "");
-			bool[] matched 			= new bool[text.Length];
-			int    wordCount 		= 0;
-			int    matchedWordCount = 0;
+			string text 				 = Text.Replace("&", "");
+			bool[] matched 				 = new bool[text.Length];
+			int    wordCharsCount 		 = 0;
+			int    matchedWordCharsCount = 0;
 
 			foreach (string word in words)
 			{
-				++wordCount;
+				wordCharsCount+= word.Length;
 				int pos = text.IndexOf(word, 0, text.Length, StringComparison.InvariantCultureIgnoreCase);
 				if (pos >= 0)
 				{
-					++matchedWordCount;
+					matchedWordCharsCount+= word.Length;
 					for (int i = pos; i < pos + word.Length; ++i)
 						matched[i] = true;
 				}
 			}
 
-			if (wordCount == 0)
+			if (wordCharsCount == 0)
 				return 0.0;
 
 			int matchableCharCount = text.Length;
@@ -94,7 +94,7 @@ namespace NppMenuSearch
 				matchableCharCount = 1;
 
 			double result = matchedCharCount / (double)matchableCharCount;
-			result *= matchedWordCount / (double)wordCount;
+			result *= matchedWordCharsCount / (double)wordCharsCount;
 
 			if (Parent != null)
 				result = result * 0.625 + 0.375 * Parent.MatchingSimilarity(words);

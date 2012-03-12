@@ -15,8 +15,6 @@ namespace NppMenuSearch
         internal const string PluginName  = "NppMenuSearch";
         static string 		  iniFilePath = null;
         static bool 		  someSetting = false;
-        static Bitmap 		  tbBmp 	  = Properties.Resources.star;
-        static Bitmap 		  tbBmp_tbTab = Properties.Resources.star_bmp;
 
 		public static SearchForm SearchForm { get; private set; }
 
