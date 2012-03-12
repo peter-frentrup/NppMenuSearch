@@ -2,7 +2,7 @@
 Place NppMenuSearch.dll in the plugins\ subfolder of the Notepad++ install folder; 
 
 2) Usage
-The plugin adds a text box too the Notepad++ toolbar. 
+The plugin adds a text box to the Notepad++ toolbar. 
 - Use Ctrl+M or use the mouse to select it.
 - Type some characters, e.g. "number con".
   As you type, a drop-down list of found menu items appears.
