@@ -2092,6 +2092,8 @@ namespace NppPluginNET
 
 		[DllImport("user32")]
 		public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref REBARBANDINFO lParam);
+		[DllImport("user32")]
+		public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref NMHDR lParam);
 
         public const int MAX_PATH = 260;
         [DllImport("kernel32")]
@@ -2109,6 +2111,7 @@ namespace NppPluginNET
 
 		public const int WM_CREATE 		= 0x0001;
 		public const int WM_ACTIVATEAPP = 0x001C;
+		public const int WM_NOTIFY 		= 0x004E;
 		public const int WM_KEYDOWN 	= 0x0100;
 		public const int WM_KEYUP 		= 0x0101;
 		public const int WM_CHAR 		= 0x0102;
@@ -2123,6 +2126,14 @@ namespace NppPluginNET
 		public static extern bool GetComboBoxInfo(IntPtr hwnd, ref COMBOBOXINFO pcbi);
 
 		[StructLayout(LayoutKind.Sequential)]
+		public struct NMHDR
+		{
+			public IntPtr hwndFrom;
+			public uint idFrom;
+			public uint code;
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
 		public struct COMBOBOXINFO
 		{
 			public int 	  cbSize;
@@ -2133,6 +2144,13 @@ namespace NppPluginNET
 			public IntPtr hwndItem;
 			public IntPtr hwndList;
 		}
+		
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool IsWindowVisible(IntPtr hWnd);
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr GetForegroundWindow();
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr GetFocus();
@@ -2142,6 +2160,10 @@ namespace NppPluginNET
 
 		[DllImport("user32.dll")]
 		public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+		[DllImport("user32.dll")]
+		public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+		
 
 
 		public const int SW_SHOWNOACTIVATE = 4;
@@ -2296,6 +2318,8 @@ namespace NppPluginNET
 		[DllImport("user32.dll")]
 		public static extern int GetMenuItemCount(IntPtr hMenu);
 
+		[DllImport("user32.dll")]
+		public static extern int GetDlgCtrlID(IntPtr hwndCtl);
 
 		[DllImport("user32.dll", SetLastError = true)]
 		public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out IntPtr lpdwProcessId);
@@ -2434,6 +2458,51 @@ namespace NppPluginNET
 			public int 	  lParam;
 			public int 	  cxHeader;
 		}
+		
+		public const int TCM_FIRST 			  = 0x1300;
+		public const int TCM_GETIMAGELIST 	  = (TCM_FIRST + 2);
+		public const int TCM_SETIMAGELIST 	  = (TCM_FIRST + 3);
+		public const int TCM_GETITEMCOUNT 	  = (TCM_FIRST + 4);
+		public const int TCM_GETITEMA 		  = (TCM_FIRST + 5);
+		public const int TCM_GETITEMW 		  = (TCM_FIRST + 60);
+		public const int TCM_SETITEMA 		  = (TCM_FIRST + 6);
+		public const int TCM_SETITEMW 		  = (TCM_FIRST + 61);
+		public const int TCM_INSERTITEMA 	  = (TCM_FIRST + 7);
+		public const int TCM_INSERTITEMW 	  = (TCM_FIRST + 62);
+		public const int TCM_DELETEITEM 	  = (TCM_FIRST + 8);
+		public const int TCM_DELETEALLITEMS   = (TCM_FIRST + 9);
+		public const int TCM_GETITEMRECT 	  = (TCM_FIRST + 10);
+		public const int TCM_GETCURSEL 		  = (TCM_FIRST + 11);
+		public const int TCM_SETCURSEL 		  = (TCM_FIRST + 12);
+		public const int TCM_HITTEST 		  = (TCM_FIRST + 13);
+		public const int TCM_SETITEMEXTRA 	  = (TCM_FIRST + 14);
+		public const int TCM_ADJUSTRECT 	  = (TCM_FIRST + 40);
+		public const int TCM_SETITEMSIZE 	  = (TCM_FIRST + 41);
+		public const int TCM_REMOVEIMAGE 	  = (TCM_FIRST + 42);
+		public const int TCM_SETPADDING 	  = (TCM_FIRST + 43);
+		public const int TCM_GETROWCOUNT 	  = (TCM_FIRST + 44);
+		public const int TCM_GETCURFOCUS 	  = (TCM_FIRST + 47);
+		public const int TCM_SETCURFOCUS 	  = (TCM_FIRST + 48);
+		public const int TCM_SETMINTABWIDTH   = (TCM_FIRST + 49);
+		public const int TCM_DESELECTALL 	  = (TCM_FIRST + 50);
+		public const int TCM_HIGHLIGHTITEM 	  = (TCM_FIRST + 51);
+		public const int TCM_SETEXTENDEDSTYLE = (TCM_FIRST + 52);
+		public const int TCM_GETEXTENDEDSTYLE = (TCM_FIRST + 53);
+
+		public const int TCN_SELCHANGE = -551;
+
+
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr GetWindowDC(IntPtr hWnd);
+
+		[DllImport("user32.dll")]
+		public static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
+
+		public const int DSTINVERT = 0x00550009;
+
+		[DllImport("gdi32.dll")]
+		public static extern bool PatBlt(IntPtr hdc, int nXLeft, int nYLeft, int nWidth, int nHeight, uint dwRop);
     }
 
     public class ClikeStringArray : IDisposable

@@ -71,8 +71,10 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DialogItem.cs" />
     <Compile Include="DllExport\DllExportAttribute.cs" />
     <Compile Include="Forms\ResultsPopup.cs">
       <SubType>Form</SubType>
@@ -80,6 +82,7 @@
     <Compile Include="Forms\ResultsPopup.Designer.cs">
       <DependentUpon>ResultsPopup.cs</DependentUpon>
     </Compile>
+    <Compile Include="HierarchyItem.cs" />
     <Compile Include="MenuItem.cs" />
     <Compile Include="Forms\SearchForm.cs">
       <SubType>Form</SubType>

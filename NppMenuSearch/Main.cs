@@ -16,8 +16,7 @@ namespace NppMenuSearch
         static string 		  iniFilePath = null;
         static bool 		  someSetting = false;
 
-		public static SearchForm SearchForm { get; private set; }
-
+		internal static SearchForm SearchForm { get; private set; }
 
         internal static void CommandMenuInit()
         {
@@ -38,6 +37,29 @@ namespace NppMenuSearch
             PluginBase.SetCommand(0, "Menu Search...", MenuSearchFunction, new ShortcutKey(true,  false, false, Keys.M));
 			PluginBase.SetCommand(1, "About...", 	   AboutFunction, 	   new ShortcutKey(false, false, false, Keys.None));
         }
+
+		internal static string GetNativeLangXml()
+		{
+			// %appdata%\Notepad++\nativeLang.xml
+
+			string result = Path.Combine(
+				Path.Combine(
+					Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+					"Notepad++"),
+				"nativeLang.xml");
+
+			if (File.Exists(result))
+				return result;
+
+			StringBuilder sb = new StringBuilder(1024);
+			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETNPPDIRECTORY, sb.Capacity, sb);
+
+			result = Path.Combine(sb.ToString(), "nativeLang.xml");
+			if (File.Exists(result))
+				return result;
+
+			return null;
+		}
 
 		internal static void PluginReady()
 		{

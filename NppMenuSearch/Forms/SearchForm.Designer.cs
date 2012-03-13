@@ -38,9 +38,9 @@
 			this.frmSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
 			this.frmSearch.BackColor = System.Drawing.SystemColors.Control;
 			this.frmSearch.Controls.Add(this.txtSearch);
-			this.frmSearch.Location = new System.Drawing.Point(0, 8);
+			this.frmSearch.Location = new System.Drawing.Point(0, 14);
 			this.frmSearch.Name = "frmSearch";
-			this.frmSearch.Size = new System.Drawing.Size(295, 20);
+			this.frmSearch.Size = new System.Drawing.Size(459, 20);
 			this.frmSearch.TabIndex = 1;
 			// 
 			// txtSearch
@@ -48,7 +48,7 @@
 			this.txtSearch.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.txtSearch.Location = new System.Drawing.Point(0, 0);
 			this.txtSearch.Name = "txtSearch";
-			this.txtSearch.Size = new System.Drawing.Size(295, 20);
+			this.txtSearch.Size = new System.Drawing.Size(459, 20);
 			this.txtSearch.TabIndex = 0;
 			this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
 			this.txtSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSearch_KeyDown);
@@ -59,7 +59,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Control;
-			this.ClientSize = new System.Drawing.Size(295, 37);
+			this.ClientSize = new System.Drawing.Size(459, 48);
 			this.Controls.Add(this.frmSearch);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 			this.Name = "SearchForm";

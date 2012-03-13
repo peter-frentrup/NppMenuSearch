@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -48,26 +45,28 @@ namespace NppMenuSearch.Forms
 			});
 
 			if (rebar == IntPtr.Zero)
+			{
+				Console.WriteLine("ReBarWindow32 not found.");
 				return;
+			}
 
-			//frmSearch.ClientSize = new Size(frmSearch.Size.Width, txtSearch.Size.Height);
-			//ClientSize = frmSearch.Size;
-
-			//Win32.SetParent(Handle, parent);
 			Win32.SetWindowLong(Handle, Win32.GWL_STYLE, Win32.WS_CHILD | Win32.GetWindowLong(Handle, Win32.GWL_STYLE));
 
 			Win32.REBARBANDINFO band = new Win32.REBARBANDINFO();
 			band.cbSize 			 = System.Runtime.InteropServices.Marshal.SizeOf(band);
-			band.fMask 				 = Win32.RBBIM_CHILD | Win32.RBBIM_SIZE | Win32.RBBIM_IDEALSIZE;
+			band.fMask 				 = Win32.RBBIM_CHILD | Win32.RBBIM_SIZE | Win32.RBBIM_IDEALSIZE | Win32.RBBIM_CHILDSIZE;
 			band.hwndChild 			 = Handle;
 			band.cx 				 = Size.Width;
 			band.cxIdeal 			 = Size.Width;
+			band.cxMinChild 		 = 120;
+			band.cyMinChild 		 = frmSearch.Height;
+			band.cyMaxChild 		 = frmSearch.Height;
+			band.cyChild 			 = 0;
+			band.cyIntegral 		 = 0;
 
 			int count = (int)Win32.SendMessage(rebar, (NppMsg)Win32.RB_GETBANDCOUNT, 0, 0);
 
 			Win32.SendMessage(rebar, Win32.RB_INSERTBANDW, count, ref band);
-			//Win32.SendMessage(rebar, (NppMsg)Win32.RB_MINIMIZEBAND, count, 0);
-			//Win32.SendMessage(rebar, (NppMsg)Win32.RB_MAXIMIZEBAND, count, 1);
 			if (count > 0)
 			{
 				Win32.SendMessage(rebar, (NppMsg)Win32.RB_MINIMIZEBAND, count - 1, 0);
@@ -77,9 +76,16 @@ namespace NppMenuSearch.Forms
 
 		public void SelectSearchField()
 		{
-			txtSearch.SelectAll();
-			txtSearch.Focus();
-			txtSearch_TextChanged(null, null);
+			if (ResultsPopup.Visible)
+			{
+				ResultsPopup.ShowMoreResults();
+			}
+			else
+			{
+				txtSearch.SelectAll();
+				txtSearch.Focus();
+				txtSearch_TextChanged(null, null);
+			}
 		}
 
 		private IntPtr GetNppMainWindow()
@@ -126,25 +132,12 @@ namespace NppMenuSearch.Forms
 				{
 					Console.WriteLine("shown");
 					Win32.SetFocus(txtSearch.Handle);
-					//txtSearch.Focus();
+
 					ResultsPopup.Activated -= shown;
 				};
 				ResultsPopup.Activated += shown;
 				ResultsPopup.Show();
-				//ResultsPopup.Visible = true;
-
-				//Win32.ShowWindow(ResultsPopup.Handle, Win32.SW_SHOWNOACTIVATE);
-				//Win32.SetWindowPos(
-				//	ResultsPopup.Handle,
-				//	(IntPtr)Win32.HWND_TOPMOST,
-				//	ResultsPopup.Left,
-				//	ResultsPopup.Top,
-				//	ResultsPopup.Width,
-				//	ResultsPopup.Height,
-				//	Win32.SWP_NOACTIVATE);
 			}
-			//else
-			//	Console.WriteLine("other {0}" + ResultsPopup.RectangleToScreen(ResultsPopup.ClientRectangle));
 		}
 
 		private bool suppressKeyPress;
@@ -160,6 +153,11 @@ namespace NppMenuSearch.Forms
 					e.Handled = true;
 					suppressKeyPress = true;
 					Win32.SetFocus(PluginBase.GetCurrentScintilla());
+					break;
+
+				case Keys.Tab:
+					e.Handled = true;
+					suppressKeyPress = true;
 					break;
 			}
 		}
