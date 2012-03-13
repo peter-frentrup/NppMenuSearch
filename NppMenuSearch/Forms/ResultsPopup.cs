@@ -76,7 +76,7 @@ namespace NppMenuSearch.Forms
 			MaxMenuResults 		  = int.MaxValue;
 			MaxPreferencesResults = int.MaxValue;
 			panInfo.Visible 	  = false;
-			OwnerTextBox_TextChanged(null, null);
+			RebuildResultsList();
 		}
 
 		private void ResultsPopup_VisibleChanged(object sender, EventArgs e)
@@ -94,7 +94,7 @@ namespace NppMenuSearch.Forms
 					OwnerTextBox.TextChanged += OwnerTextBox_TextChanged;
 					OwnerTextBox.KeyDown += OwnerTextBox_KeyDown;
 				}
-				OwnerTextBox_TextChanged(null, null);
+				RebuildResultsList();
 			}
 			else
 			{
@@ -196,7 +196,7 @@ namespace NppMenuSearch.Forms
 			}
 		}
 
-		void OwnerTextBox_TextChanged(object sender, EventArgs e)
+		void RebuildResultsList()
 		{
 			var words = OwnerTextBox.Text.SplitAt(' ');
 
@@ -223,10 +223,10 @@ namespace NppMenuSearch.Forms
 			for (int i = 0; i < menuItems.Length; ++i)
 			{
 				ListViewItem item = new ListViewItem();
-				item.Tag   		  = menuItems[i];
-				item.Text  		  = menuItems[i] + "";
-				item.Group 		  = resultGroupMenu;
-				viewResults.Items.Add(item); 
+				item.Tag = menuItems[i];
+				item.Text = menuItems[i] + "";
+				item.Group = resultGroupMenu;
+				viewResults.Items.Add(item);
 			}
 
 			if (menuItems.Length == MaxMenuResults)
@@ -238,9 +238,9 @@ namespace NppMenuSearch.Forms
 			for (int i = 0; i < prefDialogItems.Length; ++i)
 			{
 				ListViewItem item = new ListViewItem();
-				item.Tag 		  = prefDialogItems[i];
-				item.Text 		  = prefDialogItems[i] + "";
-				item.Group 		  = resultGroupPreferences;
+				item.Tag = prefDialogItems[i];
+				item.Text = prefDialogItems[i] + "";
+				item.Group = resultGroupPreferences;
 				viewResults.Items.Add(item);
 			}
 
@@ -252,6 +252,15 @@ namespace NppMenuSearch.Forms
 
 			if (viewResults.Items.Count > 0)
 				viewResults.Items[0].Selected = true;
+		}
+
+		void OwnerTextBox_TextChanged(object sender, EventArgs e)
+		{
+			MaxMenuResults 		  = DefaultMaxMenuResults;
+			MaxPreferencesResults = DefaultMaxPreferencesResults;
+			panInfo.Visible 	  = true;
+
+			RebuildResultsList();
 		}
 
 		void ItemSelected()
@@ -268,6 +277,7 @@ namespace NppMenuSearch.Forms
 				if (OwnerTextBox != null)
 					OwnerTextBox.Text = "";
 
+				Win32.SetFocus(PluginBase.GetCurrentScintilla());
 				return;
 			}
 

@@ -152,7 +152,6 @@ namespace NppMenuSearch.Forms
 				case Keys.Enter:
 					e.Handled = true;
 					suppressKeyPress = true;
-					Win32.SetFocus(PluginBase.GetCurrentScintilla());
 					break;
 
 				case Keys.Tab:
