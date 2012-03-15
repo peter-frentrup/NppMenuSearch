@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using NppPluginNET;
 using NppMenuSearch.Forms;
+using System.Diagnostics;
 
 namespace NppMenuSearch
 {
@@ -103,7 +104,10 @@ namespace NppMenuSearch
 		internal static void AboutFunction()
 		{
 			MessageBox.Show(
-				"Notepad++ Menu Search Plugin by Peter Frentrup",
+				string.Format(
+					"Notepad++ Menu Search Plugin, version {0}\r\n"+
+					"by Peter Frentrup",
+					typeof(Main).Assembly.GetName().Version),
 				"NppMenuSearch",
 				MessageBoxButtons.OK,
 				MessageBoxIcon.Information);

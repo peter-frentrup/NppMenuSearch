@@ -47,7 +47,7 @@
 			this.panInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panInfo.Location = new System.Drawing.Point(0, 497);
 			this.panInfo.Name = "panInfo";
-			this.panInfo.Size = new System.Drawing.Size(528, 17);
+			this.panInfo.Size = new System.Drawing.Size(604, 17);
 			this.panInfo.TabIndex = 2;
 			// 
 			// label1
@@ -56,7 +56,7 @@
 			this.label1.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label1.Location = new System.Drawing.Point(0, 2);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(420, 14);
+			this.label1.Size = new System.Drawing.Size(419, 14);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Press CTRL+M again to show all results. TAB to switch groups: Menu ↔ Preferences";
 			// 
@@ -69,12 +69,13 @@
 			this.viewResults.Location = new System.Drawing.Point(0, 0);
 			this.viewResults.MultiSelect = false;
 			this.viewResults.Name = "viewResults";
-			this.viewResults.Size = new System.Drawing.Size(528, 497);
+			this.viewResults.OwnerDraw = true;
+			this.viewResults.Size = new System.Drawing.Size(604, 497);
 			this.viewResults.TabIndex = 1;
 			this.viewResults.TileSize = new System.Drawing.Size(317, 16);
 			this.viewResults.UseCompatibleStateImageBehavior = false;
 			this.viewResults.View = System.Windows.Forms.View.Tile;
-			this.viewResults.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.viewResults_ItemSelectionChanged);
+			this.viewResults.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.viewResults_DrawItem);
 			this.viewResults.Click += new System.EventHandler(this.viewResults_Click);
 			this.viewResults.Resize += new System.EventHandler(this.viewResults_Resize);
 			// 
@@ -82,7 +83,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(528, 514);
+			this.ClientSize = new System.Drawing.Size(604, 514);
 			this.ControlBox = false;
 			this.Controls.Add(this.viewResults);
 			this.Controls.Add(this.panInfo);

@@ -19,83 +19,6 @@ namespace NppMenuSearch
 			Text 	  = "";
 		}
 
-		public DialogItem(IntPtr hwnd)
-		{
-			ControlId = (uint)Win32.GetDlgCtrlID(hwnd);
-
-			{
-				StringBuilder sb = new StringBuilder(Win32.GetWindowTextLength(hwnd) + 1);
-				Win32.GetWindowText(hwnd, sb, sb.Capacity);
-				Text = sb.ToString();
-			}
-
-			var groupBoxes = new Dictionary<IntPtr, KeyValuePair<DialogItem, Rectangle>>();
-			Win32.EnumChildWindows(hwnd, descendent =>
-			{
-				if (Win32.GetParent(descendent) == hwnd)
-				{
-					if ((Win32.GetWindowLong(descendent, Win32.GWL_STYLE) & Win32.BS_TYPEMASK) == Win32.BS_GROUPBOX)
-					{
-						StringBuilder sb = new StringBuilder(256);
-						Win32.GetClassName(descendent, sb, sb.Capacity);
-
-						if (sb.ToString() == "Button")
-						{
-							RECT winRect;
-							Win32.GetWindowRect(descendent, out winRect);
-							
-							Rectangle rect = new Rectangle(winRect.Left, winRect.Top, winRect.Right - winRect.Left, winRect.Bottom - winRect.Top);
-
-							DialogItem item = new DialogItem(descendent);
-							groupBoxes.Add(descendent, new KeyValuePair<DialogItem, Rectangle>(item, rect));
-						}
-					}
-				}
-
-				return true;
-			});
-
-			foreach (var group in groupBoxes)
-			{
-				AddItem(group.Value.Key);
-			}
-
-
-			Win32.EnumChildWindows(hwnd, descendent =>
-				{
-					if (Win32.GetParent(descendent) == hwnd)
-					{
-						if (!groupBoxes.ContainsKey(descendent))
-						{
-							DialogItem item = new DialogItem(descendent);
-							if (item.Text == "")
-								return true;
-
-							if (item.ControlId == 0 && !item.EnumItems().Any())
-								return true;
-							
-							RECT winRect;
-							Win32.GetWindowRect(descendent, out winRect);
-
-							Rectangle rect = new Rectangle(winRect.Left, winRect.Top, winRect.Right - winRect.Left, winRect.Bottom - winRect.Top);
-
-							foreach (var group in groupBoxes)
-							{
-								if (group.Value.Value.IntersectsWith(rect))
-								{
-									group.Value.Key.AddItem(item);
-									return true;
-								}
-							}
-
-							AddItem(item);
-						}
-					}
-
-					return true;
-				});
-		}
-
 		public DialogItem(XmlElement dialog)
 		{
 			Text 	  = "";
@@ -103,11 +26,21 @@ namespace NppMenuSearch
 
 			if (dialog.HasAttribute("id"))
 			{
-				uint.TryParse(
-					dialog.GetAttribute("id"),
-					System.Globalization.NumberStyles.Number,
-					CultureInfo.InvariantCulture.NumberFormat,
-					out ControlId);
+				if (!uint.TryParse(
+						dialog.GetAttribute("id"),
+						System.Globalization.NumberStyles.Number,
+						CultureInfo.InvariantCulture.NumberFormat,
+						out ControlId))
+				{
+					int id = 0;
+					int.TryParse(
+						dialog.GetAttribute("id"),
+						System.Globalization.NumberStyles.Number,
+						CultureInfo.InvariantCulture.NumberFormat,
+						out id);
+
+					ControlId = (uint)id;
+				}
 			}
 
 			if (dialog.HasAttribute("name"))
@@ -139,6 +72,9 @@ namespace NppMenuSearch
 					Rectangle rect = new Rectangle(winRect.Left, winRect.Top, winRect.Right - winRect.Left, winRect.Bottom - winRect.Top);
 
 					uint id = (uint)Win32.GetDlgCtrlID(descendent);
+					if (id == 0)
+						return true;
+
 					DialogItem item = EnumItems().Cast<DialogItem>().Where(i => i.ControlId == id).FirstOrDefault();
 
 					if(item == null)
@@ -162,14 +98,35 @@ namespace NppMenuSearch
 				return true;
 			});
 
+			foreach (var innerGroup in groupBoxes.OrderByDescending(kv => kv.Value.Width))
+			{
+				foreach (var outerGroup in groupBoxes.OrderBy(kv => kv.Value.Width))
+				{
+					if (outerGroup.Key == innerGroup.Key)
+						continue;
+
+					if (outerGroup.Key.Parent != this)
+						continue;
+
+					if (outerGroup.Value.Contains(innerGroup.Value))
+					{
+						innerGroup.Key.Parent.RemoveItem(innerGroup.Key);
+						outerGroup.Key.AddItem(innerGroup.Key);
+						break;
+					}
+				}
+			}
+
 			foreach (var other in otherItems)
 			{
-				foreach (var group in groupBoxes)
+				foreach (var group in groupBoxes.OrderBy(kv => kv.Value.Width))
 				{
 					if (group.Value.Contains(other.Value))
 					{
 						RemoveItem(other.Key);
 						group.Key.AddItem(other.Key);
+						groupBoxes.Remove(other.Key);
+						break;
 					}
 				}
 			}

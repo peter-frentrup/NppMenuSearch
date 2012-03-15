@@ -9,15 +9,15 @@ namespace NppMenuSearch
 {
 	public class DialogHelper
 	{
-		public static IntPtr LoadNppDialog(int dialogResoucreId)
+		public static IntPtr LoadNppDialog(IntPtr hwndParent, int dialogResoucreId)
 		{
 			if (dialogResoucreId < 0 || dialogResoucreId > 0xFFFF)
 				return IntPtr.Zero;
 
 			IntPtr exeModule = Win32.GetModuleHandle(null);
 
-			// no need to pin DialogProcedure, becuase that is a static method
-			return CreateDialogParam(exeModule, (IntPtr)dialogResoucreId, IntPtr.Zero, DialogProcedure, IntPtr.Zero);
+			// No need to pin DialogProcedure, because that is a static method.
+			return CreateDialogParam(exeModule, (IntPtr)dialogResoucreId, hwndParent, DialogProcedure, IntPtr.Zero);
 		}
 
 		static IntPtr DialogProcedure(IntPtr hwndDlg, uint uMsg, IntPtr wParam, IntPtr lParam)
@@ -38,7 +38,7 @@ namespace NppMenuSearch
 
 		delegate IntPtr DLGPROC(IntPtr hwndDlg, uint uMsg, IntPtr wParam, IntPtr lParam);
 
-		[DllImport("user32.dll")]
+		[DllImport("user32.dll", SetLastError=true)]
 		static extern IntPtr CreateDialogParam(IntPtr hInstance, IntPtr templateId,
 		   IntPtr hwndParent, DLGPROC lpDialogFunc, IntPtr dwInitParam);
 

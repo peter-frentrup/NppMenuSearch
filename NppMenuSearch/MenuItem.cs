@@ -28,7 +28,6 @@ namespace NppMenuSearch
 				IntPtr sub = Win32.GetSubMenu(hmenu, (uint)i, true);
 
 				MenuItem item  = new MenuItem(sub);
-				item.Parent    = this;
 				item.Text 	   = text.Before("\t");
 				item.Shortcut  = text.After("\t");
 				item.CommandId = id;

@@ -31,7 +31,7 @@ namespace NppMenuSearch
 			subitems.Add(item);
 		}
 
-		protected void RemoveItem(HierarchyItem item)
+		public void RemoveItem(HierarchyItem item)
 		{
 			if (subitems.Remove(item))
 			{

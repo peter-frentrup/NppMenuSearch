@@ -1018,6 +1018,30 @@ namespace NppPluginNET
             IDM_SYSTRAYPOPUP_CLOSE            = (IDM_SYSTRAYPOPUP + 5)
     }
 
+	public enum NppResources : int
+	{
+		IDD_REGEXT_BOX = 4000,
+
+		IDD_PREFERENCE_BOX = 6000,
+		IDC_BUTTON_CLOSE = IDD_PREFERENCE_BOX + 1,
+
+		IDD_PREFERENCE_BAR_BOX = 6100,
+
+		IDD_PREFERENCE_MARGEIN_BOX = 6200,
+
+		IDD_PREFERENCE_SETTING_BOX = 6300,
+
+		IDD_PREFERENCE_NEWDOCSETTING_BOX = 6400,
+
+		IDD_PREFERENCE_LANG_BOX = 6500,
+
+		IDD_PREFERENCE_PRINT_BOX = 6600,
+
+		IDD_PREFERENCE_PRINT2_BOX = 6700,
+
+		IDD_PREFERENCE_BACKUP_BOX = 6800
+	};
+
     [Flags]
     public enum DockMgrMsg : uint
     {
@@ -2094,6 +2118,31 @@ namespace NppPluginNET
 		public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref REBARBANDINFO lParam);
 		[DllImport("user32")]
 		public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref NMHDR lParam);
+
+		public const int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
+		public const int FORMAT_MESSAGE_IGNORE_INSERTS 	= 0x00000200;
+		public const int FORMAT_MESSAGE_FROM_SYSTEM 	= 0x00001000;
+
+		[DllImport("kernel32.dll")]
+		public static extern int FormatMessage(int dwFlags, int lpSource,
+			int dwMessageId, int dwLanguageId, ref String lpBuffer, int nSize, int Arguments);
+
+		public static string GetErrorMessage(int errorCode)
+		{
+			int messageSize = 255;
+			string lpMsgBuf = "";
+			int dwFlags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
+
+			int retVal = FormatMessage(dwFlags, 0, errorCode, 0, ref lpMsgBuf, messageSize, 0);
+			if (0 == retVal)
+			{
+				return null;
+			}
+			else
+			{
+				return lpMsgBuf;
+			}
+		}
 
         public const int MAX_PATH = 260;
         [DllImport("kernel32")]

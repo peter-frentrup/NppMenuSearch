@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using NppPluginNET;
 using System.Xml;
+using System.Runtime.InteropServices;
 
 namespace NppMenuSearch.Forms
 {
@@ -23,21 +24,9 @@ namespace NppMenuSearch.Forms
 		ListViewGroup resultGroupMenu 		 = new ListViewGroup("Menu", 		HorizontalAlignment.Left);
 		ListViewGroup resultGroupPreferences = new ListViewGroup("Preferences", HorizontalAlignment.Left);
 
-		public TextBox 	  OwnerTextBox;
-		public MenuItem   MainMenu;
-
-		bool initializedPropertiesDialog = false;
-		private DialogItem preferenceDialog;
-		public DialogItem PreferenceDialog
-		{
-			get { return preferenceDialog; }
-			set
-			{
-				preferenceDialog = value;
-				initializedPropertiesDialog = true;
-			}
-		}
-
+		public 	TextBox    OwnerTextBox;
+		public 	MenuItem   MainMenu;
+		private DialogItem PreferenceDialog;
 
 		public ResultsPopup()
 		{
@@ -47,9 +36,87 @@ namespace NppMenuSearch.Forms
 			viewResults.Groups.Add(resultGroupPreferences);
 			
 			MainMenu = new MenuItem(IntPtr.Zero);
+			InitPreferencesDialog();
 
 			Main.MakeNppOwnerOf(this);
-			preferenceDialog = new DialogItem();
+		}
+
+		protected void InitPreferencesDialog()
+		{
+			PreferenceDialog = new DialogItem();
+
+			string nativeLangFile = Main.GetNativeLangXml();
+			if (nativeLangFile == null)
+			{
+				return;
+			}
+
+			XmlDocument doc = new XmlDocument();
+			doc.Load(nativeLangFile);
+
+			XmlElement preferenceDialogXml = (XmlElement)doc.SelectSingleNode("/NotepadPlus/Native-Langue/Dialog/Preference");
+			PreferenceDialog = new DialogItem(preferenceDialogXml);
+			PreferenceDialog.Text = "";
+
+			// Now refine hierachy via group box positions
+			foreach (XmlElement pageXml in preferenceDialogXml.ChildNodes)
+			{
+				int resourceId = 0;
+				// not nice to hardcode it here :(
+				switch (pageXml.Name)
+				{
+					case "Global":
+						resourceId = (int)NppResources.IDD_PREFERENCE_BAR_BOX;
+						break;
+
+					case "Scintillas":
+						resourceId = (int)NppResources.IDD_PREFERENCE_MARGEIN_BOX;
+						break;
+
+					case "NewDoc":
+						resourceId = (int)NppResources.IDD_PREFERENCE_NEWDOCSETTING_BOX;
+						break;
+
+					case "FileAssoc":
+						resourceId = (int)NppResources.IDD_REGEXT_BOX;
+						break;
+
+					case "LangMenu":
+						resourceId = (int)NppResources.IDD_PREFERENCE_LANG_BOX;
+						break;
+
+					case "Print":
+						resourceId = (int)NppResources.IDD_PREFERENCE_PRINT_BOX;
+						break;
+
+					case "MISC":
+						resourceId = (int)NppResources.IDD_PREFERENCE_SETTING_BOX;
+						break;
+
+					case "Backup":
+						resourceId = (int)NppResources.IDD_PREFERENCE_BACKUP_BOX;
+						break;
+				}
+
+				if (resourceId == 0)
+					continue;
+
+				string title = pageXml.GetAttribute("title");
+
+				DialogItem pageItem = PreferenceDialog.EnumItems().Cast<DialogItem>().Where(i => i.Text == title).FirstOrDefault();
+				if (pageItem == null)
+					continue;
+
+				IntPtr hwndDialogPage = DialogHelper.LoadNppDialog(Handle, resourceId);
+				try
+				{
+					pageItem.ReorderItemsByGroupBoxes(hwndDialogPage);
+				}
+				finally
+				{
+					DialogHelper.DestroyWindow(hwndDialogPage);
+				}
+			}
 		}
 
 		protected override void WndProc(ref Message m)
@@ -94,15 +161,6 @@ namespace NppMenuSearch.Forms
 				panInfo.Visible 	  = true;
 
 				MainMenu = new MenuItem(Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_INTERNAL_GETMENU, 0, 0));
-
-				if (!initializedPropertiesDialog)
-				{
-					XmlDocument doc = new XmlDocument();
-					doc.Load(Main.GetNativeLangXml());
-
-					XmlElement preferenceDialogXml = (XmlElement)doc.SelectSingleNode("/NotepadPlus/Native-Langue/Dialog/Preference");
-					PreferenceDialog = new DialogItem(preferenceDialogXml);
-				}
 
 				if (OwnerTextBox != null)
 				{
@@ -438,29 +496,6 @@ namespace NppMenuSearch.Forms
 			return hwndPreferences;
 		}
 
-		protected void InitPreferenceDialog()
-		{
-			/* WM_TIMER messages have the lowest priority, so the following EventHandler will be called 
-			 * (immediately) after the Preferences Dialog is shown [becuase we use a tick count of 1ms]
-			 * 
-			 * This does not work when the Preferences window is already visible, because it wont be 
-			 * activated by Notepad++
-			 */
-			EventHandler tick = null;
-			tick = (timer, ev) =>
-			{
-				((Timer)timer).Stop();
-				((Timer)timer).Tick -= tick;
-
-				Win32.ShowWindow(FindPreferencesDialog(), Win32.SW_HIDE);
-			};
-
-			timerIdle.Tick += tick;
-
-			timerIdle.Start();
-			Win32.SendMessage(PluginBase.nppData._nppHandle, (NppMsg)Win32.WM_COMMAND, (int)NppMenuCmd.IDM_SETTING_PREFERECE, 0);
-		}
-
 		public void OpenPreferences(uint destinationControlId)
 		{
 			/* WM_TIMER messages have the lowest priority, so the following EventHandler will be called 
@@ -502,14 +537,50 @@ namespace NppMenuSearch.Forms
 			ItemSelected();
 		}
 
-		private void viewResults_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+		private void viewResults_DrawItem(object sender, DrawListViewItemEventArgs e)
 		{
-			// Work around bug that causes artefacts.
+			/*if (e.Item.Selected)
+			{
+				e.Item.BackColor = Color.LightGray;
+				e.Item.ForeColor = Color.Black;
 
-			Rectangle bounds = e.Item.Bounds;
-			bounds.Inflate(1, 1);
-			Console.WriteLine(bounds);
-			e.Item.ListView.Invalidate(bounds);
+				e.DrawBackground();
+				e.DrawText();
+			}
+			else
+			{
+				if (e.Item.BackColor != e.Item.ListView.BackColor)
+					e.Item.BackColor = e.Item.ListView.BackColor;
+
+				if (e.Item.ForeColor != e.Item.ListView.ForeColor)
+					e.Item.ForeColor = e.Item.ListView.ForeColor;
+
+				e.DrawDefault = true;
+				return;
+			}*/
+
+			if (!e.Item.Selected)
+			{
+				e.DrawDefault = true;
+				return;
+			}
+
+			using (Brush background = new SolidBrush(Color.LightGray))
+			using (Brush foreground = new SolidBrush(Color.Black))
+			{
+				e.Graphics.FillRectangle(background, e.Bounds);
+
+				StringFormat format = new StringFormat(
+					StringFormatFlags.NoWrap | StringFormatFlags.NoClip | StringFormatFlags.FitBlackBox);
+				format.SetTabStops(20f, new float[] { 20f });
+
+				e.Graphics.DrawString(
+					e.Item.Text,
+					e.Item.Font ?? e.Item.ListView.Font,
+					foreground,
+					e.Bounds.Location,
+					format);
+			}
 		}
 	}
 }
