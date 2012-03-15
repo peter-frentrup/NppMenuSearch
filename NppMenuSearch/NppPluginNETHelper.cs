@@ -2109,14 +2109,21 @@ namespace NppPluginNET
         [DllImport("user32")]
         public static extern int CheckMenuItem(IntPtr hmenu, int uIDCheckItem, int uCheck);
 
-		public const int WM_CREATE 		= 0x0001;
-		public const int WM_ACTIVATEAPP = 0x001C;
-		public const int WM_NOTIFY 		= 0x004E;
-		public const int WM_KEYDOWN 	= 0x0100;
-		public const int WM_KEYUP 		= 0x0101;
-		public const int WM_CHAR 		= 0x0102;
-		public const int WM_UNICHAR 	= 0x0109;
-		public const int WM_COMMAND 	= 0x0111;
+		public const int MA_ACTIVATE 		 = 1;
+		public const int MA_ACTIVATEANDEAT 	 = 2;
+		public const int MA_NOACTIVATE 		 = 3;
+		public const int MA_NOACTIVATEANDEAT = 4;
+
+		public const int WM_CREATE 		  = 0x0001;
+		public const int WM_ACTIVATEAPP   = 0x001C;
+		public const int WM_MOUSEACTIVATE = 0x0021;
+		public const int WM_NOTIFY 		  = 0x004E;
+		public const int WM_KEYDOWN 	  = 0x0100;
+		public const int WM_KEYUP 		  = 0x0101;
+		public const int WM_CHAR 		  = 0x0102;
+		public const int WM_UNICHAR 	  = 0x0109;
+		public const int WM_INITDIALOG 	  = 0x0110;
+		public const int WM_COMMAND 	  = 0x0111;
 
 		public const int WM_REFLECT = 0x2000;
 
@@ -2163,9 +2170,14 @@ namespace NppPluginNET
 
 		[DllImport("user32.dll")]
 		public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-		
 
+		[DllImport("user32.dll", SetLastError = true)]
+		public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
+		[DllImport("user32.dll", SetLastError = true)]
+		public static extern int GetWindowTextLength(IntPtr hWnd);
+
+		public const int SW_HIDE = 0;
 		public const int SW_SHOWNOACTIVATE = 4;
 
 		[DllImport("user32.dll")]
@@ -2189,8 +2201,37 @@ namespace NppPluginNET
 		public const int GWL_USERDATA 	= -21;
 		public const int GWL_ID 		= -12;
 
-		public const int WS_CLIPCHILDREN = 0x02000000;
-		public const int WS_CHILD = 0x40000000;
+		public const int WS_CLIPCHILDREN 	= 0x02000000;
+		public const int WS_CHILD 		 	= 0x40000000;
+		public const int BS_PUSHBUTTON      = 0x00000000;
+		public const int BS_DEFPUSHBUTTON   = 0x00000001;
+		public const int BS_CHECKBOX        = 0x00000002;
+		public const int BS_AUTOCHECKBOX    = 0x00000003;
+		public const int BS_RADIOBUTTON     = 0x00000004;
+		public const int BS_3STATE          = 0x00000005;
+		public const int BS_AUTO3STATE      = 0x00000006;
+		public const int BS_GROUPBOX        = 0x00000007;
+		public const int BS_USERBUTTON      = 0x00000008;
+		public const int BS_AUTORADIOBUTTON = 0x00000009;
+		public const int BS_PUSHBOX         = 0x0000000A;
+		public const int BS_OWNERDRAW       = 0x0000000B;
+		public const int BS_TYPEMASK        = 0x0000000F;
+		public const int BS_LEFTTEXT 		= 0x00000020;
+		public const int BS_TEXT        	= 0x00000000;
+		public const int BS_ICON        	= 0x00000040;
+		public const int BS_BITMAP      	= 0x00000080;
+		public const int BS_LEFT        	= 0x00000100;
+		public const int BS_RIGHT       	= 0x00000200;
+		public const int BS_CENTER      	= 0x00000300;
+		public const int BS_TOP         	= 0x00000400;
+		public const int BS_BOTTOM      	= 0x00000800;
+		public const int BS_VCENTER     	= 0x00000C00;
+		public const int BS_PUSHLIKE    	= 0x00001000;
+		public const int BS_MULTILINE   	= 0x00002000;
+		public const int BS_NOTIFY      	= 0x00004000;
+		public const int BS_FLAT        	= 0x00008000;
+		public const int BS_RIGHTBUTTON 	= BS_LEFTTEXT;
+
 
 		[DllImport("user32.dll")]
 		public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
@@ -2503,7 +2544,11 @@ namespace NppPluginNET
 
 		[DllImport("gdi32.dll")]
 		public static extern bool PatBlt(IntPtr hdc, int nXLeft, int nYLeft, int nWidth, int nHeight, uint dwRop);
-    }
+
+
+		[DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+		public static extern IntPtr GetModuleHandle(string lpModuleName);
+	}
 
     public class ClikeStringArray : IDisposable
     {

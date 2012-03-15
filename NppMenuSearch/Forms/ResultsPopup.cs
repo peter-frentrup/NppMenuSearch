@@ -20,34 +20,36 @@ namespace NppMenuSearch.Forms
 		int MaxMenuResults 		  = DefaultMaxMenuResults;
 		int MaxPreferencesResults = DefaultMaxPreferencesResults;
 
-		public TextBox OwnerTextBox;
-		public MenuItem MainMenu;
-		public DialogItem PreferenceDialog;
-
 		ListViewGroup resultGroupMenu 		 = new ListViewGroup("Menu", 		HorizontalAlignment.Left);
 		ListViewGroup resultGroupPreferences = new ListViewGroup("Preferences", HorizontalAlignment.Left);
+
+		public TextBox 	  OwnerTextBox;
+		public MenuItem   MainMenu;
+
+		bool initializedPropertiesDialog = false;
+		private DialogItem preferenceDialog;
+		public DialogItem PreferenceDialog
+		{
+			get { return preferenceDialog; }
+			set
+			{
+				preferenceDialog = value;
+				initializedPropertiesDialog = true;
+			}
+		}
+
 
 		public ResultsPopup()
 		{
 			InitializeComponent();
-			MainMenu = new MenuItem(IntPtr.Zero);
 
 			viewResults.Groups.Add(resultGroupMenu);
 			viewResults.Groups.Add(resultGroupPreferences);
+			
+			MainMenu = new MenuItem(IntPtr.Zero);
 
 			Main.MakeNppOwnerOf(this);
-			try
-			{
-				XmlDocument doc = new XmlDocument();
-				doc.Load(Main.GetNativeLangXml());
-
-				XmlElement preferenceDialogXml = (XmlElement)doc.SelectSingleNode("/NotepadPlus/Native-Langue/Dialog/Preference");
-				PreferenceDialog = new DialogItem(preferenceDialogXml);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine(ex);
-			}
+			preferenceDialog = new DialogItem();
 		}
 
 		protected override void WndProc(ref Message m)
@@ -58,6 +60,10 @@ namespace NppMenuSearch.Forms
 					if (m.WParam == IntPtr.Zero)
 						Hide();
 					break;
+
+				case Win32.WM_MOUSEACTIVATE:
+					m.Result = (IntPtr)Win32.MA_ACTIVATE;
+					return;
 			}
 
 			base.WndProc(ref m);
@@ -89,12 +95,21 @@ namespace NppMenuSearch.Forms
 
 				MainMenu = new MenuItem(Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_INTERNAL_GETMENU, 0, 0));
 
+				if (!initializedPropertiesDialog)
+				{
+					XmlDocument doc = new XmlDocument();
+					doc.Load(Main.GetNativeLangXml());
+
+					XmlElement preferenceDialogXml = (XmlElement)doc.SelectSingleNode("/NotepadPlus/Native-Langue/Dialog/Preference");
+					PreferenceDialog = new DialogItem(preferenceDialogXml);
+				}
+
 				if (OwnerTextBox != null)
 				{
 					OwnerTextBox.TextChanged += OwnerTextBox_TextChanged;
 					OwnerTextBox.KeyDown += OwnerTextBox_KeyDown;
+					RebuildResultsList();
 				}
-				RebuildResultsList();
 			}
 			else
 			{
@@ -333,8 +348,6 @@ namespace NppMenuSearch.Forms
 				return true;
 			});
 
-			Console.WriteLine("tab control = {0:x}", (int)hwndTab);
-
 			if (hwndTab == IntPtr.Zero)
 				return;
 
@@ -385,7 +398,16 @@ namespace NppMenuSearch.Forms
 
 
 		static IntPtr hwndPreferences = IntPtr.Zero;
-		static IntPtr FindDialogWithControl(uint controlId, out IntPtr hwndControl)
+		public static IntPtr FindPreferencesDialog()
+		{
+			if (hwndPreferences != IntPtr.Zero)
+				return hwndPreferences;
+
+			IntPtr hwndClosebutton;
+			return FindPreferencesDialog(6001, out hwndClosebutton);
+		}
+
+		public static IntPtr FindPreferencesDialog(uint controlId, out IntPtr hwndControl)
 		{
 			IntPtr form = Win32.GetForegroundWindow();
 
@@ -416,6 +438,29 @@ namespace NppMenuSearch.Forms
 			return hwndPreferences;
 		}
 
+		protected void InitPreferenceDialog()
+		{
+			/* WM_TIMER messages have the lowest priority, so the following EventHandler will be called 
+			 * (immediately) after the Preferences Dialog is shown [becuase we use a tick count of 1ms]
+			 * 
+			 * This does not work when the Preferences window is already visible, because it wont be 
+			 * activated by Notepad++
+			 */
+			EventHandler tick = null;
+			tick = (timer, ev) =>
+			{
+				((Timer)timer).Stop();
+				((Timer)timer).Tick -= tick;
+
+				Win32.ShowWindow(FindPreferencesDialog(), Win32.SW_HIDE);
+			};
+
+			timerIdle.Tick += tick;
+
+			timerIdle.Start();
+			Win32.SendMessage(PluginBase.nppData._nppHandle, (NppMsg)Win32.WM_COMMAND, (int)NppMenuCmd.IDM_SETTING_PREFERECE, 0);
+		}
+
 		public void OpenPreferences(uint destinationControlId)
 		{
 			/* WM_TIMER messages have the lowest priority, so the following EventHandler will be called 
@@ -425,18 +470,13 @@ namespace NppMenuSearch.Forms
 			 * activated by Notepad++
 			 */
 			EventHandler tick = null;
-			tick = (s, ev) =>
+			tick = (timer, ev) =>
 			{
-				timerIdle.Stop();
-				timerIdle.Tick -= tick;
+				((Timer)timer).Stop();
+				((Timer)timer).Tick -= tick;
 
 				IntPtr hwndDestinationControl;
-				IntPtr hwndPreferences = FindDialogWithControl(destinationControlId, out hwndDestinationControl);
-
-				Console.WriteLine("preference window = {0:x}", (int)hwndPreferences);
-				Console.WriteLine("destination control = {0:x}, visibility = {1}",
-					(int)hwndDestinationControl,
-					hwndDestinationControl != IntPtr.Zero && Win32.IsWindowVisible(hwndDestinationControl));
+				IntPtr hwndPreferences = FindPreferencesDialog(destinationControlId, out hwndDestinationControl);
 
 				if (hwndDestinationControl != IntPtr.Zero)
 				{

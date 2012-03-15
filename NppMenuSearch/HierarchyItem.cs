@@ -18,11 +18,25 @@ namespace NppMenuSearch
 
 		protected void AddItem(HierarchyItem item)
 		{
+			if (item == null)
+				throw new ArgumentException("item");
+
+			if (item.Parent != null)
+				throw new InvalidOperationException("item.Parent must be null");
+
 			if (subitems == null)
 				subitems = new List<HierarchyItem>();
 
 			item.Parent = this;
 			subitems.Add(item);
+		}
+
+		protected void RemoveItem(HierarchyItem item)
+		{
+			if (subitems.Remove(item))
+			{
+				item.Parent = null;
+			}
 		}
 
 		public IEnumerable<HierarchyItem> EnumItems()

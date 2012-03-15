@@ -31,33 +31,15 @@
 			this.components = new System.ComponentModel.Container();
 			this.timerIdle = new System.Windows.Forms.Timer(this.components);
 			this.timerBlink = new System.Windows.Forms.Timer(this.components);
-			this.viewResults = new System.Windows.Forms.ListView();
 			this.panInfo = new System.Windows.Forms.Panel();
 			this.label1 = new System.Windows.Forms.Label();
+			this.viewResults = new System.Windows.Forms.ListView();
 			this.panInfo.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// timerIdle
 			// 
 			this.timerIdle.Interval = 1;
-			// 
-			// viewResults
-			// 
-			this.viewResults.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.viewResults.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.viewResults.FullRowSelect = true;
-			this.viewResults.HideSelection = false;
-			this.viewResults.Location = new System.Drawing.Point(0, 0);
-			this.viewResults.MultiSelect = false;
-			this.viewResults.Name = "viewResults";
-			this.viewResults.Size = new System.Drawing.Size(528, 497);
-			this.viewResults.TabIndex = 1;
-			this.viewResults.TileSize = new System.Drawing.Size(317, 16);
-			this.viewResults.UseCompatibleStateImageBehavior = false;
-			this.viewResults.View = System.Windows.Forms.View.Tile;
-			this.viewResults.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.viewResults_ItemSelectionChanged);
-			this.viewResults.Click += new System.EventHandler(this.viewResults_Click);
-			this.viewResults.Resize += new System.EventHandler(this.viewResults_Resize);
 			// 
 			// panInfo
 			// 
@@ -78,6 +60,24 @@
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Press CTRL+M again to show all results. TAB to switch groups: Menu ↔ Preferences";
 			// 
+			// viewResults
+			// 
+			this.viewResults.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.viewResults.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.viewResults.FullRowSelect = true;
+			this.viewResults.HideSelection = false;
+			this.viewResults.Location = new System.Drawing.Point(0, 0);
+			this.viewResults.MultiSelect = false;
+			this.viewResults.Name = "viewResults";
+			this.viewResults.Size = new System.Drawing.Size(528, 497);
+			this.viewResults.TabIndex = 1;
+			this.viewResults.TileSize = new System.Drawing.Size(317, 16);
+			this.viewResults.UseCompatibleStateImageBehavior = false;
+			this.viewResults.View = System.Windows.Forms.View.Tile;
+			this.viewResults.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.viewResults_ItemSelectionChanged);
+			this.viewResults.Click += new System.EventHandler(this.viewResults_Click);
+			this.viewResults.Resize += new System.EventHandler(this.viewResults_Resize);
+			// 
 			// ResultsPopup
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -86,6 +86,7 @@
 			this.ControlBox = false;
 			this.Controls.Add(this.viewResults);
 			this.Controls.Add(this.panInfo);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
 			this.Name = "ResultsPopup";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
@@ -99,10 +100,10 @@
 
 		#endregion
 
-		private System.Windows.Forms.Timer timerIdle;
 		private System.Windows.Forms.Timer timerBlink;
-		private System.Windows.Forms.ListView viewResults;
 		private System.Windows.Forms.Panel panInfo;
 		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.ListView viewResults;
+		internal System.Windows.Forms.Timer timerIdle;
 	}
 }

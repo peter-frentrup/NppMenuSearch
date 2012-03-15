@@ -54,7 +54,12 @@ namespace NppMenuSearch
 			StringBuilder sb = new StringBuilder(1024);
 			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETNPPDIRECTORY, sb.Capacity, sb);
 
-			result = Path.Combine(sb.ToString(), "nativeLang.xml");
+			string nppDir = sb.ToString();
+			result = Path.Combine(nppDir, "nativeLang.xml");
+			if (File.Exists(result))
+				return result;
+
+			result = Path.Combine(Path.Combine(nppDir, "localization"), "english.xml");
 			if (File.Exists(result))
 				return result;
 

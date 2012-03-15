@@ -30,6 +30,7 @@
 		{
 			this.frmSearch = new System.Windows.Forms.Panel();
 			this.txtSearch = new System.Windows.Forms.TextBox();
+			this.button1 = new System.Windows.Forms.Button();
 			this.frmSearch.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -37,6 +38,7 @@
 			// 
 			this.frmSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
 			this.frmSearch.BackColor = System.Drawing.SystemColors.Control;
+			this.frmSearch.Controls.Add(this.button1);
 			this.frmSearch.Controls.Add(this.txtSearch);
 			this.frmSearch.Location = new System.Drawing.Point(0, 14);
 			this.frmSearch.Name = "frmSearch";
@@ -45,6 +47,7 @@
 			// 
 			// txtSearch
 			// 
+			this.txtSearch.CausesValidation = false;
 			this.txtSearch.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.txtSearch.Location = new System.Drawing.Point(0, 0);
 			this.txtSearch.Name = "txtSearch";
@@ -53,6 +56,17 @@
 			this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
 			this.txtSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSearch_KeyDown);
 			this.txtSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtSearch_KeyPress);
+			// 
+			// button1
+			// 
+			this.button1.Dock = System.Windows.Forms.DockStyle.Right;
+			this.button1.Location = new System.Drawing.Point(438, 0);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(21, 20);
+			this.button1.TabIndex = 1;
+			this.button1.Text = "button1";
+			this.button1.UseVisualStyleBackColor = true;
+			this.button1.Click += new System.EventHandler(this.button1_Click);
 			// 
 			// SearchForm
 			// 
@@ -75,5 +89,6 @@
 
 		private System.Windows.Forms.Panel frmSearch;
 		private System.Windows.Forms.TextBox txtSearch;
+		private System.Windows.Forms.Button button1;
 	}
 }

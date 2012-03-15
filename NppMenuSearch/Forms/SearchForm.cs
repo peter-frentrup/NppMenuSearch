@@ -108,7 +108,7 @@ namespace NppMenuSearch.Forms
 
 		private void SearchForm_Load(object sender, EventArgs e)
 		{
-			Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETCUEBANNER, 0, "Search Menu (Ctrl+M)");
+			Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETCUEBANNER, 0, "Search Menu & Options (Ctrl+M)");
 		}
 
 		private void txtSearch_TextChanged(object sender, EventArgs e)
@@ -168,6 +168,46 @@ namespace NppMenuSearch.Forms
 				suppressKeyPress = false;
 				e.Handled = true;
 			}
+		}
+
+
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			/* WM_TIMER messages have the lowest priority, so the following EventHandler will be called 
+			 * (immediately) after the Preferences Dialog is shown [becuase we use a tick count of 1ms]
+			 * 
+			 * This does not work when the Preferences window is already visible, because it wont be 
+			 * activated by Notepad++
+			 */
+			EventHandler tick = null;
+			tick = (timer, ev) =>
+			{
+				((Timer)timer).Stop();
+				((Timer)timer).Tick -= tick;
+
+				IntPtr hwndCloseControl;
+				IntPtr hwndPreferences = ResultsPopup.FindPreferencesDialog(6001, out hwndCloseControl);
+
+				if (hwndPreferences != IntPtr.Zero &&
+					hwndPreferences == Win32.GetForegroundWindow())
+				{
+					Win32.ShowWindow(hwndPreferences, Win32.SW_HIDE);
+
+					ResultsPopup.PreferenceDialog = new DialogItem(hwndPreferences);
+
+					//foreach (var item in ResultsPopup.PreferenceDialog.EnumFinalItems())
+					//{
+					//	Console.WriteLine(item);
+					//}
+				}
+			};
+
+			ResultsPopup.timerIdle.Tick += tick;
+
+			ResultsPopup.timerIdle.Start();
+			Win32.SendMessage(PluginBase.nppData._nppHandle, (NppMsg)Win32.WM_COMMAND, (int)NppMenuCmd.IDM_SETTING_PREFERECE, 0);
+
 		}
 	}
 }
