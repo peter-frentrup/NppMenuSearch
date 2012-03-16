@@ -296,30 +296,30 @@ namespace NppMenuSearch.Forms
 			for (int i = 0; i < menuItems.Length; ++i)
 			{
 				ListViewItem item = new ListViewItem();
-				item.Tag = menuItems[i];
-				item.Text = menuItems[i] + "";
-				item.Group = resultGroupMenu;
+				item.Tag 		  = menuItems[i];
+				item.Text 		  = menuItems[i] + "";
+				item.Group 		  = resultGroupMenu;
 				viewResults.Items.Add(item);
 			}
 
 			if (menuItems.Length == MaxMenuResults)
 			{
-				viewResults.Items[viewResults.Items.Count - 1].Tag = null;
+				viewResults.Items[viewResults.Items.Count - 1].Tag 	= null;
 				viewResults.Items[viewResults.Items.Count - 1].Text = "...";
 			}
 
 			for (int i = 0; i < prefDialogItems.Length; ++i)
 			{
 				ListViewItem item = new ListViewItem();
-				item.Tag = prefDialogItems[i];
-				item.Text = prefDialogItems[i] + "";
-				item.Group = resultGroupPreferences;
+				item.Tag 		  = prefDialogItems[i];
+				item.Text 		  = prefDialogItems[i] + "";
+				item.Group 		  = resultGroupPreferences;
 				viewResults.Items.Add(item);
 			}
 
 			if (prefDialogItems.Length == MaxPreferencesResults)
 			{
-				viewResults.Items[viewResults.Items.Count - 1].Tag = null;
+				viewResults.Items[viewResults.Items.Count - 1].Tag 	= null;
 				viewResults.Items[viewResults.Items.Count - 1].Text = "...";
 			}
 
@@ -376,8 +376,8 @@ namespace NppMenuSearch.Forms
 		static void ChangeTabPage(IntPtr hwndDialog, IntPtr hwndTabControl, int index)
 		{
 			Win32.NMHDR nmhdr = new Win32.NMHDR();
-			nmhdr.hwndFrom = hwndTabControl;
-			nmhdr.idFrom = (uint)Win32.GetDlgCtrlID(hwndTabControl);
+			nmhdr.hwndFrom 	  = hwndTabControl;
+			nmhdr.idFrom 	  = (uint)Win32.GetDlgCtrlID(hwndTabControl);
 
 			// does not send a TCN_SELCHANGING or TCN_SELCHANGE notification code:
 			Win32.SendMessage(hwndTabControl, (NppMsg)Win32.TCM_SETCURSEL, index, 0);
@@ -410,7 +410,7 @@ namespace NppMenuSearch.Forms
 				return;
 
 			int count = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETITEMCOUNT, 0, 0);
-			int sel = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETCURSEL, 0, 0);
+			int sel   = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETCURSEL, 0, 0);
 
 			for (int i = 0; i < count; ++i)
 			{
@@ -478,7 +478,7 @@ namespace NppMenuSearch.Forms
 			{
 				if (Win32.GetDlgCtrlID(hwndChild) == controlId)
 				{
-					control = hwndChild;
+					control 		= hwndChild;
 					hwndPreferences = form;
 					return false;
 				}
@@ -539,26 +539,6 @@ namespace NppMenuSearch.Forms
 
 		private void viewResults_DrawItem(object sender, DrawListViewItemEventArgs e)
 		{
-			/*if (e.Item.Selected)
-			{
-				e.Item.BackColor = Color.LightGray;
-				e.Item.ForeColor = Color.Black;
-
-				e.DrawBackground();
-				e.DrawText();
-			}
-			else
-			{
-				if (e.Item.BackColor != e.Item.ListView.BackColor)
-					e.Item.BackColor = e.Item.ListView.BackColor;
-
-				if (e.Item.ForeColor != e.Item.ListView.ForeColor)
-					e.Item.ForeColor = e.Item.ListView.ForeColor;
-
-				e.DrawDefault = true;
-				return;
-			}*/
-
 			if (!e.Item.Selected)
 			{
 				e.DrawDefault = true;

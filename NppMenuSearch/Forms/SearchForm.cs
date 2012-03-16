@@ -127,15 +127,14 @@ namespace NppMenuSearch.Forms
 				pt.X -= ResultsPopup.Width;
 				ResultsPopup.Location = pt;
 
-				EventHandler shown = null;
-				shown = (object _sender, EventArgs _e) =>
+				EventHandler activated = null;
+				activated = (object _sender, EventArgs _e) =>
 				{
-					Console.WriteLine("shown");
 					Win32.SetFocus(txtSearch.Handle);
 
-					ResultsPopup.Activated -= shown;
+					ResultsPopup.Activated -= activated;
 				};
-				ResultsPopup.Activated += shown;
+				ResultsPopup.Activated += activated;
 				ResultsPopup.Show();
 			}
 		}
@@ -150,10 +149,6 @@ namespace NppMenuSearch.Forms
 			{
 				case Keys.Escape:
 				case Keys.Enter:
-					e.Handled = true;
-					suppressKeyPress = true;
-					break;
-
 				case Keys.Tab:
 					e.Handled = true;
 					suppressKeyPress = true;
