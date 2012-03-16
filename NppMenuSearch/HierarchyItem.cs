@@ -67,16 +67,19 @@ namespace NppMenuSearch
 			int    wordCharsCount 		 = 0;
 			int    matchedWordCharsCount = 0;
 
+			List<string> unmatchedWords = new List<string>();
 			foreach (string word in words)
 			{
 				wordCharsCount+= word.Length;
 				int pos = text.IndexOf(word, 0, text.Length, StringComparison.InvariantCultureIgnoreCase);
 				if (pos >= 0)
 				{
-					matchedWordCharsCount+= word.Length;
+					matchedWordCharsCount += word.Length;
 					for (int i = pos; i < pos + word.Length; ++i)
 						matched[i] = true;
 				}
+				else
+					unmatchedWords.Add(word);
 			}
 
 			if (wordCharsCount == 0)
@@ -102,7 +105,10 @@ namespace NppMenuSearch
 			result *= matchedWordCharsCount / (double)wordCharsCount;
 
 			if (Parent != null)
-				result = result * 0.625 + 0.375 * Parent.MatchingSimilarity(words);
+				result = result * 0.5 + 0.5 * Parent.MatchingSimilarity(unmatchedWords);
+
+			unmatchedWords.Clear();
+			unmatchedWords = null;
 
 			return result;
 		}

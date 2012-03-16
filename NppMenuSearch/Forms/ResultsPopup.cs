@@ -14,15 +14,19 @@ namespace NppMenuSearch.Forms
 {
 	public partial class ResultsPopup : Form
 	{
-		const int DefaultMaxMenuResults 	   = 15;
-		const int DefaultMaxPreferencesResults = 10;
+		static LinkedList<uint> RecentlyUsedCommands = new LinkedList<uint>();
+
+		const int DefaultMaxMenuResults 	   = 12;
+		const int DefaultMaxPreferencesResults = 7;
+		const int RecentlyUsedListCount 	   = 5;
 		const int BlinkRepeat 				   = 4;
 
 		int MaxMenuResults 		  = DefaultMaxMenuResults;
 		int MaxPreferencesResults = DefaultMaxPreferencesResults;
 
-		ListViewGroup resultGroupMenu 		 = new ListViewGroup("Menu", 		HorizontalAlignment.Left);
-		ListViewGroup resultGroupPreferences = new ListViewGroup("Preferences", HorizontalAlignment.Left);
+		ListViewGroup resultGroupRecentlyUsed = new ListViewGroup("Recently Used", HorizontalAlignment.Left);
+		ListViewGroup resultGroupMenu 		  = new ListViewGroup("Menu", 		HorizontalAlignment.Left);
+		ListViewGroup resultGroupPreferences  = new ListViewGroup("Preferences", HorizontalAlignment.Left);
 
 		public 	TextBox    OwnerTextBox;
 		public 	MenuItem   MainMenu;
@@ -32,6 +36,7 @@ namespace NppMenuSearch.Forms
 		{
 			InitializeComponent();
 
+			viewResults.Groups.Add(resultGroupRecentlyUsed);
 			viewResults.Groups.Add(resultGroupMenu);
 			viewResults.Groups.Add(resultGroupPreferences);
 			
@@ -165,16 +170,17 @@ namespace NppMenuSearch.Forms
 				if (OwnerTextBox != null)
 				{
 					OwnerTextBox.TextChanged += OwnerTextBox_TextChanged;
-					OwnerTextBox.KeyDown += OwnerTextBox_KeyDown;
+					OwnerTextBox.KeyDown 	 += OwnerTextBox_KeyDown;
 					RebuildResultsList();
 				}
+
 			}
 			else
 			{
 				if (OwnerTextBox != null)
 				{
 					OwnerTextBox.TextChanged -= OwnerTextBox_TextChanged;
-					OwnerTextBox.KeyDown -= OwnerTextBox_KeyDown;
+					OwnerTextBox.KeyDown 	 -= OwnerTextBox_KeyDown;
 				}
 			}
 		}
@@ -278,7 +284,7 @@ namespace NppMenuSearch.Forms
 				.Select(item => new KeyValuePair<double, HierarchyItem>(item.MatchingSimilarity(words), item))
 				.Where(kv => kv.Key > 0.0)
 				.OrderByDescending(kv => kv.Key)
-				.Take(MaxMenuResults)
+				//.Take(MaxMenuResults)
 				.Select(kv => (MenuItem)kv.Value)
 				.ToArray();
 
@@ -287,40 +293,71 @@ namespace NppMenuSearch.Forms
 				.Select(item => new KeyValuePair<double, HierarchyItem>(item.MatchingSimilarity(words), item))
 				.Where(kv => kv.Key > 0.0)
 				.OrderByDescending(kv => kv.Key)
-				.Take(MaxPreferencesResults)
+				//.Take(MaxPreferencesResults)
 				.Select(kv => (DialogItem)kv.Value)
+				.ToArray();
+
+			HierarchyItem[] recentlyUsed = RecentlyUsedCommands
+				.Select(id =>
+					(HierarchyItem)menuItems.Where(      item => item.CommandId == id).FirstOrDefault() ??
+					(HierarchyItem)prefDialogItems.Where(item => item.ControlId == id).FirstOrDefault())
+				.Where(item=>item != null)
+				.Take(RecentlyUsedListCount)
 				.ToArray();
 
 			viewResults.Items.Clear();
 
-			for (int i = 0; i < menuItems.Length; ++i)
+			resultGroupMenu.Header 		  = string.Format("Menu ({0})", 	   menuItems.Length 	  - recentlyUsed.Where(hi => hi is MenuItem).Count());
+			resultGroupPreferences.Header = string.Format("Preferences ({0})", prefDialogItems.Length - recentlyUsed.Where(hi => hi is DialogItem).Count());
+
+			foreach (var hi in recentlyUsed)
 			{
 				ListViewItem item = new ListViewItem();
-				item.Tag 		  = menuItems[i];
-				item.Text 		  = menuItems[i] + "";
-				item.Group 		  = resultGroupMenu;
+				item.Tag 		  = hi;
+				item.Text 		  = hi + "";
+				item.Group 		  = resultGroupRecentlyUsed;
 				viewResults.Items.Add(item);
+#if DEBUG
+				item.Text = string.Format("[{1:0.0000}] {0}", hi, hi.MatchingSimilarity(words));
+#endif
 			}
 
-			if (menuItems.Length == MaxMenuResults)
+			int i = 0;
+			foreach (var item in menuItems)
 			{
-				viewResults.Items[viewResults.Items.Count - 1].Tag 	= null;
-				viewResults.Items[viewResults.Items.Count - 1].Text = "...";
+				if (recentlyUsed.Contains(item))
+					continue;
+
+				if (i++ == MaxMenuResults)
+					break;
+
+				ListViewItem lvitem = new ListViewItem();
+				lvitem.Tag 			= item;
+				lvitem.Text 		= item + "";
+				lvitem.Group 		= resultGroupMenu;
+				viewResults.Items.Add(lvitem);
+#if DEBUG
+				lvitem.Text 		= string.Format("[{1:0.0000}] {0}", item, item.MatchingSimilarity(words));
+#endif
 			}
 
-			for (int i = 0; i < prefDialogItems.Length; ++i)
+			i = 0;
+			foreach (var item in prefDialogItems)
 			{
-				ListViewItem item = new ListViewItem();
-				item.Tag 		  = prefDialogItems[i];
-				item.Text 		  = prefDialogItems[i] + "";
-				item.Group 		  = resultGroupPreferences;
-				viewResults.Items.Add(item);
-			}
+				if (recentlyUsed.Contains(item))
+					continue;
 
-			if (prefDialogItems.Length == MaxPreferencesResults)
-			{
-				viewResults.Items[viewResults.Items.Count - 1].Tag 	= null;
-				viewResults.Items[viewResults.Items.Count - 1].Text = "...";
+				if (i++ == MaxPreferencesResults)
+					break;
+
+				ListViewItem lvitem = new ListViewItem();
+				lvitem.Tag 			= item;
+				lvitem.Text 		= item + "";
+				lvitem.Group 	  	= resultGroupPreferences;
+				viewResults.Items.Add(lvitem);
+#if DEBUG
+				lvitem.Text 		= string.Format("[{1}] {0}", item, item.MatchingSimilarity(words));
+#endif
 			}
 
 			if (viewResults.Items.Count > 0)
@@ -344,6 +381,9 @@ namespace NppMenuSearch.Forms
 			MenuItem menuItem = viewResults.SelectedItems[0].Tag as MenuItem;
 			if (menuItem != null)
 			{
+				RecentlyUsedCommands.Remove(menuItem.CommandId);
+				RecentlyUsedCommands.AddFirst(menuItem.CommandId);
+
 				//Console.WriteLine("Selected {0}", item.CommandId);
 				Win32.SendMessage(PluginBase.nppData._nppHandle, (NppMsg)Win32.WM_COMMAND, (int)menuItem.CommandId, 0);
 				Hide();
@@ -357,6 +397,9 @@ namespace NppMenuSearch.Forms
 			DialogItem dialogItem = viewResults.SelectedItems[0].Tag as DialogItem;
 			if (dialogItem != null)
 			{
+				RecentlyUsedCommands.Remove(dialogItem.ControlId);
+				RecentlyUsedCommands.AddFirst(dialogItem.ControlId);
+
 				OpenPreferences(dialogItem.ControlId);
 				Hide();
 				if (OwnerTextBox != null)
@@ -365,13 +408,6 @@ namespace NppMenuSearch.Forms
 				return;
 			}
 		}
-
-		private void lstResults_Click(object sender, EventArgs e)
-		{
-			ItemSelected();
-		}
-
-
 
 		static void ChangeTabPage(IntPtr hwndDialog, IntPtr hwndTabControl, int index)
 		{
@@ -539,26 +575,53 @@ namespace NppMenuSearch.Forms
 
 		private void viewResults_DrawItem(object sender, DrawListViewItemEventArgs e)
 		{
-			if (!e.Item.Selected)
+			Color backgroundColor;
+			Color foregroundColor;
+
+			if (e.Item.Selected)
 			{
-				e.DrawDefault = true;
-				return;
+				backgroundColor = Color.FromArgb(211, 211, 211);
+				foregroundColor = Color.Black;
+			}
+			else
+			{
+				if ((e.State & ListViewItemStates.Hot) != 0)
+				{
+					backgroundColor = Color.FromArgb(234, 234, 234);
+					foregroundColor = Color.Black;
+				}
+				else
+				{
+					backgroundColor = SystemColors.Window;
+					foregroundColor = SystemColors.WindowText;
+				}
 			}
 
-			using (Brush background = new SolidBrush(Color.LightGray))
-			using (Brush foreground = new SolidBrush(Color.Black))
+			using (Brush background = new SolidBrush(backgroundColor))
+			using (Brush foreground = new SolidBrush(foregroundColor))
 			{
-				e.Graphics.FillRectangle(background, e.Bounds);
+				Rectangle bounds = new Rectangle(e.Bounds.Left + 10, e.Bounds.Top, e.Bounds.Width - 10, e.Bounds.Height);
+				Rectangle textBounds = new Rectangle(bounds.Left + 16, bounds.Top, bounds.Width - 16, bounds.Height);
+
+				e.Graphics.FillRectangle(background, bounds);
 
 				StringFormat format = new StringFormat(
 					StringFormatFlags.NoWrap | StringFormatFlags.NoClip | StringFormatFlags.FitBlackBox);
 				format.SetTabStops(20f, new float[] { 20f });
 
+				if (e.Item.Tag is DialogItem)
+				{
+					e.Graphics.DrawImage(
+						Properties.Resources.Gear,
+						bounds.Left,
+						bounds.Top);
+				}
+
 				e.Graphics.DrawString(
 					e.Item.Text,
 					e.Item.Font ?? e.Item.ListView.Font,
 					foreground,
-					e.Bounds.Location,
+					textBounds.Location,
 					format);
 			}
 		}

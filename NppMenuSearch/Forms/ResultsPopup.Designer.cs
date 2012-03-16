@@ -56,16 +56,20 @@
 			this.label1.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label1.Location = new System.Drawing.Point(0, 2);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(419, 14);
+			this.label1.Size = new System.Drawing.Size(506, 14);
 			this.label1.TabIndex = 0;
-			this.label1.Text = "Press CTRL+M again to show all results. TAB to switch groups: Menu ↔ Preferences";
+			this.label1.Text = "Press CTRL+M again to show all results. TAB to switch groups: Recently Used ↔ Men" +
+				"u ↔ Preferences";
 			// 
 			// viewResults
 			// 
+			this.viewResults.Activation = System.Windows.Forms.ItemActivation.OneClick;
 			this.viewResults.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.viewResults.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.viewResults.FullRowSelect = true;
 			this.viewResults.HideSelection = false;
+			this.viewResults.HotTracking = true;
+			this.viewResults.HoverSelection = true;
 			this.viewResults.Location = new System.Drawing.Point(0, 0);
 			this.viewResults.MultiSelect = false;
 			this.viewResults.Name = "viewResults";

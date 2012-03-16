@@ -22,6 +22,18 @@ namespace NppMenuSearch.Forms
 			ResultsPopup = new ResultsPopup();
 			ResultsPopup.OwnerTextBox = txtSearch;
 
+			//Win32.SetWindowLong(
+			//	ResultsPopup.Handle,
+			//	Win32.GWL_STYLE,
+			//	Win32.WS_CHILD | Win32.GetWindowLong(ResultsPopup.Handle, Win32.GWL_STYLE));
+			//
+			//Win32.SetWindowLong(
+			//	ResultsPopup.Handle,
+			//	Win32.GWL_EXSTYLE,
+			//	Win32.WS_EX_TOPMOST | Win32.GetWindowLong(ResultsPopup.Handle, Win32.GWL_EXSTYLE));
+			//
+			//Win32.SetParent(ResultsPopup.Handle, Main.GetMainWindow());
+
 			/* Maybe we should just hook the toolbar's window procedure instead of hoping that nobody else 
 			 * tries this canary trick with a window just atop our canary. Because that would prevent 
 			 * WM_PAINT messages from being delivered to our canary...
@@ -271,8 +283,11 @@ namespace NppMenuSearch.Forms
 			{
 				Point pt = new Point(frmSearch.Width, frmSearch.Height);
 				Win32.ClientToScreen(frmSearch.Handle, ref pt);
+				//Win32.ScreenToClient(Win32.GetParent(ResultsPopup.Handle), ref pt);
 
 				pt.X -= ResultsPopup.Width;
+				//if(pt.X < 0)
+				//	pt.X = 0;
 				ResultsPopup.Location = pt;
 
 				EventHandler activated = null;

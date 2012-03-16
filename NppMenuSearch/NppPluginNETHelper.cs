@@ -2247,6 +2247,9 @@ namespace NppPluginNET
 		[DllImport("user32.dll")]
 		public static extern bool ClientToScreen(IntPtr hWnd, ref System.Drawing.Point lpPoint);
 
+		[DllImport("user32.dll")]
+		public static extern bool ScreenToClient(IntPtr hWnd, ref System.Drawing.Point lpPoint);
+
 		public const int GWL_WNDPROC 	= -4;
 		public const int GWL_HINSTANCE 	= -6;
 		public const int GWL_HWNDPARENT = -8;
@@ -2286,6 +2289,27 @@ namespace NppPluginNET
 		public const int BS_FLAT        	= 0x00008000;
 		public const int BS_RIGHTBUTTON 	= BS_LEFTTEXT;
 
+		public const int WS_EX_DLGMODALFRAME 	= 0x00000001;
+		public const int WS_EX_NOPARENTNOTIFY 	= 0x00000004;
+		public const int WS_EX_TOPMOST 			= 0x00000008;
+		public const int WS_EX_ACCEPTFILES 		= 0x00000010;
+		public const int WS_EX_TRANSPARENT 		= 0x00000020;
+		public const int WS_EX_MDICHILD 		= 0x00000040;
+		public const int WS_EX_TOOLWINDOW 		= 0x00000080;
+		public const int WS_EX_WINDOWEDGE 		= 0x00000100;
+		public const int WS_EX_CLIENTEDGE 		= 0x00000200;
+		public const int WS_EX_CONTEXTHELP 		= 0x00000400;
+		public const int WS_EX_RIGHT 			= 0x00001000;
+		public const int WS_EX_LEFT 			= 0x00000000;
+		public const int WS_EX_RTLREADING 		= 0x00002000;
+		public const int WS_EX_LTRREADING 		= 0x00000000;
+		public const int WS_EX_LEFTSCROLLBAR 	= 0x00004000;
+		public const int WS_EX_RIGHTSCROLLBAR 	= 0x00000000;
+		public const int WS_EX_CONTROLPARENT 	= 0x00010000;
+		public const int WS_EX_STATICEDGE 		= 0x00020000;
+		public const int WS_EX_APPWINDOW 		= 0x00040000;
+		public const int WS_EX_OVERLAPPEDWINDOW = (WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE);
+		public const int WS_EX_PALETTEWINDOW 	= (WS_EX_WINDOWEDGE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST);
 
 		[DllImport("user32.dll")]
 		public static extern int GetWindowLong(IntPtr hWnd, int nIndex);

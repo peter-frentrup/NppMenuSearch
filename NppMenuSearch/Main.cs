@@ -77,10 +77,10 @@ namespace NppMenuSearch
             Win32.WritePrivateProfileString("SomeSection", "SomeKey", someSetting ? "1" : "0", iniFilePath);
         }
 
-		internal static void MakeNppOwnerOf(Form form)
+		public static IntPtr GetMainWindow()
 		{
 			IntPtr dummy;
-			IntPtr thisThread = Win32.GetWindowThreadProcessId(form.Handle, out dummy);
+			IntPtr thisThread = Win32.GetWindowThreadProcessId(PluginBase.nppData._nppHandle, out dummy);
 			IntPtr parent = PluginBase.nppData._nppHandle;
 			while (parent != IntPtr.Zero)
 			{
@@ -92,7 +92,12 @@ namespace NppMenuSearch
 				parent = grandParent;
 			}
 
-			Win32.SetWindowLongPtr(form.Handle, Win32.GWL_HWNDPARENT, parent);
+			return parent;
+		}
+
+		internal static void MakeNppOwnerOf(Form form)
+		{
+			Win32.SetWindowLongPtr(form.Handle, Win32.GWL_HWNDPARENT, GetMainWindow());
 		}
 
 		internal static void MenuSearchFunction()
