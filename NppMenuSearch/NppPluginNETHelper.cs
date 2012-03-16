@@ -2164,6 +2164,7 @@ namespace NppPluginNET
 		public const int MA_NOACTIVATEANDEAT = 4;
 
 		public const int WM_CREATE 		  = 0x0001;
+		public const int WM_DESTROY 	  = 0x0002;
 		public const int WM_ACTIVATEAPP   = 0x001C;
 		public const int WM_MOUSEACTIVATE = 0x0021;
 		public const int WM_NOTIFY 		  = 0x004E;
@@ -2201,6 +2202,10 @@ namespace NppPluginNET
 			public IntPtr hwndList;
 		}
 		
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool IsWindow(IntPtr hWnd);
+
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool IsWindowVisible(IntPtr hWnd);
@@ -2515,23 +2520,43 @@ namespace NppPluginNET
 		public const int RBBIM_SIZE 	  	 = 64;
 		public const int RBBIM_BACKGROUND 	 = 128;
 		public const int RBBIM_ID 		  	 = 256;
-		public const int RBBIM_IDEALSIZE  	 = 512;
-		public const int RB_INSERTBANDA   	 = 0x400/*WM_USER*/+ 1;
-		public const int RB_INSERTBANDW   	 = 0x400/*WM_USER*/+ 10;
-		public const int RB_DELETEBAND 	  	 = 0x400/*WM_USER*/+ 2;
-		public const int RB_GETBARINFO 	  	 = 0x400/*WM_USER*/+ 3;
-		public const int RB_SETBARINFO 	  	 = 0x400/*WM_USER*/+ 4;
-		public const int RB_GETBANDCOUNT  	 = 0x400/*WM_USER*/+ 12;
-		public const int RB_GETROWCOUNT   	 = 0x400/*WM_USER*/+ 13;
-		public const int RB_GETROWHEIGHT  	 = 0x400/*WM_USER*/+ 14;
-		public const int RB_SETBANDINFOA  	 = 0x400/*WM_USER*/+ 6;
-		public const int RB_SETBANDINFOW  	 = 0x400/*WM_USER*/+ 11;
-		public const int RB_SETPARENT 	  	 = 0x400/*WM_USER*/+ 7;
-		public const int RB_GETBANDINFOW  	 = 0x400/*WM_USER*/+ 28;
-		public const int RB_GETBANDINFOA  	 = 0x400/*WM_USER*/+ 29;
-		public const int RB_MINIMIZEBAND  	 = 0x400/*WM_USER*/+ 30;
-		public const int RB_MAXIMIZEBAND  	 = 0x400/*WM_USER*/+ 31;
-		public const int RB_IDTOINDEX 	  	 = 0x400/*WM_USER*/+ 16;
+		public const int RBBIM_IDEALSIZE 	 = 512;
+		public const int RB_INSERTBANDA 	 = 0x400/*WM_USER*/+ 1;
+		public const int RB_INSERTBANDW 	 = 0x400/*WM_USER*/+ 10;
+		public const int RB_DELETEBAND 		 = 0x400/*WM_USER*/+ 2;
+		public const int RB_GETBARINFO 		 = 0x400/*WM_USER*/+ 3;
+		public const int RB_SETBARINFO 		 = 0x400/*WM_USER*/+ 4;
+		public const int RB_SETBANDINFOA 	 = 0x400/*WM_USER*/+ 6;
+		public const int RB_SETBANDINFOW 	 = 0x400/*WM_USER*/+ 11;
+		public const int RB_SETPARENT 		 = 0x400/*WM_USER*/+ 7;
+		public const int RB_HITTEST 		 = 0x400/*WM_USER*/+ 8;
+		public const int RB_GETRECT 		 = 0x400/*WM_USER*/+ 9;
+		public const int RB_GETBANDCOUNT 	 = 0x400/*WM_USER*/+ 12;
+		public const int RB_GETROWCOUNT 	 = 0x400/*WM_USER*/+ 13;
+		public const int RB_GETROWHEIGHT 	 = 0x400/*WM_USER*/+ 14;
+		public const int RB_IDTOINDEX 		 = 0x400/*WM_USER*/+ 16;
+		public const int RB_GETTOOLTIPS 	 = 0x400/*WM_USER*/+ 17;
+		public const int RB_SETTOOLTIPS 	 = 0x400/*WM_USER*/+ 18;
+		public const int RB_SETBKCOLOR 		 = 0x400/*WM_USER*/+ 19;
+		public const int RB_GETBKCOLOR 		 = 0x400/*WM_USER*/+ 20;
+		public const int RB_SETTEXTCOLOR 	 = 0x400/*WM_USER*/+ 21;
+		public const int RB_GETTEXTCOLOR 	 = 0x400/*WM_USER*/+ 22;
+		public const int RB_SIZETORECT 		 = 0x400/*WM_USER*/+ 23;
+		public const int RB_BEGINDRAG 		 = 0x400/*WM_USER*/+ 24;
+		public const int RB_ENDDRAG 		 = 0x400/*WM_USER*/+ 25;
+		public const int RB_DRAGMOVE 		 = 0x400/*WM_USER*/+ 26;
+		public const int RB_GETBARHEIGHT 	 = 0x400/*WM_USER*/+ 27;
+		public const int RB_GETBANDINFOW 	 = 0x400/*WM_USER*/+ 28;
+		public const int RB_GETBANDINFOA 	 = 0x400/*WM_USER*/+ 29;
+		public const int RB_MINIMIZEBAND 	 = 0x400/*WM_USER*/+ 30;
+		public const int RB_MAXIMIZEBAND 	 = 0x400/*WM_USER*/+ 31;
+		public const int RB_GETBANDBORDERS 	 = 0x400/*WM_USER*/+ 34;
+		public const int RB_SHOWBAND 		 = 0x400/*WM_USER*/+ 35;
+		public const int RB_SETPALETTE 		 = 0x400/*WM_USER*/+ 37;
+		public const int RB_GETPALETTE 		 = 0x400/*WM_USER*/+ 38;
+		public const int RB_MOVEBAND 		 = 0x400/*WM_USER*/+ 39;
+		public const int RB_GETBANDMARGINS 	 = 0x400/*WM_USER*/+ 40;
+		public const int RB_PUSHCHEVRON 	 = 0x400/*WM_USER*/+ 43;
 
 		[StructLayout(LayoutKind.Sequential)]
 		public struct REBARBANDINFO

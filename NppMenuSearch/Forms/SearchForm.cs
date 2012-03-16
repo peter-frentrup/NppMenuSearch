@@ -22,14 +22,34 @@ namespace NppMenuSearch.Forms
 			ResultsPopup = new ResultsPopup();
 			ResultsPopup.OwnerTextBox = txtSearch;
 
-			toolbarShownCanary 		  = new Control();
-			toolbarShownCanary.Width  = 1;
-			toolbarShownCanary.Height = 1;
-			toolbarShownCanary.Left   = 0;
-			toolbarShownCanary.Top 	  = 0;
-			toolbarShownCanary.Paint += new PaintEventHandler(toolbarShownCanary_Paint);
+			/* Maybe we should just hook the toolbar's window procedure instead of hoping that nobody else 
+			 * tries this canary trick with a window just atop our canary. Because that would prevent 
+			 * WM_PAINT messages from being delivered to our canary...
+			 */
+			toolbarShownCanary 		  		   = new Control();
+			toolbarShownCanary.Width  		   = 1;
+			toolbarShownCanary.Height 		   = 1;
+			toolbarShownCanary.Left   		   = 0;
+			toolbarShownCanary.Top 	  		   = 0;
+			toolbarShownCanary.Paint 		   += toolbarShownCanary_Paint;
+			toolbarShownCanary.HandleDestroyed += new EventHandler(toolbarShownCanary_HandleDestroyed);
 
-			Win32.SetParent(toolbarShownCanary.Handle, Handle);
+			//Win32.SetParent(toolbarShownCanary.Handle, Handle);
+		}
+
+		void toolbarShownCanary_HandleDestroyed(object sender, EventArgs e)
+		{
+			EventHandler tick = null;
+			tick = (_sender, _e) =>
+			{
+				timerDelay.Tick -= tick;
+				timerDelay.Stop();
+
+				CheckToolbarVisiblity();
+			};
+
+			timerDelay.Tick += tick;
+			timerDelay.Start();
 		}
 
 		void InitToolbar()
@@ -101,6 +121,26 @@ namespace NppMenuSearch.Forms
 			}
 		}
 
+		// -1 on error
+		static int GetRebarBandIndexByChildHandle(IntPtr hwndRebar, IntPtr hwndChild)
+		{
+			Win32.REBARBANDINFO band = new Win32.REBARBANDINFO();
+			band.cbSize 			 = System.Runtime.InteropServices.Marshal.SizeOf(band);
+			int count 				 = (int)Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_GETBANDCOUNT, 0, 0);
+
+			for (int i = 0; i < count; ++i)
+			{
+				band.fMask 	   = Win32.RBBIM_CHILD;
+				band.hwndChild = IntPtr.Zero;
+				Win32.SendMessage(hwndRebar, Win32.RB_GETBANDINFOW, i, ref band);
+
+				if (band.hwndChild == hwndChild)
+					return i;
+			}
+
+			return -1;
+		}
+
 		public void CheckToolbarVisiblity()
 		{
 			if(currentlyCheckingToolbarVisiblity)
@@ -109,53 +149,51 @@ namespace NppMenuSearch.Forms
 			try
 			{
 				currentlyCheckingToolbarVisiblity = true;
-				if (hwndRebar == IntPtr.Zero && hwndToolbar == IntPtr.Zero)
+				if (!Win32.IsWindow(hwndRebar) || !Win32.IsWindow(hwndToolbar))
 				{
 					InitToolbar();
+
+					Win32.SetWindowLong(
+						Handle,
+						Win32.GWL_STYLE,
+						Win32.WS_CHILD | Win32.GetWindowLong(Handle, Win32.GWL_STYLE));
+
+				}
+				
+				Win32.REBARBANDINFO band = new Win32.REBARBANDINFO();
+				band.cbSize 			 = System.Runtime.InteropServices.Marshal.SizeOf(band);
+
+				bool show = false; //Win32.IsWindowVisible(hwndToolbar);
+				int toolbarIndex = GetRebarBandIndexByChildHandle(hwndRebar, hwndToolbar);
+				if (toolbarIndex >= 0)
+				{
+					band.fMask = Win32.RBBIM_STYLE;
+					
+					Win32.SendMessage(hwndRebar, Win32.RB_GETBANDINFOW, toolbarIndex, ref band);
+
+					show = (band.fStyle & Win32.RBBS_HIDDEN) == 0;
 				}
 
-				bool show = Win32.IsWindowVisible(hwndToolbar);
 				if (show == Visible)
 				{
 					return;
 				}
 
-				Win32.REBARBANDINFO band = new Win32.REBARBANDINFO();
-				band.cbSize 			 = System.Runtime.InteropServices.Marshal.SizeOf(band);
-				int count 				 = (int)Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_GETBANDCOUNT, 0, 0);
-
-				for (int i = 0; i < count; ++i)
+				int searchBarIndex = GetRebarBandIndexByChildHandle(hwndRebar, Handle);
+				if (searchBarIndex >= 0)
 				{
-					band.fMask 	   = Win32.RBBIM_CHILD | Win32.RBBIM_STYLE;
-					band.fStyle    = 0;
-					band.hwndChild = IntPtr.Zero;
-					Win32.SendMessage(hwndRebar, Win32.RB_GETBANDINFOW, i, ref band);
+					Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_SHOWBAND, searchBarIndex, show ? 1 : 0);
 
-					if (band.hwndChild == Handle)
+					if (searchBarIndex > 0 && show)
 					{
-						if (show)
-							band.fStyle &= ~Win32.RBBS_HIDDEN;
-						else
-							band.fStyle |= Win32.RBBS_HIDDEN;
-
-						band.fMask = Win32.RBBIM_STYLE;
-						Win32.SendMessage(hwndRebar, Win32.RB_SETBANDINFOW, i, ref band);
-
-						if (i > 0 && show)
-						{
-							Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MINIMIZEBAND, i - 1, 0);
-							Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MAXIMIZEBAND, i - 1, 1);
-						}
-						return;
+						Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MINIMIZEBAND, searchBarIndex - 1, 0);
+						Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MAXIMIZEBAND, searchBarIndex - 1, 1);
 					}
+
+					return;
 				}
 
 				// not yet inserted
-
-				Win32.SetWindowLong(
-					Handle,
-					Win32.GWL_STYLE,
-					Win32.WS_CHILD | Win32.GetWindowLong(Handle, Win32.GWL_STYLE));
 
 				band.fMask 		= Win32.RBBIM_CHILD | Win32.RBBIM_SIZE | Win32.RBBIM_IDEALSIZE | Win32.RBBIM_CHILDSIZE;
 				band.fStyle 	= Win32.RBBS_GRIPPERALWAYS;
@@ -168,17 +206,20 @@ namespace NppMenuSearch.Forms
 				band.cyChild 	= 0;
 				band.cyIntegral = 0;
 
-				Width = 120;
+				Width = band.cxMinChild;
 
 				if (!show)
 					band.fStyle |= Win32.RBBS_HIDDEN;
 
+				int count = (int)Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_GETBANDCOUNT, 0, 0);
 				Win32.SendMessage(hwndRebar, Win32.RB_INSERTBANDW, count, ref band);
 				if (count > 0 && show)
 				{
 					Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MINIMIZEBAND, count - 1, 0);
 					Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MAXIMIZEBAND, count - 1, 1);
 				}
+
+				Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETCUEBANNER, 0, "Search Menu & Preferences (Ctrl+M)");
 			}
 			finally
 			{
@@ -216,11 +257,6 @@ namespace NppMenuSearch.Forms
 			}
 
 			return parent;
-		}
-
-		private void SearchForm_Load(object sender, EventArgs e)
-		{
-			Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETCUEBANNER, 0, "Search Menu & Preferences (Ctrl+M)");
 		}
 
 		private void txtSearch_TextChanged(object sender, EventArgs e)

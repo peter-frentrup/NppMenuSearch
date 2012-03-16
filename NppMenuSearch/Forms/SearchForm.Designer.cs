@@ -28,8 +28,10 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.frmSearch = new System.Windows.Forms.Panel();
 			this.txtSearch = new System.Windows.Forms.TextBox();
+			this.timerDelay = new System.Windows.Forms.Timer(this.components);
 			this.frmSearch.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -55,6 +57,10 @@
 			this.txtSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSearch_KeyDown);
 			this.txtSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtSearch_KeyPress);
 			// 
+			// timerDelay
+			// 
+			this.timerDelay.Interval = 1;
+			// 
 			// SearchForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -65,7 +71,6 @@
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 			this.Name = "SearchForm";
 			this.Text = "SearchForm";
-			this.Load += new System.EventHandler(this.SearchForm_Load);
 			this.SizeChanged += new System.EventHandler(this.SearchForm_SizeChanged);
 			this.frmSearch.ResumeLayout(false);
 			this.frmSearch.PerformLayout();
@@ -77,5 +82,6 @@
 
 		private System.Windows.Forms.Panel frmSearch;
 		private System.Windows.Forms.TextBox txtSearch;
+		private System.Windows.Forms.Timer timerDelay;
 	}
 }
