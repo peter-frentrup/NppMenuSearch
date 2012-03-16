@@ -66,6 +66,7 @@
 			this.Name = "SearchForm";
 			this.Text = "SearchForm";
 			this.Load += new System.EventHandler(this.SearchForm_Load);
+			this.SizeChanged += new System.EventHandler(this.SearchForm_SizeChanged);
 			this.frmSearch.ResumeLayout(false);
 			this.frmSearch.PerformLayout();
 			this.ResumeLayout(false);

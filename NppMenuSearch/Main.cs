@@ -69,8 +69,7 @@ namespace NppMenuSearch
 
 		internal static void PluginReady()
 		{
-			SearchForm.AddToToolbar();
-			SearchForm.Show();
+			SearchForm.CheckToolbarVisiblity();
 		}
 
         internal static void PluginCleanUp()
