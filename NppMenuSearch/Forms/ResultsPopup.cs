@@ -161,27 +161,20 @@ namespace NppMenuSearch.Forms
 		{
 			if (Visible)
 			{
-				MaxMenuResults 		  = DefaultMaxMenuResults;
+				MaxMenuResults = DefaultMaxMenuResults;
 				MaxPreferencesResults = DefaultMaxPreferencesResults;
-				panInfo.Visible 	  = true;
+				panInfo.Visible = true;
 
 				MainMenu = new MenuItem(Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_INTERNAL_GETMENU, 0, 0));
 
-				if (OwnerTextBox != null)
-				{
-					OwnerTextBox.TextChanged += OwnerTextBox_TextChanged;
-					OwnerTextBox.KeyDown 	 += OwnerTextBox_KeyDown;
-					RebuildResultsList();
-				}
-
+				OwnerTextBox.TextChanged += OwnerTextBox_TextChanged;
+				OwnerTextBox.KeyDown 	 += OwnerTextBox_KeyDown;
+				RebuildResultsList();
 			}
 			else
 			{
-				if (OwnerTextBox != null)
-				{
-					OwnerTextBox.TextChanged -= OwnerTextBox_TextChanged;
-					OwnerTextBox.KeyDown 	 -= OwnerTextBox_KeyDown;
-				}
+				OwnerTextBox.TextChanged -= OwnerTextBox_TextChanged;
+				OwnerTextBox.KeyDown 	 -= OwnerTextBox_KeyDown;
 			}
 		}
 
@@ -387,10 +380,11 @@ namespace NppMenuSearch.Forms
 				//Console.WriteLine("Selected {0}", item.CommandId);
 				Win32.SendMessage(PluginBase.nppData._nppHandle, (NppMsg)Win32.WM_COMMAND, (int)menuItem.CommandId, 0);
 				Hide();
-				if (OwnerTextBox != null)
-					OwnerTextBox.Text = "";
+				OwnerTextBox.Text = "";
 
-				Win32.SetFocus(PluginBase.GetCurrentScintilla());
+				if(OwnerTextBox.Focused)
+					Win32.SetFocus(PluginBase.GetCurrentScintilla());
+
 				return;
 			}
 
@@ -402,8 +396,7 @@ namespace NppMenuSearch.Forms
 
 				OpenPreferences(dialogItem.ControlId);
 				Hide();
-				if (OwnerTextBox != null)
-					OwnerTextBox.Text = "";
+				OwnerTextBox.Text = "";
 
 				return;
 			}
@@ -580,28 +573,20 @@ namespace NppMenuSearch.Forms
 
 			if (e.Item.Selected)
 			{
-				backgroundColor = Color.FromArgb(211, 211, 211);
+				backgroundColor = Color.LightGray;
 				foregroundColor = Color.Black;
 			}
 			else
 			{
-				if ((e.State & ListViewItemStates.Hot) != 0)
-				{
-					backgroundColor = Color.FromArgb(234, 234, 234);
-					foregroundColor = Color.Black;
-				}
-				else
-				{
-					backgroundColor = SystemColors.Window;
-					foregroundColor = SystemColors.WindowText;
-				}
+				backgroundColor = SystemColors.Window;
+				foregroundColor = SystemColors.WindowText;
 			}
 
 			using (Brush background = new SolidBrush(backgroundColor))
 			using (Brush foreground = new SolidBrush(foregroundColor))
 			{
-				Rectangle bounds = new Rectangle(e.Bounds.Left + 10, e.Bounds.Top, e.Bounds.Width - 10, e.Bounds.Height);
-				Rectangle textBounds = new Rectangle(bounds.Left + 16, bounds.Top, bounds.Width - 16, bounds.Height);
+				Rectangle bounds 	 = new Rectangle(e.Bounds.Left + 10, e.Bounds.Top, e.Bounds.Width - 10, e.Bounds.Height);
+				Rectangle textBounds = new Rectangle(bounds.Left + 16, 	 bounds.Top,   bounds.Width - 16, 	bounds.Height);
 
 				e.Graphics.FillRectangle(background, bounds);
 

@@ -68,8 +68,6 @@
 			this.viewResults.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.viewResults.FullRowSelect = true;
 			this.viewResults.HideSelection = false;
-			this.viewResults.HotTracking = true;
-			this.viewResults.HoverSelection = true;
 			this.viewResults.Location = new System.Drawing.Point(0, 0);
 			this.viewResults.MultiSelect = false;
 			this.viewResults.Name = "viewResults";
