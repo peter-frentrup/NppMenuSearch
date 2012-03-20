@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
+using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using NppPluginNET;
 using NppMenuSearch.Forms;
-using System.Diagnostics;
+using NppPluginNET;
 
 namespace NppMenuSearch
 {
     class Main
     {
+		public static LinkedList<uint> RecentlyUsedCommands = new LinkedList<uint>();
+
         internal const string PluginName  = "NppMenuSearch";
-        static string 		  iniFilePath = null;
-        static bool 		  someSetting = false;
+        static string 		  xmlFilePath = null;
 
 		internal static SearchForm SearchForm { get; private set; }
 
@@ -26,17 +24,19 @@ namespace NppMenuSearch
 			Console.WriteLine(PluginName + " debug mode");
 #endif
 
-            StringBuilder sbIniFilePath = new StringBuilder(Win32.MAX_PATH);
-            Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETPLUGINSCONFIGDIR, Win32.MAX_PATH, sbIniFilePath);
-            iniFilePath = sbIniFilePath.ToString();
-            if (!Directory.Exists(iniFilePath)) Directory.CreateDirectory(iniFilePath);
-            iniFilePath = Path.Combine(iniFilePath, PluginName + ".ini");
-            someSetting = (Win32.GetPrivateProfileInt("SomeSection", "SomeKey", 0, iniFilePath) != 0);
+			StringBuilder sbXmlFilePath = new StringBuilder(Win32.MAX_PATH);
+			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETPLUGINSCONFIGDIR, Win32.MAX_PATH, sbXmlFilePath);
+			xmlFilePath = sbXmlFilePath.ToString();
+			if (!Directory.Exists(xmlFilePath)) Directory.CreateDirectory(xmlFilePath);
+			xmlFilePath = Path.Combine(xmlFilePath, PluginName + ".xml");
+			Settings.Load(xmlFilePath);
 
 			SearchForm = new SearchForm();
 
-            PluginBase.SetCommand(0, "Menu Search...", MenuSearchFunction, new ShortcutKey(true,  false, false, Keys.M));
-			PluginBase.SetCommand(1, "About...", 	   AboutFunction, 	   new ShortcutKey(false, false, false, Keys.None));
+            PluginBase.SetCommand(0, "Menu Search...",		 	   MenuSearchFunction, 	  new ShortcutKey(true,  false, false, Keys.M));
+			PluginBase.SetCommand(1, "Clear “Recently Used” List", ClearRecentlyUsedList, new ShortcutKey(false, false, false, Keys.None));
+			PluginBase.SetCommand(2, "---", 				 	   null);
+			PluginBase.SetCommand(3, "About...", 			 	   AboutFunction, 	   	  new ShortcutKey(false, false, false, Keys.None));
         }
 
 		internal static string GetNativeLangXml()
@@ -74,7 +74,7 @@ namespace NppMenuSearch
 
         internal static void PluginCleanUp()
         {
-            Win32.WritePrivateProfileString("SomeSection", "SomeKey", someSetting ? "1" : "0", iniFilePath);
+			Settings.Save(xmlFilePath);
         }
 
 		public static IntPtr GetMainWindow()
@@ -104,6 +104,11 @@ namespace NppMenuSearch
         {
 			SearchForm.SelectSearchField();
         }
+
+		internal static void ClearRecentlyUsedList()
+		{
+			RecentlyUsedCommands.Clear();
+		}
 
 		internal static void AboutFunction()
 		{

@@ -100,6 +100,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Settings.cs" />
     <Compile Include="StringUtil.cs" />
     <Compile Include="UnmanagedExports.cs" />
   </ItemGroup>

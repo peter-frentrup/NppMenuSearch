@@ -1,21 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using NppPluginNET;
 using System.Xml;
-using System.Runtime.InteropServices;
+using NppPluginNET;
 
 namespace NppMenuSearch.Forms
 {
 	public partial class ResultsPopup : Form
 	{
-		static LinkedList<uint> RecentlyUsedCommands = new LinkedList<uint>();
-
 		const int DefaultMaxMenuResults 	   = 12;
 		const int DefaultMaxPreferencesResults = 7;
 		const int RecentlyUsedListCount 	   = 5;
@@ -290,7 +285,7 @@ namespace NppMenuSearch.Forms
 				.Select(kv => (DialogItem)kv.Value)
 				.ToArray();
 
-			HierarchyItem[] recentlyUsed = RecentlyUsedCommands
+			HierarchyItem[] recentlyUsed = Main.RecentlyUsedCommands
 				.Select(id =>
 					(HierarchyItem)menuItems.Where(      item => item.CommandId == id).FirstOrDefault() ??
 					(HierarchyItem)prefDialogItems.Where(item => item.ControlId == id).FirstOrDefault())
@@ -374,8 +369,8 @@ namespace NppMenuSearch.Forms
 			MenuItem menuItem = viewResults.SelectedItems[0].Tag as MenuItem;
 			if (menuItem != null)
 			{
-				RecentlyUsedCommands.Remove(menuItem.CommandId);
-				RecentlyUsedCommands.AddFirst(menuItem.CommandId);
+				Main.RecentlyUsedCommands.Remove(menuItem.CommandId);
+				Main.RecentlyUsedCommands.AddFirst(menuItem.CommandId);
 
 				//Console.WriteLine("Selected {0}", item.CommandId);
 				Win32.SendMessage(PluginBase.nppData._nppHandle, (NppMsg)Win32.WM_COMMAND, (int)menuItem.CommandId, 0);
@@ -391,8 +386,8 @@ namespace NppMenuSearch.Forms
 			DialogItem dialogItem = viewResults.SelectedItems[0].Tag as DialogItem;
 			if (dialogItem != null)
 			{
-				RecentlyUsedCommands.Remove(dialogItem.ControlId);
-				RecentlyUsedCommands.AddFirst(dialogItem.ControlId);
+				Main.RecentlyUsedCommands.Remove(dialogItem.ControlId);
+				Main.RecentlyUsedCommands.AddFirst(dialogItem.ControlId);
 
 				OpenPreferences(dialogItem.ControlId);
 				Hide();
