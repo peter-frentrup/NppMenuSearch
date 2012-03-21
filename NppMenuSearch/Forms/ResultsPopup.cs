@@ -131,6 +131,14 @@ namespace NppMenuSearch.Forms
 				case Win32.WM_MOUSEACTIVATE:
 					m.Result = (IntPtr)Win32.MA_ACTIVATE;
 					return;
+
+				case Win32.WM_ACTIVATE:
+					if (((int)m.WParam & 0xFFFF) == Win32.WA_CLICKACTIVE)
+					{
+						m.Result = IntPtr.Zero;
+						return;
+					}
+					break;
 			}
 
 			base.WndProc(ref m);

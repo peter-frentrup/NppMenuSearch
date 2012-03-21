@@ -2163,8 +2163,13 @@ namespace NppPluginNET
 		public const int MA_NOACTIVATE 		 = 3;
 		public const int MA_NOACTIVATEANDEAT = 4;
 
+		public const int WA_INACTIVE 	= 0;
+		public const int WA_ACTIVE 		= 1;
+		public const int WA_CLICKACTIVE = 2;
+
 		public const int WM_CREATE 		  = 0x0001;
 		public const int WM_DESTROY 	  = 0x0002;
+		public const int WM_ACTIVATE 	  = 0x0006;
 		public const int WM_ACTIVATEAPP   = 0x001C;
 		public const int WM_MOUSEACTIVATE = 0x0021;
 		public const int WM_NOTIFY 		  = 0x004E;

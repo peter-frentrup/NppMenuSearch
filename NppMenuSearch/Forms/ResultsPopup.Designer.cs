@@ -56,7 +56,7 @@
 			this.label1.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label1.Location = new System.Drawing.Point(0, 2);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(506, 14);
+			this.label1.Size = new System.Drawing.Size(507, 14);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Press CTRL+M again to show all results. TAB to switch groups: Recently Used ↔ Men" +
 				"u ↔ Preferences";
@@ -90,11 +90,13 @@
 			this.Controls.Add(this.viewResults);
 			this.Controls.Add(this.panInfo);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+			this.KeyPreview = true;
 			this.Name = "ResultsPopup";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
 			this.VisibleChanged += new System.EventHandler(this.ResultsPopup_VisibleChanged);
+			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OwnerTextBox_KeyDown);
 			this.panInfo.ResumeLayout(false);
 			this.panInfo.PerformLayout();
 			this.ResumeLayout(false);
