@@ -31,8 +31,6 @@ namespace NppMenuSearch
 			xmlFilePath = Path.Combine(xmlFilePath, PluginName + ".xml");
 			Settings.Load(xmlFilePath);
 
-			SearchForm = new SearchForm();
-
             PluginBase.SetCommand(0, "Menu Search...",		 	   MenuSearchFunction, 	  new ShortcutKey(true,  false, false, Keys.M));
 			PluginBase.SetCommand(1, "Clear “Recently Used” List", ClearRecentlyUsedList, new ShortcutKey(false, false, false, Keys.None));
 			PluginBase.SetCommand(2, "---", 				 	   null);
@@ -69,6 +67,8 @@ namespace NppMenuSearch
 
 		internal static void PluginReady()
 		{
+			SearchForm = new SearchForm();
+
 			SearchForm.CheckToolbarVisiblity();
 		}
 

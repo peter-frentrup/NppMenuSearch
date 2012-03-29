@@ -2173,6 +2173,8 @@ namespace NppPluginNET
 		public const int WM_ACTIVATEAPP   = 0x001C;
 		public const int WM_MOUSEACTIVATE = 0x0021;
 		public const int WM_NOTIFY 		  = 0x004E;
+		public const int EM_SETMARGINS 	  = 0x00D3;
+		public const int EM_GETMARGINS 	  = 0x00D3;
 		public const int WM_KEYDOWN 	  = 0x0100;
 		public const int WM_KEYUP 		  = 0x0101;
 		public const int WM_CHAR 		  = 0x0102;
@@ -2183,6 +2185,9 @@ namespace NppPluginNET
 		public const int WM_REFLECT = 0x2000;
 
 		public const int EM_SETCUEBANNER = 0x1501;
+
+		public const int EC_LEFTMARGIN 	= 1;
+		public const int EC_RIGHTMARGIN = 2;
 
 		[DllImport("user32.dll")]
 		public static extern bool GetComboBoxInfo(IntPtr hwnd, ref COMBOBOXINFO pcbi);

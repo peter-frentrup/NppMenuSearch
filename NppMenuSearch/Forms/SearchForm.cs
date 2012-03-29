@@ -22,18 +22,6 @@ namespace NppMenuSearch.Forms
 			ResultsPopup = new ResultsPopup();
 			ResultsPopup.OwnerTextBox = txtSearch;
 
-			//Win32.SetWindowLong(
-			//	ResultsPopup.Handle,
-			//	Win32.GWL_STYLE,
-			//	Win32.WS_CHILD | Win32.GetWindowLong(ResultsPopup.Handle, Win32.GWL_STYLE));
-			//
-			//Win32.SetWindowLong(
-			//	ResultsPopup.Handle,
-			//	Win32.GWL_EXSTYLE,
-			//	Win32.WS_EX_TOPMOST | Win32.GetWindowLong(ResultsPopup.Handle, Win32.GWL_EXSTYLE));
-			//
-			//Win32.SetParent(ResultsPopup.Handle, Main.GetMainWindow());
-
 			/* Maybe we should just hook the toolbar's window procedure instead of hoping that nobody else 
 			 * tries this canary trick with a window just atop our canary. Because that would prevent 
 			 * WM_PAINT messages from being delivered to our canary...
@@ -46,7 +34,10 @@ namespace NppMenuSearch.Forms
 			toolbarShownCanary.Paint 		   += toolbarShownCanary_Paint;
 			toolbarShownCanary.HandleDestroyed += new EventHandler(toolbarShownCanary_HandleDestroyed);
 
-			//Win32.SetParent(toolbarShownCanary.Handle, Handle);
+			uint margins = (uint)Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_GETMARGINS, 0, 0);
+			uint rightMargin = margins >> 16;
+			rightMargin+= 16;
+			Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETMARGINS, Win32.EC_RIGHTMARGIN, (int)(rightMargin << 16));
 		}
 
 		void toolbarShownCanary_HandleDestroyed(object sender, EventArgs e)
@@ -275,6 +266,7 @@ namespace NppMenuSearch.Forms
 		{
 			if (txtSearch.TextLength == 0)
 			{
+				picClear.Image = null;
 				ResultsPopup.Hide();
 				return;
 			}
@@ -299,6 +291,9 @@ namespace NppMenuSearch.Forms
 				};
 				ResultsPopup.Activated += activated;
 				ResultsPopup.Show();
+
+				if (picClear.Image == null)
+					picClear.Image = Properties.Resources.ClearNormal;
 			}
 		}
 
@@ -336,6 +331,34 @@ namespace NppMenuSearch.Forms
 		private void SearchForm_SizeChanged(object sender, EventArgs e)
 		{
 			CheckToolbarVisiblity();
+		}
+
+		private void picClear_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				if (txtSearch.TextLength > 0)
+				{
+					picClear.Image = Properties.Resources.ClearPressed;
+				}
+			}
+		}
+
+		private void picClear_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				if (txtSearch.TextLength > 0)
+				{
+					picClear.Image = Properties.Resources.ClearNormal;
+				}
+			}
+		}
+
+		private void picClear_Click(object sender, EventArgs e)
+		{
+			txtSearch.Text = "";
+			Win32.SetFocus(PluginBase.GetCurrentScintilla());
 		}
 	}
 }

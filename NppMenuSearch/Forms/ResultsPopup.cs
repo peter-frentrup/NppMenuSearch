@@ -262,6 +262,7 @@ namespace NppMenuSearch.Forms
 				case Keys.Escape:
 					e.Handled = true;
 					Hide();
+					Win32.SetFocus(PluginBase.GetCurrentScintilla());
 					break;
 
 				case Keys.Enter:

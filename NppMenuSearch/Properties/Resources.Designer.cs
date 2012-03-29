@@ -60,6 +60,20 @@ namespace NppMenuSearch.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap ClearNormal {
+            get {
+                object obj = ResourceManager.GetObject("ClearNormal", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap ClearPressed {
+            get {
+                object obj = ResourceManager.GetObject("ClearPressed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Gear {
             get {
                 object obj = ResourceManager.GetObject("Gear", resourceCulture);
