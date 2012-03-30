@@ -50,9 +50,11 @@ namespace NppMenuSearch
 			{
 				Text = dialog.GetAttribute("title");
 
-				foreach (XmlElement item in dialog.ChildNodes)
+				foreach (var _item in dialog.ChildNodes)
 				{
-					AddItem(new DialogItem(item));
+					XmlElement item = _item as XmlElement;
+					if(item != null)
+						AddItem(new DialogItem(item));
 				}
 			}
 		}

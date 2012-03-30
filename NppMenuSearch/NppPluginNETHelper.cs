@@ -15,6 +15,7 @@ namespace NppPluginNET
         public IntPtr _scintillaSecondHandle;
     }
 
+	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void NppFuncItemDelegate();
 
     [StructLayout(LayoutKind.Sequential)]

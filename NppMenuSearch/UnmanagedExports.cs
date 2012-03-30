@@ -47,21 +47,30 @@ namespace NppMenuSearch
         {
             SCNotification nc = (SCNotification)Marshal.PtrToStructure(notifyCode, typeof(SCNotification));
 
-			switch (nc.nmhdr.code)
+			try
 			{
-				case (uint)NppMsg.NPPN_READY:
-					Main.PluginReady();
-					break;
 
-				case (uint)NppMsg.NPPN_TBMODIFICATION:
-					PluginBase._funcItems.RefreshItems();
-					break;
-					
-				case (uint)NppMsg.NPPN_SHUTDOWN:
-					Main.PluginCleanUp();
-					Marshal.FreeHGlobal(_ptrPluginName);
-					break;
+				switch (nc.nmhdr.code)
+				{
+					case (uint)NppMsg.NPPN_READY:
+						Main.PluginReady();
+						break;
 
+					case (uint)NppMsg.NPPN_TBMODIFICATION:
+						PluginBase._funcItems.RefreshItems();
+						break;
+
+					case (uint)NppMsg.NPPN_SHUTDOWN:
+						Main.PluginCleanUp();
+						Marshal.FreeHGlobal(_ptrPluginName);
+						break;
+
+				}
+
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine(ex);
 			}
         }
     }
