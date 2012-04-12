@@ -34,9 +34,35 @@ namespace NppMenuSearch.Forms
 			toolbarShownCanary.Paint 		   += toolbarShownCanary_Paint;
 			toolbarShownCanary.HandleDestroyed += new EventHandler(toolbarShownCanary_HandleDestroyed);
 
+			picClear.Visible = false;
+			//uint margins = (uint)Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_GETMARGINS, 0, 0);
+			//uint rightMargin = margins >> 16;
+			//rightMargin+= 16;
+			//Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETMARGINS, Win32.EC_RIGHTMARGIN, (int)(rightMargin << 16));
+		}
+
+		void SetClearImage(Image img)
+		{
+			if (img == picClear.Image)
+				return;
+
 			uint margins = (uint)Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_GETMARGINS, 0, 0);
 			uint rightMargin = margins >> 16;
-			rightMargin+= 16;
+
+			if(picClear.Visible)
+				rightMargin -= 16;
+
+			if (img == null)
+			{
+				picClear.Visible = false;
+			}
+			else
+			{
+				rightMargin 	 += 16;
+				picClear.Visible = true;
+			}
+
+			picClear.Image = img;
 			Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETMARGINS, Win32.EC_RIGHTMARGIN, (int)(rightMargin << 16));
 		}
 
@@ -266,7 +292,7 @@ namespace NppMenuSearch.Forms
 		{
 			if (txtSearch.TextLength == 0)
 			{
-				picClear.Image = null;
+				SetClearImage(null);
 				ResultsPopup.Hide();
 				return;
 			}
@@ -292,8 +318,7 @@ namespace NppMenuSearch.Forms
 				ResultsPopup.Activated += activated;
 				ResultsPopup.Show();
 
-				if (picClear.Image == null)
-					picClear.Image = Properties.Resources.ClearNormal;
+				SetClearImage(Properties.Resources.ClearNormal);
 			}
 		}
 

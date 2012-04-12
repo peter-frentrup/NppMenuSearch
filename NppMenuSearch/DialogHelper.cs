@@ -7,8 +7,10 @@ using NppPluginNET;
 
 namespace NppMenuSearch
 {
-	public class DialogHelper
+	public static class DialogHelper
 	{
+		static DLGPROC DialogProcedureDelegate = new DLGPROC(DialogProcedure);
+
 		public static IntPtr LoadNppDialog(IntPtr hwndParent, int dialogResoucreId)
 		{
 			if (dialogResoucreId < 0 || dialogResoucreId > 0xFFFF)
@@ -16,8 +18,9 @@ namespace NppMenuSearch
 
 			IntPtr exeModule = Win32.GetModuleHandle(null);
 
-			// No need to pin DialogProcedure, because that is a static method.
-			return CreateDialogParam(exeModule, (IntPtr)dialogResoucreId, hwndParent, DialogProcedure, IntPtr.Zero);
+
+			// No need to pin DialogProcedureDelegate, because that is a static field.
+			return CreateDialogParam(exeModule, (IntPtr)dialogResoucreId, hwndParent, DialogProcedureDelegate, IntPtr.Zero);
 		}
 
 		static IntPtr DialogProcedure(IntPtr hwndDlg, uint uMsg, IntPtr wParam, IntPtr lParam)
