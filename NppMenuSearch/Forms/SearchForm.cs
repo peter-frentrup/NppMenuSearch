@@ -18,6 +18,9 @@ namespace NppMenuSearch.Forms
 
 		public SearchForm()
 		{
+			toolbarShownCanary = new Control();
+			toolbarShownCanary.HandleDestroyed += new EventHandler(toolbarShownCanary_HandleDestroyed);
+
 			InitializeComponent();
 			ResultsPopup = new ResultsPopup();
 			ResultsPopup.OwnerTextBox = txtSearch;
@@ -26,13 +29,11 @@ namespace NppMenuSearch.Forms
 			 * tries this canary trick with a window just atop our canary. Because that would prevent 
 			 * WM_PAINT messages from being delivered to our canary...
 			 */
-			toolbarShownCanary 		  		   = new Control();
 			toolbarShownCanary.Width  		   = 1;
 			toolbarShownCanary.Height 		   = 1;
 			toolbarShownCanary.Left   		   = 0;
 			toolbarShownCanary.Top 	  		   = 0;
 			toolbarShownCanary.Paint 		   += toolbarShownCanary_Paint;
-			toolbarShownCanary.HandleDestroyed += new EventHandler(toolbarShownCanary_HandleDestroyed);
 
 			picClear.Visible = false;
 			//uint margins = (uint)Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_GETMARGINS, 0, 0);
@@ -172,7 +173,7 @@ namespace NppMenuSearch.Forms
 
 		public void CheckToolbarVisiblity()
 		{
-			if(currentlyCheckingToolbarVisiblity)
+			if(currentlyCheckingToolbarVisiblity || toolbarShownCanary == null)
 				return;
 
 			try
