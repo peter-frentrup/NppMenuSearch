@@ -335,9 +335,16 @@ namespace NppMenuSearch.Forms
 			switch (e.KeyCode)
 			{
 				case Keys.Escape:
+					e.Handled 		 = true;
+					suppressKeyPress = true;
+					//txtSearch.Text 	 = "";
+					ResultsPopup.Hide();
+					Win32.SetFocus(PluginBase.GetCurrentScintilla());
+					break;
+
 				case Keys.Enter:
 				case Keys.Tab:
-					e.Handled = true;
+					e.Handled 		 = true;
 					suppressKeyPress = true;
 					break;
 			}

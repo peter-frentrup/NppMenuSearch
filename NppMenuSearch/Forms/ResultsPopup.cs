@@ -259,12 +259,6 @@ namespace NppMenuSearch.Forms
 					}
 					break;
 
-				case Keys.Escape:
-					e.Handled = true;
-					Hide();
-					Win32.SetFocus(PluginBase.GetCurrentScintilla());
-					break;
-
 				case Keys.Enter:
 					e.Handled = true;
 					ItemSelected();
