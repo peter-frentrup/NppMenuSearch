@@ -92,6 +92,9 @@ namespace NppMenuSearch.Forms
 
 			Win32.EnumChildWindows(main, child =>
 			{
+				if (Win32.GetParent(child) != main)
+					return true;
+
 				StringBuilder sb = new StringBuilder(256);
 				Win32.GetClassName(child, sb, sb.Capacity);
 
