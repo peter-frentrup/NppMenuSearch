@@ -2151,9 +2151,14 @@ namespace NppPluginNET
         [DllImport("kernel32")]
         public static extern bool WritePrivateProfileString(string lpAppName, string lpKeyName, string lpString, string lpFileName);
 
-        public const int MF_BYCOMMAND = 0;
-        public const int MF_CHECKED = 8;
-        public const int MF_UNCHECKED = 0;
+		public const uint MF_BYCOMMAND 	= 0x00000000;
+		public const uint MF_BYPOSITION = 0x00000400;
+		public const uint MF_CHECKED 	= 0x00000008;
+		public const uint MF_UNCHECKED 	= 0x00000000;
+		public const uint MF_ENABLED 	= 0x00000000;
+		public const uint MF_GRAYED 	= 0x00000001;
+		public const uint MF_DISABLED 	= 0x00000002;
+
         [DllImport("user32")]
         public static extern IntPtr GetMenu(IntPtr hWnd);
         [DllImport("user32")]
@@ -2397,13 +2402,16 @@ namespace NppPluginNET
 		[DllImport("user32.dll")]
 		public static extern bool SetMenuItemInfoW(IntPtr hMenu, uint uItem, bool fByPosition, [In] ref MENUITEMINFO lpmii);
 
+		[DllImport("user32.dll")]
+		public static extern bool EnableMenuItem(IntPtr hMenu, uint uIDEnableItem, uint uEnable);
+
 		// return null if item is no string item
 		public static string GetMenuItemString(IntPtr hMenu, uint uItem, bool fByPosition)
 		{
 			Win32.MENUITEMINFO info = new Win32.MENUITEMINFO();
 			info.cbSize 			= Win32.MENUITEMINFO.Size;
 			info.fMask 				= Win32.MIIM_FTYPE;
-			Win32.GetMenuItemInfoW(hMenu, uItem, true, ref info);
+			Win32.GetMenuItemInfoW(hMenu, uItem, fByPosition, ref info);
 
 			string s = null;
 			if ((info.fType & Win32.MFT_SEPARATOR) == 0)
@@ -2411,14 +2419,14 @@ namespace NppPluginNET
 				info.dwTypeData = IntPtr.Zero;
 				info.cch 		= 0;
 				info.fMask 		= Win32.MIIM_STRING;
-				Win32.GetMenuItemInfoW(hMenu, uItem, true, ref info);
+				Win32.GetMenuItemInfoW(hMenu, uItem, fByPosition, ref info);
 
 				int len 		= (int)info.cch;
 				info.cch++;
 				IntPtr sPtr 	= Marshal.AllocHGlobal((len + 1) * 2);
 				info.dwTypeData = sPtr;
 				info.fMask 		= Win32.MIIM_STRING | Win32.MIIM_FTYPE;
-				Win32.GetMenuItemInfoW(hMenu, uItem, true, ref info);
+				Win32.GetMenuItemInfoW(hMenu, uItem, fByPosition, ref info);
 
 				s = Marshal.PtrToStringUni(sPtr, len);
 				Marshal.FreeHGlobal(sPtr);
@@ -2432,7 +2440,7 @@ namespace NppPluginNET
 			Win32.MENUITEMINFO info = new Win32.MENUITEMINFO();
 			info.cbSize 			= Win32.MENUITEMINFO.Size;
 			info.fMask 				= Win32.MIIM_SUBMENU;
-			Win32.GetMenuItemInfoW(hMenu, uItem, true, ref info);
+			Win32.GetMenuItemInfoW(hMenu, uItem, fByPosition, ref info);
 			return info.hSubMenu;
 		}
 
@@ -2441,7 +2449,7 @@ namespace NppPluginNET
 			Win32.MENUITEMINFO info = new Win32.MENUITEMINFO();
 			info.cbSize 			= Win32.MENUITEMINFO.Size;
 			info.fMask 				= Win32.MIIM_ID;
-			Win32.GetMenuItemInfoW(hMenu, uItem, true, ref info);
+			Win32.GetMenuItemInfoW(hMenu, uItem, fByPosition, ref info);
 			return info.wID;
 		}
 
@@ -2524,6 +2532,20 @@ namespace NppPluginNET
 			return true;
 		}
 
+		public enum BeepType : uint
+		{
+			SimpleBeep 		   = 0xFFFFFFFF,
+			MB_OK 			   = 0x00,
+			MB_ICONERROR 	   = 0x10,
+			MB_ICONQUESTION    = 0x20,
+			MB_ICONEXCLAMATION = 0x30,
+			MB_ICONASTERISK    = 0x40,
+		}
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool MessageBeep(BeepType uType);
+		
 		[DllImport("kernel32")]
 		public static extern bool AllocConsole();
 

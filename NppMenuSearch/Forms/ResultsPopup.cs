@@ -389,6 +389,7 @@ namespace NppMenuSearch.Forms
 				if(OwnerTextBox.Focused)
 					Win32.SetFocus(PluginBase.GetCurrentScintilla());
 
+				Main.RecalcRepeatLastCommandMenuItem();
 				return;
 			}
 

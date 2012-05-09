@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using NppMenuSearch.Forms;
 using NppPluginNET;
+using System.Runtime.InteropServices;
 
 namespace NppMenuSearch
 {
@@ -31,10 +33,11 @@ namespace NppMenuSearch
 			xmlFilePath = Path.Combine(xmlFilePath, PluginName + ".xml");
 			Settings.Load(xmlFilePath);
 
-            PluginBase.SetCommand(0, "Menu Search...",		 	   MenuSearchFunction, 	  new ShortcutKey(true,  false, false, Keys.M));
-			PluginBase.SetCommand(1, "Clear “Recently Used” List", ClearRecentlyUsedList, new ShortcutKey(false, false, false, Keys.None));
-			PluginBase.SetCommand(2, "---", 				 	   null);
-			PluginBase.SetCommand(3, "About...", 			 	   AboutFunction, 	   	  new ShortcutKey(false, false, false, Keys.None));
+            PluginBase.SetCommand(0, "Menu Search...",		 	   MenuSearchFunction, 	  	  new ShortcutKey(true,  false, false, Keys.M));
+			PluginBase.SetCommand(1, "Clear “Recently Used” List", ClearRecentlyUsedList, 	  new ShortcutKey(false, false, false, Keys.None));
+			PluginBase.SetCommand(2, "Repeat previous command",    RepeatLastCommandFunction, new ShortcutKey(false, false, false, Keys.None));
+			PluginBase.SetCommand(3, "---", 				 	   null);
+			PluginBase.SetCommand(4, "About...", 			 	   AboutFunction, 	   	  	  new ShortcutKey(false, false, false, Keys.None));
         }
 
 		internal static string GetNativeLangXml()
@@ -65,11 +68,111 @@ namespace NppMenuSearch
 			return null;
 		}
 
+		internal static IntPtr FindPluginMenuItem(uint commandId, out uint index)
+		{
+			IntPtr pluginsMenu = Win32.SendMessage(
+				PluginBase.nppData._nppHandle,
+				NppMsg.NPPM_GETMENUHANDLE,
+				(int)NppMsg.NPPPLUGINMENU,
+				0);
+
+			index = 0;
+
+			if (pluginsMenu == IntPtr.Zero)
+				return IntPtr.Zero;
+
+			for (uint i = 0; i < Win32.GetMenuItemCount(pluginsMenu); ++i)
+			{
+				IntPtr subMenu = Win32.GetSubMenu(pluginsMenu, i, true);
+				if (subMenu == IntPtr.Zero)
+					continue;
+
+				for (uint j = 0; j < Win32.GetMenuItemCount(subMenu); ++j)
+				{
+					if (Win32.GetMenuItemId(subMenu, j, true) == commandId)
+					{
+						index = j;
+						return subMenu;
+					}
+				}
+			}
+
+			return IntPtr.Zero;
+		}
+
+		internal static IntPtr FindRepeatLastCommandMenuItem(out uint cmdId, out uint index)
+		{
+			cmdId = (uint)PluginBase._funcItems.Items[2]._cmdID;
+
+			if(cmdId == 0){
+				index = 0;
+				return IntPtr.Zero;
+			}
+
+			return FindPluginMenuItem(cmdId, out index);
+		}
+
+		internal static MenuItem GetLastUsedMenuItem()
+		{
+			uint rlcId, rlcIndex;
+			IntPtr menu = FindRepeatLastCommandMenuItem(out rlcId, out rlcIndex);
+
+			MenuItem mainMenu = SearchForm.ResultsPopup.MainMenu;
+			if (!mainMenu.EnumItems().Any())
+				mainMenu = new MenuItem(Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_INTERNAL_GETMENU, 0, 0));
+
+			return RecentlyUsedCommands
+				.Where(id => id != rlcId)
+				.Select(id => mainMenu
+					.EnumFinalItems()
+					.Cast<MenuItem>()
+					.Where(item => item.CommandId == id)
+					.FirstOrDefault())
+				.FirstOrDefault();
+		}
+
+		internal static void RecalcRepeatLastCommandMenuItem()
+		{
+			uint rlcId, rlcIndex;
+			IntPtr menu = FindRepeatLastCommandMenuItem(out rlcId, out rlcIndex);
+
+			if(menu == IntPtr.Zero)
+				return;
+
+			MenuItem lastUsedItem = GetLastUsedMenuItem();
+
+			Win32.MENUITEMINFO info = new Win32.MENUITEMINFO();
+			info.cbSize = Win32.MENUITEMINFO.Size;
+			info.fMask = Win32.MIIM_FTYPE;
+			Win32.GetMenuItemInfoW(menu, rlcIndex, true, ref info);
+
+			string caption;
+
+			if (lastUsedItem == null)
+			{
+				Win32.EnableMenuItem(menu, rlcIndex, Win32.MF_BYPOSITION | Win32.MF_DISABLED | Win32.MF_GRAYED);
+				caption = "Repeat previous command";
+			}
+			else
+			{
+				Win32.EnableMenuItem(menu, rlcIndex, Win32.MF_BYPOSITION | Win32.MF_ENABLED);
+				caption = string.Format("Repeat command “{0}”", lastUsedItem);
+			}
+
+			IntPtr sPtr 	= Marshal.StringToHGlobalUni(caption);
+			info.dwTypeData = sPtr;
+			info.fMask 		=  Win32.MIIM_STRING | Win32.MIIM_FTYPE;
+			Win32.SetMenuItemInfoW(menu, rlcIndex, true, ref info);
+
+			Marshal.FreeHGlobal(sPtr);
+		}
+
 		internal static void PluginReady()
 		{
 			SearchForm = new SearchForm();
 
 			SearchForm.CheckToolbarVisiblity();
+			RecalcRepeatLastCommandMenuItem();
 		}
 
         internal static void PluginCleanUp()
@@ -108,6 +211,20 @@ namespace NppMenuSearch
 		internal static void ClearRecentlyUsedList()
 		{
 			RecentlyUsedCommands.Clear();
+			RecalcRepeatLastCommandMenuItem();
+		}
+
+		internal static void RepeatLastCommandFunction()
+		{
+			MenuItem lastUsedItem = GetLastUsedMenuItem();
+
+			if (lastUsedItem == null)
+			{
+				Win32.MessageBeep(Win32.BeepType.MB_ICONERROR);
+				return;
+			}
+
+			Win32.SendMessage(PluginBase.nppData._nppHandle, (NppMsg)Win32.WM_COMMAND, (int)lastUsedItem.CommandId, 0);
 		}
 
 		internal static void AboutFunction()

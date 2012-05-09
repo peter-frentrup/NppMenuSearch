@@ -8,7 +8,7 @@ namespace NppMenuSearch.Forms
 {
 	public partial class SearchForm : Form
 	{
-		ResultsPopup ResultsPopup;
+		public ResultsPopup ResultsPopup { get; private set; }
 
 		IntPtr hwndRebar   = IntPtr.Zero;
 		IntPtr hwndToolbar = IntPtr.Zero;
