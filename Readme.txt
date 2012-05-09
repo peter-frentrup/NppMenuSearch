@@ -11,3 +11,5 @@ The plugin adds a text box to the Notepad++ toolbar.
 - ESC abandons the search.
 - ENTER executes the currently selected menu item and closes the drop-down list.
   If a preferences dialog item was selected, the preferences dialog with that item highlighted.
+- There is a menu item to repeat the most recently used command. You should assign a keyboard 
+  shortcut to this if you use need it often. This would effectively save you two keystrokes.
