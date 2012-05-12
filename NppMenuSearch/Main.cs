@@ -173,6 +173,8 @@ namespace NppMenuSearch
 
 			SearchForm.CheckToolbarVisiblity();
 			RecalcRepeatLastCommandMenuItem();
+
+			Win32.SendMessage(PluginBase.GetCurrentScintilla(), SciMsg.SCI_GRABFOCUS, 0, 0);
 		}
 
         internal static void PluginCleanUp()

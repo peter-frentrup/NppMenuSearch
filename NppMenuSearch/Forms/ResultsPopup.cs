@@ -20,8 +20,8 @@ namespace NppMenuSearch.Forms
 		int MaxPreferencesResults = DefaultMaxPreferencesResults;
 
 		ListViewGroup resultGroupRecentlyUsed = new ListViewGroup("Recently Used", HorizontalAlignment.Left);
-		ListViewGroup resultGroupMenu 		  = new ListViewGroup("Menu", 		HorizontalAlignment.Left);
-		ListViewGroup resultGroupPreferences  = new ListViewGroup("Preferences", HorizontalAlignment.Left);
+		ListViewGroup resultGroupMenu 		  = new ListViewGroup("Menu", 		   HorizontalAlignment.Left);
+		ListViewGroup resultGroupPreferences  = new ListViewGroup("Preferences",   HorizontalAlignment.Left);
 
 		public 	TextBox    OwnerTextBox;
 		public 	MenuItem   MainMenu;
