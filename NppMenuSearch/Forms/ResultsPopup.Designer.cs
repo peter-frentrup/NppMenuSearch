@@ -45,9 +45,10 @@
 			// 
 			this.panInfo.Controls.Add(this.label1);
 			this.panInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panInfo.Location = new System.Drawing.Point(0, 497);
+			this.panInfo.Location = new System.Drawing.Point(0, 612);
+			this.panInfo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.panInfo.Name = "panInfo";
-			this.panInfo.Size = new System.Drawing.Size(604, 17);
+			this.panInfo.Size = new System.Drawing.Size(805, 21);
 			this.panInfo.TabIndex = 2;
 			// 
 			// label1
@@ -55,8 +56,9 @@
 			this.label1.AutoSize = true;
 			this.label1.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label1.Location = new System.Drawing.Point(0, 2);
+			this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(507, 14);
+			this.label1.Size = new System.Drawing.Size(654, 16);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Press CTRL+M again to show all results. TAB to switch groups: Recently Used ↔ Men" +
 				"u ↔ Preferences";
@@ -69,10 +71,11 @@
 			this.viewResults.FullRowSelect = true;
 			this.viewResults.HideSelection = false;
 			this.viewResults.Location = new System.Drawing.Point(0, 0);
+			this.viewResults.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.viewResults.MultiSelect = false;
 			this.viewResults.Name = "viewResults";
 			this.viewResults.OwnerDraw = true;
-			this.viewResults.Size = new System.Drawing.Size(604, 497);
+			this.viewResults.Size = new System.Drawing.Size(805, 612);
 			this.viewResults.TabIndex = 1;
 			this.viewResults.TileSize = new System.Drawing.Size(317, 16);
 			this.viewResults.UseCompatibleStateImageBehavior = false;
@@ -83,14 +86,14 @@
 			// 
 			// ResultsPopup
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(604, 514);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+			this.ClientSize = new System.Drawing.Size(805, 633);
 			this.ControlBox = false;
 			this.Controls.Add(this.viewResults);
 			this.Controls.Add(this.panInfo);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
 			this.KeyPreview = true;
+			this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.Name = "ResultsPopup";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
