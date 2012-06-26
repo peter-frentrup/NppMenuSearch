@@ -35,6 +35,10 @@ namespace NppMenuSearch.Forms
 			toolbarShownCanary.Top 	  		   = 0;
 			toolbarShownCanary.Paint 		   += toolbarShownCanary_Paint;
 
+			frmSearch.Height = txtSearch.Height;
+			frmSearch.Top = (Height - frmSearch.Height) / 2;
+			picClear.Top = (frmSearch.Height - picClear.Height) / 2;
+
 			picClear.Visible = false;
 			//uint margins = (uint)Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_GETMARGINS, 0, 0);
 			//uint rightMargin = margins >> 16;
