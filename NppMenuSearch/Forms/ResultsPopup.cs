@@ -19,6 +19,8 @@ namespace NppMenuSearch.Forms
 		int MaxMenuResults 		  = DefaultMaxMenuResults;
 		int MaxPreferencesResults = DefaultMaxPreferencesResults;
 
+		public event EventHandler Finished;
+
 		ListViewGroup resultGroupRecentlyUsed = new ListViewGroup("Recently Used", HorizontalAlignment.Left);
 		ListViewGroup resultGroupMenu 		  = new ListViewGroup("Menu", 		   HorizontalAlignment.Left);
 		ListViewGroup resultGroupPreferences  = new ListViewGroup("Preferences",   HorizontalAlignment.Left);
@@ -384,6 +386,7 @@ namespace NppMenuSearch.Forms
 					Win32.SetFocus(PluginBase.GetCurrentScintilla());
 
 				Main.RecalcRepeatLastCommandMenuItem();
+				OnFinished();
 				return;
 			}
 
@@ -397,8 +400,15 @@ namespace NppMenuSearch.Forms
 				Hide();
 				OwnerTextBox.Text = "";
 
+				OnFinished();
 				return;
 			}
+		}
+
+		public void OnFinished()
+		{
+			if (Finished != null)
+				Finished(this, new EventArgs());
 		}
 
 		static void ChangeTabPage(IntPtr hwndDialog, IntPtr hwndTabControl, int index)
@@ -545,7 +555,10 @@ namespace NppMenuSearch.Forms
 				{
 					NavigateToChild(hwndPreferences, hwndDestinationControl);
 					if (Win32.IsWindowVisible(hwndDestinationControl))
+					{
+						Win32.SetFocus(hwndDestinationControl);
 						Highlight(hwndDestinationControl);
+					}
 				}
 			};
 

@@ -77,6 +77,12 @@
     <Compile Include="DialogHelper.cs" />
     <Compile Include="DialogItem.cs" />
     <Compile Include="DllExport\DllExportAttribute.cs" />
+    <Compile Include="Forms\FlyingSearchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FlyingSearchForm.Designer.cs">
+      <DependentUpon>FlyingSearchForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ResultsPopup.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,11 +91,11 @@
     </Compile>
     <Compile Include="HierarchyItem.cs" />
     <Compile Include="MenuItem.cs" />
-    <Compile Include="Forms\SearchForm.cs">
+    <Compile Include="Forms\ToolbarSearchForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SearchForm.Designer.cs">
-      <DependentUpon>SearchForm.cs</DependentUpon>
+    <Compile Include="Forms\ToolbarSearchForm.Designer.cs">
+      <DependentUpon>ToolbarSearchForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Main.cs" />
     <Compile Include="NppPluginNETBase.cs" />
@@ -105,11 +111,14 @@
     <Compile Include="UnmanagedExports.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\FlyingSearchForm.resx">
+      <DependentUpon>FlyingSearchForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ResultsPopup.resx">
       <DependentUpon>ResultsPopup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SearchForm.resx">
-      <DependentUpon>SearchForm.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\ToolbarSearchForm.resx">
+      <DependentUpon>ToolbarSearchForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

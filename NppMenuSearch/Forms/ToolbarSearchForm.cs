@@ -6,7 +6,7 @@ using NppPluginNET;
 
 namespace NppMenuSearch.Forms
 {
-	public partial class SearchForm : Form
+	public partial class ToolbarSearchForm : Form
 	{
 		public ResultsPopup ResultsPopup { get; private set; }
 
@@ -16,7 +16,7 @@ namespace NppMenuSearch.Forms
 
 		bool currentlyCheckingToolbarVisiblity = false;
 
-		public SearchForm()
+		public ToolbarSearchForm()
 		{
 			toolbarShownCanary = new Control();
 			toolbarShownCanary.HandleDestroyed += new EventHandler(toolbarShownCanary_HandleDestroyed);
@@ -88,7 +88,7 @@ namespace NppMenuSearch.Forms
 
 		void InitToolbar()
 		{
-			IntPtr main = GetNppMainWindow();
+			IntPtr main = Main.GetNppMainWindow();
 			hwndRebar 	= IntPtr.Zero;
 			hwndToolbar = IntPtr.Zero;
 
@@ -276,24 +276,6 @@ namespace NppMenuSearch.Forms
 				txtSearch.Focus();
 				txtSearch_TextChanged(null, null);
 			}
-		}
-
-		private IntPtr GetNppMainWindow()
-		{
-			IntPtr dummy;
-			IntPtr thisThread = Win32.GetWindowThreadProcessId(Handle, out dummy);
-			IntPtr parent = PluginBase.nppData._nppHandle;
-			while (parent != IntPtr.Zero)
-			{
-				IntPtr grandParent = Win32.GetParent(parent);
-
-				if (Win32.GetWindowThreadProcessId(grandParent, out dummy) != thisThread)
-					break;
-
-				parent = grandParent;
-			}
-
-			return parent;
 		}
 
 		private void txtSearch_TextChanged(object sender, EventArgs e)

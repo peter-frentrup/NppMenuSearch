@@ -17,8 +17,9 @@ namespace NppMenuSearch
         internal const string PluginName  = "NppMenuSearch";
         static string 		  xmlFilePath = null;
 
-		internal static SearchForm SearchForm { get; private set; }
-
+		internal static ToolbarSearchForm ToolbarSearchForm { get; private set; }
+		internal static FlyingSearchForm  FlyingSearchForm 	{ get; private set; }
+		
         internal static void CommandMenuInit()
         {
 #if DEBUG
@@ -117,7 +118,7 @@ namespace NppMenuSearch
 			uint rlcId, rlcIndex;
 			IntPtr menu = FindRepeatLastCommandMenuItem(out rlcId, out rlcIndex);
 
-			MenuItem mainMenu = SearchForm.ResultsPopup.MainMenu;
+			MenuItem mainMenu = ToolbarSearchForm.ResultsPopup.MainMenu;
 			if (!mainMenu.EnumItems().Any())
 				mainMenu = new MenuItem(Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_INTERNAL_GETMENU, 0, 0));
 
@@ -169,12 +170,21 @@ namespace NppMenuSearch
 
 		internal static void PluginReady()
 		{
-			SearchForm = new SearchForm();
+			ToolbarSearchForm = new ToolbarSearchForm();
+			FlyingSearchForm = new FlyingSearchForm();
 
-			SearchForm.CheckToolbarVisiblity();
+			MakeNppOwnerOf(FlyingSearchForm);
+			FlyingSearchForm.ResultsPopup.Finished += FlyingSearchForm_ResultsPopup_Finished;
+
+			ToolbarSearchForm.CheckToolbarVisiblity();
 			RecalcRepeatLastCommandMenuItem();
 
 			Win32.SendMessage(PluginBase.GetCurrentScintilla(), SciMsg.SCI_GRABFOCUS, 0, 0);
+		}
+
+		static void FlyingSearchForm_ResultsPopup_Finished(object sender, EventArgs e)
+		{
+			FlyingSearchForm.Hide();
 		}
 
         internal static void PluginCleanUp()
@@ -182,7 +192,7 @@ namespace NppMenuSearch
 			Settings.Save(xmlFilePath);
         }
 
-		public static IntPtr GetMainWindow()
+		public static IntPtr GetNppMainWindow()
 		{
 			IntPtr dummy;
 			IntPtr thisThread = Win32.GetWindowThreadProcessId(PluginBase.nppData._nppHandle, out dummy);
@@ -202,12 +212,15 @@ namespace NppMenuSearch
 
 		internal static void MakeNppOwnerOf(Form form)
 		{
-			Win32.SetWindowLongPtr(form.Handle, Win32.GWL_HWNDPARENT, GetMainWindow());
+			Win32.SetWindowLongPtr(form.Handle, Win32.GWL_HWNDPARENT, GetNppMainWindow());
 		}
 
 		internal static void MenuSearchFunction()
         {
-			SearchForm.SelectSearchField();
+			if (ToolbarSearchForm.Visible)
+				ToolbarSearchForm.SelectSearchField();
+			else
+				FlyingSearchForm.SelectSearchField();
         }
 
 		internal static void ClearRecentlyUsedList()

@@ -1,6 +1,6 @@
 ﻿namespace NppMenuSearch.Forms
 {
-	partial class SearchForm
+	partial class ToolbarSearchForm
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -81,7 +81,7 @@
 			// 
 			this.timerDelay.Interval = 1;
 			// 
-			// SearchForm
+			// ToolbarSearchForm
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.BackColor = System.Drawing.SystemColors.Control;
@@ -89,7 +89,7 @@
 			this.Controls.Add(this.frmSearch);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 			this.Margin = new System.Windows.Forms.Padding(4);
-			this.Name = "SearchForm";
+			this.Name = "ToolbarSearchForm";
 			this.Text = "SearchForm";
 			this.SizeChanged += new System.EventHandler(this.SearchForm_SizeChanged);
 			this.frmSearch.ResumeLayout(false);
