@@ -10,18 +10,18 @@ using System.Runtime.InteropServices;
 
 namespace NppMenuSearch
 {
-    class Main
-    {
+	class Main
+	{
 		public static LinkedList<uint> RecentlyUsedCommands = new LinkedList<uint>();
 
-        internal const string PluginName  = "NppMenuSearch";
-        static string 		  xmlFilePath = null;
+		internal const string PluginName  = "NppMenuSearch";
+		static string 		  xmlFilePath = null;
 
 		internal static ToolbarSearchForm ToolbarSearchForm { get; private set; }
 		internal static FlyingSearchForm  FlyingSearchForm 	{ get; private set; }
 		
-        internal static void CommandMenuInit()
-        {
+		internal static void CommandMenuInit()
+		{
 #if DEBUG
 			Win32.AllocConsole();
 			Console.WriteLine(PluginName + " debug mode");
@@ -34,12 +34,12 @@ namespace NppMenuSearch
 			xmlFilePath = Path.Combine(xmlFilePath, PluginName + ".xml");
 			Settings.Load(xmlFilePath);
 
-            PluginBase.SetCommand(0, "Menu Search...",		 	   MenuSearchFunction, 	  	  new ShortcutKey(true,  false, false, Keys.M));
+			PluginBase.SetCommand(0, "Menu Search...",		 	   MenuSearchFunction, 	  	  new ShortcutKey(true,  false, false, Keys.M));
 			PluginBase.SetCommand(1, "Clear “Recently Used” List", ClearRecentlyUsedList, 	  new ShortcutKey(false, false, false, Keys.None));
 			PluginBase.SetCommand(2, "Repeat previous command",    RepeatLastCommandFunction, new ShortcutKey(false, false, false, Keys.None));
 			PluginBase.SetCommand(3, "---", 				 	   null);
 			PluginBase.SetCommand(4, "About...", 			 	   AboutFunction, 	   	  	  new ShortcutKey(false, false, false, Keys.None));
-        }
+		}
 
 		internal static string GetNativeLangXml()
 		{
@@ -187,10 +187,10 @@ namespace NppMenuSearch
 			FlyingSearchForm.Hide();
 		}
 
-        internal static void PluginCleanUp()
-        {
+		internal static void PluginCleanUp()
+		{
 			Settings.Save(xmlFilePath);
-        }
+		}
 
 		public static IntPtr GetNppMainWindow()
 		{
@@ -216,12 +216,12 @@ namespace NppMenuSearch
 		}
 
 		internal static void MenuSearchFunction()
-        {
+		{
 			if (ToolbarSearchForm.Visible)
 				ToolbarSearchForm.SelectSearchField();
 			else
 				FlyingSearchForm.SelectSearchField();
-        }
+		}
 
 		internal static void ClearRecentlyUsedList()
 		{
@@ -253,5 +253,5 @@ namespace NppMenuSearch
 				MessageBoxButtons.OK,
 				MessageBoxIcon.Information);
 		}
-    }
+	}
 }
