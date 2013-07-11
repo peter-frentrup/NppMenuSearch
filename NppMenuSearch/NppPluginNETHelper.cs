@@ -1025,6 +1025,7 @@ namespace NppPluginNET
 
 		IDD_PREFERENCE_BOX = 6000,
 		IDC_BUTTON_CLOSE = IDD_PREFERENCE_BOX + 1,
+		IDC_LIST_DLGTITLE = IDD_PREFERENCE_BOX + 2,
 
 		IDD_PREFERENCE_BAR_BOX = 6100,
 
@@ -1034,13 +1035,21 @@ namespace NppPluginNET
 
 		IDD_PREFERENCE_NEWDOCSETTING_BOX = 6400,
 
+		IDD_PREFERENCE_DEFAULTDIRECTORY_BOX = 6450,
+
+		IDD_PREFERENCE_RECENTFILESHISTORY_BOX = 6460,
+
 		IDD_PREFERENCE_LANG_BOX = 6500,
+
+		IDD_PREFERENCE_TABSETTINGS_BOX = 6550,
 
 		IDD_PREFERENCE_PRINT_BOX = 6600,
 
 		IDD_PREFERENCE_PRINT2_BOX = 6700,
 
-		IDD_PREFERENCE_BACKUP_BOX = 6800
+		IDD_PREFERENCE_BACKUP_BOX = 6800,
+
+		IDD_PREFERENCE_AUTOCOMPLETION_BOX = 6850
 	};
 
 	[Flags]
@@ -2119,6 +2128,8 @@ namespace NppPluginNET
 		public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref REBARBANDINFO lParam);
 		[DllImport("user32")]
 		public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref NMHDR lParam);
+		[DllImport("user32")]
+		public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, IntPtr lParam);
 
 		public const int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
 		public const int FORMAT_MESSAGE_IGNORE_INSERTS 	= 0x00000200;
@@ -2673,6 +2684,48 @@ namespace NppPluginNET
 		public const int TCN_SELCHANGE = -551;
 
 
+		public const int LB_ADDSTRING           = 0x0180;
+		public const int LB_INSERTSTRING        = 0x0181;
+		public const int LB_DELETESTRING        = 0x0182;
+		public const int LB_SELITEMRANGEEX      = 0x0183;
+		public const int LB_RESETCONTENT        = 0x0184;
+		public const int LB_SETSEL              = 0x0185;
+		public const int LB_SETCURSEL           = 0x0186;
+		public const int LB_GETSEL              = 0x0187;
+		public const int LB_GETCURSEL           = 0x0188;
+		public const int LB_GETTEXT             = 0x0189;
+		public const int LB_GETTEXTLEN          = 0x018A;
+		public const int LB_GETCOUNT            = 0x018B;
+		public const int LB_SELECTSTRING        = 0x018C;
+		public const int LB_DIR                 = 0x018D;
+		public const int LB_GETTOPINDEX         = 0x018E;
+		public const int LB_FINDSTRING          = 0x018F;
+		public const int LB_GETSELCOUNT         = 0x0190;
+		public const int LB_GETSELITEMS         = 0x0191;
+		public const int LB_SETTABSTOPS         = 0x0192;
+		public const int LB_GETHORIZONTALEXTENT = 0x0193;
+		public const int LB_SETHORIZONTALEXTENT = 0x0194;
+		public const int LB_SETCOLUMNWIDTH      = 0x0195;
+		public const int LB_ADDFILE             = 0x0196;
+		public const int LB_SETTOPINDEX         = 0x0197;
+		public const int LB_GETITEMRECT         = 0x0198;
+		public const int LB_GETITEMDATA         = 0x0199;
+		public const int LB_SETITEMDATA         = 0x019A;
+		public const int LB_SELITEMRANGE        = 0x019B;
+		public const int LB_SETANCHORINDEX      = 0x019C;
+		public const int LB_GETANCHORINDEX      = 0x019D;
+		public const int LB_SETCARETINDEX       = 0x019E;
+		public const int LB_GETCARETINDEX       = 0x019F;
+		public const int LB_SETITEMHEIGHT       = 0x01A0;
+		public const int LB_GETITEMHEIGHT       = 0x01A1;
+		public const int LB_FINDSTRINGEXACT     = 0x01A2;
+		public const int LB_SETLOCALE           = 0x01A5;
+		public const int LB_GETLOCALE           = 0x01A6;
+		public const int LB_SETCOUNT            = 0x01A7;
+		public const int LB_INITSTORAGE         = 0x01A8;
+		public const int LB_ITEMFROMPOINT       = 0x01A9;
+
+		public const int CBN_SELCHANGE = 1;
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr GetWindowDC(IntPtr hWnd);

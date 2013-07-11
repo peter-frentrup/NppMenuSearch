@@ -79,12 +79,24 @@ namespace NppMenuSearch.Forms
 						resourceId = (int)NppResources.IDD_PREFERENCE_NEWDOCSETTING_BOX;
 						break;
 
+					case "DefaultDir":
+						resourceId = (int)NppResources.IDD_PREFERENCE_DEFAULTDIRECTORY_BOX;
+						break;
+
+					case "RecentFilesHistory":
+						resourceId = (int)NppResources.IDD_PREFERENCE_RECENTFILESHISTORY_BOX;
+						break;
+
 					case "FileAssoc":
 						resourceId = (int)NppResources.IDD_REGEXT_BOX;
 						break;
 
 					case "LangMenu":
 						resourceId = (int)NppResources.IDD_PREFERENCE_LANG_BOX;
+						break;
+
+					case "TabSettings":
+						resourceId = (int)NppResources.IDD_PREFERENCE_TABSETTINGS_BOX;
 						break;
 
 					case "Print":
@@ -97,6 +109,10 @@ namespace NppMenuSearch.Forms
 
 					case "Backup":
 						resourceId = (int)NppResources.IDD_PREFERENCE_BACKUP_BOX;
+						break;
+
+					case "AutoCompletion":
+						resourceId = (int)NppResources.IDD_PREFERENCE_AUTOCOMPLETION_BOX;
 						break;
 				}
 
@@ -414,8 +430,8 @@ namespace NppMenuSearch.Forms
 		static void ChangeTabPage(IntPtr hwndDialog, IntPtr hwndTabControl, int index)
 		{
 			Win32.NMHDR nmhdr = new Win32.NMHDR();
-			nmhdr.hwndFrom 	  = hwndTabControl;
-			nmhdr.idFrom 	  = (uint)Win32.GetDlgCtrlID(hwndTabControl);
+			nmhdr.hwndFrom = hwndTabControl;
+			nmhdr.idFrom = (uint)Win32.GetDlgCtrlID(hwndTabControl);
 
 			// does not send a TCN_SELCHANGING or TCN_SELCHANGE notification code:
 			Win32.SendMessage(hwndTabControl, (NppMsg)Win32.TCM_SETCURSEL, index, 0);
@@ -424,41 +440,90 @@ namespace NppMenuSearch.Forms
 			Win32.SendMessage(hwndDialog, Win32.WM_NOTIFY, (int)nmhdr.idFrom, ref nmhdr);
 		}
 
+		static void ChangeListboxSelection(IntPtr hwndDialog, IntPtr hwndListboxControl, int index)
+		{
+			// does not send a CBN_SELCHANGE command:
+			Win32.SendMessage(hwndListboxControl, (NppMsg)Win32.LB_SETCURSEL, index, 0);
+
+			uint wID = (uint)Win32.GetDlgCtrlID(hwndListboxControl);
+			uint wNotifyCode = Win32.CBN_SELCHANGE;
+
+			int wParam = unchecked((int)((wID & 0xFFFF) | ((wNotifyCode & 0xFFFF) << 16)));
+
+			Win32.SendMessage(hwndDialog, Win32.WM_COMMAND, wParam, hwndListboxControl);
+		}
+
 		// does not work with nested/multiple tab controls!
 		static void NavigateToChild(IntPtr hwndForm, IntPtr hwndChild)
 		{
 			if (Win32.IsWindowVisible(hwndChild))
 				return;
 
+			/* Before N++ 6.4.0, the preferences dialog used a tab-control.
+			 * Since 6.4.0, it uses a list-box for the various settings dialogs.
+			 */
+
 			IntPtr hwndTab = IntPtr.Zero;
+			IntPtr hwndTabList = IntPtr.Zero;
 			Win32.EnumChildWindows(hwndForm, hwndFormChild =>
 			{
+				if (!Win32.IsWindowVisible(hwndFormChild))
+					return true;
+
 				StringBuilder sb = new StringBuilder(256);
 				Win32.GetClassName(hwndFormChild, sb, sb.Capacity);
 
-				if (sb.ToString() == "SysTabControl32")
-				{
-					hwndTab = hwndFormChild;
-					return false;
+				var classname = sb.ToString(); 
+				switch(sb.ToString()) {
+					case "SysTabControl32":
+						hwndTab = hwndFormChild;
+						return false;
+
+					case "ListBox":
+						if (Win32.GetWindowLong(hwndFormChild, Win32.GWL_ID) == (int)NppResources.IDC_LIST_DLGTITLE)
+						{
+							hwndTabList = hwndFormChild;
+							return false;
+						}
+						break;
 				}
+
 				return true;
 			});
 
-			if (hwndTab == IntPtr.Zero)
-				return;
-
-			int count = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETITEMCOUNT, 0, 0);
-			int sel   = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETCURSEL, 0, 0);
-
-			for (int i = 0; i < count; ++i)
+			if (hwndTabList != IntPtr.Zero)
 			{
-				ChangeTabPage(hwndForm, hwndTab, i);
+				int count = (int)Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_GETCOUNT, 0, 0);
+				int sel = (int)Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_GETCURSEL, 0, 0);
 
-				if (Win32.IsWindowVisible(hwndChild))
-					return;
+				Console.WriteLine("navigate via listbox, count: {0}, sel: {1}", count, sel);
+
+				for (int i = 0; i < count; ++i)
+				{
+					ChangeListboxSelection(hwndForm, hwndTabList, i);
+
+					if (Win32.IsWindowVisible(hwndChild))
+						return;
+				}
+
+				Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_SETCURSEL, sel, 0);
 			}
 
-			Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_SETCURSEL, sel, 0);
+			if (hwndTab != IntPtr.Zero)
+			{
+				int count = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETITEMCOUNT, 0, 0);
+				int sel = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETCURSEL, 0, 0);
+
+				for (int i = 0; i < count; ++i)
+				{
+					ChangeTabPage(hwndForm, hwndTab, i);
+
+					if (Win32.IsWindowVisible(hwndChild))
+						return;
+				}
+
+				Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_SETCURSEL, sel, 0);
+			}
 		}
 
 		public void Highlight(IntPtr hwnd)
