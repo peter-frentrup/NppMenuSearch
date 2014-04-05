@@ -98,6 +98,7 @@
       <DependentUpon>ToolbarSearchForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Main.cs" />
+    <Compile Include="NppListener.cs" />
     <Compile Include="NppPluginNETBase.cs" />
     <Compile Include="NppPluginNETHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

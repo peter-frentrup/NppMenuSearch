@@ -17,6 +17,8 @@ namespace NppMenuSearch
 		internal const string PluginName  = "NppMenuSearch";
 		static string 		  xmlFilePath = null;
 
+		internal static NppListener NppListener { get; private set; }
+
 		internal static ToolbarSearchForm ToolbarSearchForm { get; private set; }
 		internal static FlyingSearchForm  FlyingSearchForm 	{ get; private set; }
 		
@@ -170,8 +172,12 @@ namespace NppMenuSearch
 
 		internal static void PluginReady()
 		{
+			NppListener = new NppListener();
+			
 			ToolbarSearchForm = new ToolbarSearchForm();
 			FlyingSearchForm = new FlyingSearchForm();
+
+			NppListener.AssignHandle(PluginBase.nppData._nppHandle);
 
 			MakeNppOwnerOf(FlyingSearchForm);
 			FlyingSearchForm.ResultsPopup.Finished += FlyingSearchForm_ResultsPopup_Finished;
@@ -190,6 +196,7 @@ namespace NppMenuSearch
 		internal static void PluginCleanUp()
 		{
 			Settings.Save(xmlFilePath);
+			NppListener.ReleaseHandle();
 		}
 
 		public static IntPtr GetNppMainWindow()

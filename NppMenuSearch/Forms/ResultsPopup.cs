@@ -114,6 +114,9 @@ namespace NppMenuSearch.Forms
 					case "AutoCompletion":
 						resourceId = (int)NppResources.IDD_PREFERENCE_AUTOCOMPLETION_BOX;
 						break;
+
+					// IDD_PREFERENCE_MULTIINSTANCE_BOX
+					// IDD_PREFERENCE_DELIMITERSETTINGS_BOX
 				}
 
 				if (resourceId == 0)

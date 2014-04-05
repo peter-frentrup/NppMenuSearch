@@ -12,28 +12,16 @@ namespace NppMenuSearch.Forms
 
 		IntPtr hwndRebar   = IntPtr.Zero;
 		IntPtr hwndToolbar = IntPtr.Zero;
-		Control toolbarShownCanary;
 
 		bool currentlyCheckingToolbarVisiblity = false;
 
 		public ToolbarSearchForm()
 		{
-			toolbarShownCanary = new Control();
-			toolbarShownCanary.HandleDestroyed += new EventHandler(toolbarShownCanary_HandleDestroyed);
-
 			InitializeComponent();
 			ResultsPopup = new ResultsPopup();
 			ResultsPopup.OwnerTextBox = txtSearch;
 
-			/* Maybe we should just hook the toolbar's window procedure instead of hoping that nobody else 
-			 * tries this canary trick with a window just atop our canary. Because that would prevent 
-			 * WM_PAINT messages from being delivered to our canary...
-			 */
-			toolbarShownCanary.Width  		   = 1;
-			toolbarShownCanary.Height 		   = 1;
-			toolbarShownCanary.Left   		   = 0;
-			toolbarShownCanary.Top 	  		   = 0;
-			toolbarShownCanary.Paint 		   += toolbarShownCanary_Paint;
+			Main.NppListener.AfterHideShowToolbar += new NppListener.HideShowEventHandler(NppListener_AfterHideShowToolbar);
 
 			frmSearch.Height = txtSearch.Height;
 			frmSearch.Top = (Height - frmSearch.Height) / 2;
@@ -44,6 +32,11 @@ namespace NppMenuSearch.Forms
 			//uint rightMargin = margins >> 16;
 			//rightMargin+= 16;
 			//Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETMARGINS, Win32.EC_RIGHTMARGIN, (int)(rightMargin << 16));
+		}
+
+		void NppListener_AfterHideShowToolbar(bool show)
+		{
+			CheckToolbarVisiblity();
 		}
 
 		void SetClearImage(Image img)
@@ -71,28 +64,11 @@ namespace NppMenuSearch.Forms
 			Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETMARGINS, Win32.EC_RIGHTMARGIN, (int)(rightMargin << 16));
 		}
 
-		void toolbarShownCanary_HandleDestroyed(object sender, EventArgs e)
-		{
-			EventHandler tick = null;
-			tick = (_sender, _e) =>
-			{
-				timerDelay.Tick -= tick;
-				timerDelay.Stop();
-
-				CheckToolbarVisiblity();
-			};
-
-			timerDelay.Tick += tick;
-			timerDelay.Start();
-		}
-
 		void InitToolbar()
 		{
 			IntPtr main = Main.GetNppMainWindow();
 			hwndRebar 	= IntPtr.Zero;
 			hwndToolbar = IntPtr.Zero;
-
-			Win32.SetParent(toolbarShownCanary.Handle, Handle);
 
 			Win32.EnumChildWindows(main, child =>
 			{
@@ -127,8 +103,6 @@ namespace NppMenuSearch.Forms
 
 					if (hwndToolbar != IntPtr.Zero)
 					{
-						Win32.SetParent(toolbarShownCanary.Handle, hwndToolbar);
-
 						hwndRebar = child;
 						return false;
 					}
@@ -178,9 +152,19 @@ namespace NppMenuSearch.Forms
 			return -1;
 		}
 
+		/*public bool IsToolbarVisible()
+		{
+			return IntPtr.Zero != Win32.SendMessage(
+				PluginBase.nppData._nppHandle, 
+				NppMsg.NPPM_ISTOOLBARHIDDEN, 
+				0, 
+				0);
+		}*/
+
 		public void CheckToolbarVisiblity()
 		{
-			if(currentlyCheckingToolbarVisiblity || toolbarShownCanary == null)
+
+			if(currentlyCheckingToolbarVisiblity)
 				return;
 
 			try
@@ -343,16 +327,6 @@ namespace NppMenuSearch.Forms
 				suppressKeyPress = false;
 				e.Handled = true;
 			}
-		}
-
-		private void toolbarShownCanary_Paint(object sender, PaintEventArgs e)
-		{
-			CheckToolbarVisiblity();
-		}
-
-		private void SearchForm_SizeChanged(object sender, EventArgs e)
-		{
-			CheckToolbarVisiblity();
 		}
 
 		private void picClear_MouseDown(object sender, MouseEventArgs e)

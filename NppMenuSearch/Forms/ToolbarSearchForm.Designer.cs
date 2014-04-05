@@ -91,7 +91,6 @@
 			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "ToolbarSearchForm";
 			this.Text = "SearchForm";
-			this.SizeChanged += new System.EventHandler(this.SearchForm_SizeChanged);
 			this.frmSearch.ResumeLayout(false);
 			this.frmSearch.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picClear)).EndInit();
