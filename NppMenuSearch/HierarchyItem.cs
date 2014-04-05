@@ -12,11 +12,30 @@ namespace NppMenuSearch
 
 		public string Text;
 
-		public HierarchyItem(){
-			Text = "";
+		public int Count
+		{
+			get
+			{
+				if (subitems == null)
+					return 0;
+				return subitems.Count;
+			}
 		}
 
-		protected void AddItem(HierarchyItem item)
+		public HierarchyItem this[int i]
+		{
+			get
+			{
+				return subitems[i];
+			}
+		}
+
+		public HierarchyItem(string text = "")
+		{
+			Text = text;
+		}
+
+		public void AddItem(HierarchyItem item)
 		{
 			if (item == null)
 				throw new ArgumentException("item");
@@ -113,6 +132,31 @@ namespace NppMenuSearch
 			return result;
 		}
 
+		public HierarchyItem RemoveRedundantHeadings()
+		{
+			if (subitems == null)
+				return this;
+
+			for (int i = 0; i < subitems.Count; ++i)
+			{
+				var newItem = subitems[i].RemoveRedundantHeadings();
+				if (newItem.Parent == null)
+					newItem.Parent = this;
+
+				if (newItem.Parent == this)
+					subitems[i] = newItem;
+			}
+
+			if (subitems.Count == 1 && subitems[0].Text == Text)
+			{
+				var newItem = subitems[0];
+				RemoveItem(newItem);
+				return newItem;
+			}
+
+			return this;
+		}
+
 		public override string ToString()
 		{
 			string result = "";
@@ -120,6 +164,7 @@ namespace NppMenuSearch
 			if (Parent != null)
 			{
 				result = Parent.ToString();
+
 				if (result.Length > 0)
 					result += " → ";
 			}

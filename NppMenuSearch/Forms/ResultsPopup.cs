@@ -28,6 +28,7 @@ namespace NppMenuSearch.Forms
 		public 	TextBox    OwnerTextBox;
 		public 	MenuItem   MainMenu;
 		private DialogItem PreferenceDialog;
+		private bool isPreferenceDialogValid;
 
 		public ResultsPopup()
 		{
@@ -38,106 +39,64 @@ namespace NppMenuSearch.Forms
 			viewResults.Groups.Add(resultGroupPreferences);
 			
 			MainMenu = new MenuItem(IntPtr.Zero);
-			InitPreferencesDialog();
+			PreferenceDialog = new DialogItem("Preferences");
+
+			// Lazy initializing the dialog on first search then steals the keyboard focus :( So do it here.
+			NeedPreferencesDialog();
+
+			Main.NppListener.AfterReloadNativeLang += new EventHandler(NppListener_AfterReloadNativeLang);
 
 			Main.MakeNppOwnerOf(this);
 		}
 
-		protected void InitPreferencesDialog()
+		void NppListener_AfterReloadNativeLang(object sender, EventArgs e)
 		{
-			PreferenceDialog = new DialogItem();
+			Console.WriteLine("NppListener_AfterReloadNativeLang");
+			isPreferenceDialogValid = false;
+		}
 
-			string nativeLangFile = Main.GetNativeLangXml();
-			if (nativeLangFile == null)
-			{
+		protected void NeedPreferencesDialog()
+		{
+			if (isPreferenceDialogValid)
 				return;
+
+			isPreferenceDialogValid = true;
+
+			PreferenceDialogHelper pdh = new PreferenceDialogHelper();
+			pdh.LoadCurrentLocalization();
+
+			IntPtr hwndDialogPage;
+			PreferenceDialog = new DialogItem(pdh.PageTranslations[pdh.Global.InternalName]);
+
+			hwndDialogPage = DialogHelper.LoadNppDialog(Handle, (int)pdh.Global.ResourceId);
+			try
+			{
+				PreferenceDialog = DialogItem.CreateFromDialogFlat(hwndDialogPage, pdh.PageTranslations[pdh.Global.InternalName]);
+			}
+			finally
+			{
+				DialogHelper.DestroyWindow(hwndDialogPage);
 			}
 
-			XmlDocument doc = new XmlDocument();
-			doc.Load(nativeLangFile);
-
-			XmlElement preferenceDialogXml = (XmlElement)doc.SelectSingleNode("/NotepadPlus/Native-Langue/Dialog/Preference");
-			PreferenceDialog = new DialogItem(preferenceDialogXml);
-			PreferenceDialog.Text = "";
-
-			// Now refine hierachy via group box positions
-			foreach (XmlElement pageXml in preferenceDialogXml.ChildNodes)
+			foreach (var pageInfo in pdh.GetPages())
 			{
-				int resourceId = 0;
-				// not nice to hardcode it here :(
-				switch (pageXml.Name)
-				{
-					case "Global":
-						resourceId = (int)NppResources.IDD_PREFERENCE_BAR_BOX;
-						break;
-
-					case "Scintillas":
-						resourceId = (int)NppResources.IDD_PREFERENCE_MARGEIN_BOX;
-						break;
-
-					case "NewDoc":
-						resourceId = (int)NppResources.IDD_PREFERENCE_NEWDOCSETTING_BOX;
-						break;
-
-					case "DefaultDir":
-						resourceId = (int)NppResources.IDD_PREFERENCE_DEFAULTDIRECTORY_BOX;
-						break;
-
-					case "RecentFilesHistory":
-						resourceId = (int)NppResources.IDD_PREFERENCE_RECENTFILESHISTORY_BOX;
-						break;
-
-					case "FileAssoc":
-						resourceId = (int)NppResources.IDD_REGEXT_BOX;
-						break;
-
-					case "LangMenu":
-						resourceId = (int)NppResources.IDD_PREFERENCE_LANG_BOX;
-						break;
-
-					case "TabSettings":
-						resourceId = (int)NppResources.IDD_PREFERENCE_TABSETTINGS_BOX;
-						break;
-
-					case "Print":
-						resourceId = (int)NppResources.IDD_PREFERENCE_PRINT_BOX;
-						break;
-
-					case "MISC":
-						resourceId = (int)NppResources.IDD_PREFERENCE_SETTING_BOX;
-						break;
-
-					case "Backup":
-						resourceId = (int)NppResources.IDD_PREFERENCE_BACKUP_BOX;
-						break;
-
-					case "AutoCompletion":
-						resourceId = (int)NppResources.IDD_PREFERENCE_AUTOCOMPLETION_BOX;
-						break;
-
-					// IDD_PREFERENCE_MULTIINSTANCE_BOX
-					// IDD_PREFERENCE_DELIMITERSETTINGS_BOX
-				}
-
-				if (resourceId == 0)
-					continue;
-
-				string title = pageXml.GetAttribute("title");
-
-				DialogItem pageItem = PreferenceDialog.EnumItems().Cast<DialogItem>().Where(i => i.Text == title).FirstOrDefault();
-				if (pageItem == null)
-					continue;
-
-				IntPtr hwndDialogPage = DialogHelper.LoadNppDialog(Handle, resourceId);
+				hwndDialogPage = DialogHelper.LoadNppDialog(Handle, (int)pageInfo.ResourceId);
 				try
 				{
+					DialogItem pageItem = DialogItem.CreateFromDialogFlat(hwndDialogPage, pdh.PageTranslation(pageInfo.InternalName));
+
 					pageItem.ReorderItemsByGroupBoxes(hwndDialogPage);
+
+					PreferenceDialog.AddItem(pageItem);
 				}
 				finally
 				{
 					DialogHelper.DestroyWindow(hwndDialogPage);
 				}
 			}
+
+			PreferenceDialog.Translate(pdh.ControlTranslations);
+			PreferenceDialog.RemoveRedundantHeadings();
 		}
 
 		protected override void WndProc(ref Message m)
@@ -190,6 +149,7 @@ namespace NppMenuSearch.Forms
 				panInfo.Visible = true;
 
 				MainMenu = new MenuItem(Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_INTERNAL_GETMENU, 0, 0));
+				NeedPreferencesDialog();
 
 				OwnerTextBox.TextChanged += OwnerTextBox_TextChanged;
 				OwnerTextBox.KeyDown 	 += OwnerTextBox_KeyDown;
@@ -401,8 +361,11 @@ namespace NppMenuSearch.Forms
 				Hide();
 				OwnerTextBox.Text = "";
 
-				if(OwnerTextBox.Focused)
+				if (OwnerTextBox.Focused)
+				{
+					Console.WriteLine("focus");
 					Win32.SetFocus(PluginBase.GetCurrentScintilla());
+				}
 
 				Main.RecalcRepeatLastCommandMenuItem();
 				OnFinished();

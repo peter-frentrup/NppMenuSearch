@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Xml;
 using System.Globalization;
 using NppPluginNET;
 using System.Drawing;
@@ -13,56 +12,30 @@ namespace NppMenuSearch
 	{
 		public uint ControlId;
 
-		public DialogItem()
+		public DialogItem(string text = "", uint id = 0)
+			: base(text)
 		{
-			ControlId = 0;
-			Text 	  = "";
+			ControlId = id;
 		}
 
-		public DialogItem(XmlElement dialog)
+		public void Translate(IDictionary<uint, string> translations)
 		{
-			Text 	  = "";
-			ControlId = 0;
+			string s;
+			if (ControlId != 0 && translations.TryGetValue(ControlId, out s))
+				Text = s;
 
-			if (dialog.HasAttribute("id"))
+			foreach (var item in this.EnumItems())
 			{
-				if (!uint.TryParse(
-						dialog.GetAttribute("id"),
-						System.Globalization.NumberStyles.Number,
-						CultureInfo.InvariantCulture.NumberFormat,
-						out ControlId))
-				{
-					int id = 0;
-					int.TryParse(
-						dialog.GetAttribute("id"),
-						System.Globalization.NumberStyles.Number,
-						CultureInfo.InvariantCulture.NumberFormat,
-						out id);
-
-					ControlId = (uint)id;
-				}
-			}
-
-			if (dialog.HasAttribute("name"))
-				Text = dialog.GetAttribute("name");
-
-			if (dialog.HasAttribute("title"))
-			{
-				Text = dialog.GetAttribute("title");
-
-				foreach (var _item in dialog.ChildNodes)
-				{
-					XmlElement item = _item as XmlElement;
-					if(item != null)
-						AddItem(new DialogItem(item));
-				}
+				var dialogItem = item as DialogItem;
+				if (dialogItem != null)
+					dialogItem.Translate(translations);
 			}
 		}
 
-		public void ReorderItemsByGroupBoxes(IntPtr hwndDialog)
+		public static DialogItem CreateFromDialogFlat(IntPtr hwndDialog, string title)
 		{
-			var groupBoxes = new Dictionary<DialogItem, Rectangle>();
-			var otherItems = new Dictionary<DialogItem, Rectangle>();
+			DialogItem dialog = new DialogItem();
+			dialog.Text = title;
 
 			Win32.EnumChildWindows(hwndDialog, descendent =>
 			{
@@ -77,17 +50,66 @@ namespace NppMenuSearch
 					if (id == 0)
 						return true;
 
-					DialogItem item = EnumItems().Cast<DialogItem>().Where(i => i.ControlId == id).FirstOrDefault();
+					string className = Win32.GetClassName(descendent);
+
+					switch (className)
+					{
+						case "Button":
+						case "Static":
+							{
+								DialogItem item = new DialogItem();
+								item.ControlId = id;
+								item.Text = Win32.GetWindowText(descendent);
+
+								dialog.AddItem(item);
+							}
+							break;
+
+						default:
+							//Console.WriteLine("skip id={0} ({1})", id, className);
+							break;
+					}
+				}
+
+				return true;
+			});
+
+			return dialog;
+		}
+
+		public void ReorderItemsByGroupBoxes(IntPtr hwndDialog)
+		{
+			var groupBoxes = new Dictionary<DialogItem, Rectangle>();
+			var otherItems = new Dictionary<DialogItem, Rectangle>();
+
+			var itToItem = EnumItems()
+				.Select(hi => hi as DialogItem)
+				.Where(di => di != null)
+				.ToDictionary(di => di.ControlId);
+
+			Win32.EnumChildWindows(hwndDialog, descendent =>
+			{
+				if (Win32.GetParent(descendent) == hwndDialog)
+				{
+					RECT winRect;
+					Win32.GetWindowRect(descendent, out winRect);
+
+					Rectangle rect = new Rectangle(winRect.Left, winRect.Top, winRect.Right - winRect.Left, winRect.Bottom - winRect.Top);
+
+					uint id = (uint)Win32.GetDlgCtrlID(descendent);
+					if (id == 0)
+						return true;
+
+					DialogItem item;
+					itToItem.TryGetValue(id, out item);
 
 					if(item == null)
 						return true;
 
-					if ((Win32.GetWindowLong(descendent, Win32.GWL_STYLE) & Win32.BS_TYPEMASK) == Win32.BS_GROUPBOX)
+					if (item.Text != "" &&
+						Win32.BS_GROUPBOX == (Win32.BS_TYPEMASK & Win32.GetWindowLong(descendent, Win32.GWL_STYLE)))
 					{
-						StringBuilder sb = new StringBuilder(256);
-						Win32.GetClassName(descendent, sb, sb.Capacity);
-
-						if (sb.ToString() == "Button")
+						if (Win32.GetClassName(descendent) == "Button")
 						{
 							groupBoxes.Add(item, rect);
 							return true;

@@ -199,6 +199,7 @@ namespace NppPluginNET
 		NOTEPADPLUS_USER_INTERNAL = (0x400/*WM_USER*/ + 0000),
 
 		NPPM_INTERNAL_GETMENU = (NOTEPADPLUS_USER_INTERNAL + 14),
+		NPPM_INTERNAL_RELOADNATIVELANG= (NOTEPADPLUS_USER_INTERNAL + 25),
 
 		//Here you can find how to use these messages : http://notepad-plus.sourceforge.net/uk/plugins-HOWTO.php 
 		NPPMSG = (0x400/*WM_USER*/ + 1000),
@@ -2265,6 +2266,18 @@ namespace NppPluginNET
 		[DllImport("user32.dll", SetLastError = true)]
 		public static extern int GetWindowTextLength(IntPtr hWnd);
 
+		public static string GetWindowText(IntPtr hWnd)
+		{
+			int len = GetWindowTextLength(hWnd);
+			if (len <= 0)
+				return "";
+
+			StringBuilder sb = new StringBuilder(len + 1);
+			GetWindowText(hWnd, sb, sb.Capacity);
+
+			return sb.ToString();
+		}
+
 		public const int SW_HIDE = 0;
 		public const int SW_SHOWNOACTIVATE = 4;
 
@@ -2569,6 +2582,14 @@ namespace NppPluginNET
 
 		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+		public static string GetClassName(IntPtr hWnd)
+		{
+			StringBuilder sb = new StringBuilder(256);
+			Win32.GetClassName(hWnd, sb, sb.Capacity);
+
+			return sb.ToString();
+		}
 
 		public const int RBS_TOOLTIPS 	  	 = 256;
 		public const int RBS_VARHEIGHT 	  	 = 512;

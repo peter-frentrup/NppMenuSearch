@@ -14,12 +14,19 @@ namespace NppMenuSearch
 		public event HideShowEventHandler BeforeHideShowToolbar;
 		public event HideShowEventHandler AfterHideShowToolbar;
 
+		public event EventHandler AfterReloadNativeLang;
+
 		protected override void WndProc(ref Message m)
 		{
 			switch (m.Msg)
 			{
 				case (int)NppMsg.NPPM_HIDETOOLBAR:
 					HandleNppmHideToolbar(ref m);
+					return;
+
+				case (int)NppMsg.NPPM_INTERNAL_RELOADNATIVELANG:
+					base.WndProc(ref m);
+					OnAfterReloadNativeLang();
 					return;
 			}
 
@@ -49,6 +56,14 @@ namespace NppMenuSearch
 
 			if (handler != null)
 				handler(show);
+		}
+
+		protected virtual void OnAfterReloadNativeLang()
+		{
+			var handler = AfterReloadNativeLang;
+
+			if (handler != null)
+				handler(this, EventArgs.Empty);
 		}
 	}
 }
