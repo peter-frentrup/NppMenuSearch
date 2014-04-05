@@ -224,7 +224,7 @@ namespace NppMenuSearch
 
 		internal static void MenuSearchFunction()
 		{
-			if (ToolbarSearchForm.Visible)
+			if (Win32.IsWindowVisible(ToolbarSearchForm.Handle))
 				ToolbarSearchForm.SelectSearchField();
 			else
 				FlyingSearchForm.SelectSearchField();
