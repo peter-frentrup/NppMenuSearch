@@ -28,7 +28,6 @@ namespace NppMenuSearch.Forms
 		public 	TextBox    OwnerTextBox;
 		public 	MenuItem   MainMenu;
 		private DialogItem PreferenceDialog;
-		private bool isPreferenceDialogValid;
 
 		public ResultsPopup()
 		{
@@ -42,7 +41,7 @@ namespace NppMenuSearch.Forms
 			PreferenceDialog = new DialogItem("Preferences");
 
 			// Lazy initializing the dialog on first search then steals the keyboard focus :( So do it here.
-			NeedPreferencesDialog();
+			InitPreferencesDialog();
 
 			Main.NppListener.AfterReloadNativeLang += new EventHandler(NppListener_AfterReloadNativeLang);
 
@@ -53,16 +52,11 @@ namespace NppMenuSearch.Forms
 
 		void NppListener_AfterReloadNativeLang(object sender, EventArgs e)
 		{
-			isPreferenceDialogValid = false;
+			InitPreferencesDialog();
 		}
 
-		protected void NeedPreferencesDialog()
+		protected void InitPreferencesDialog()
 		{
-			if (isPreferenceDialogValid)
-				return;
-
-			isPreferenceDialogValid = true;
-
 			PreferenceDialogHelper pdh = new PreferenceDialogHelper();
 			pdh.LoadCurrentLocalization();
 
@@ -150,7 +144,7 @@ namespace NppMenuSearch.Forms
 				panInfo.Visible = true;
 
 				MainMenu = new MenuItem(Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_INTERNAL_GETMENU, 0, 0));
-				NeedPreferencesDialog();
+				//NeedPreferencesDialog();
 
 				OwnerTextBox.TextChanged += OwnerTextBox_TextChanged;
 				OwnerTextBox.KeyDown 	 += OwnerTextBox_KeyDown;
@@ -251,7 +245,7 @@ namespace NppMenuSearch.Forms
 						var item = viewResults.SelectedItems[0];
 
 						e.Handled = true;
-						popupMenu.Show(viewResults, new Point(item.Bounds.Right, item.Bounds.Bottom), LeftRightAlignment.Right);
+						popupMenu.Show(viewResults, new Point(item.Bounds.Right, item.Bounds.Bottom), LeftRightAlignment.Left);
 					}
 					break;
 			}
@@ -459,18 +453,12 @@ namespace NppMenuSearch.Forms
 				if (Win32.GetDlgCtrlID(hwndChild) == controlId)
 				{
 					control = hwndChild;
-					//hwndPreferences = form;
 					return false;
 				}
 				return true;
 			};
 
 			Win32.EnumChildWindows(form, callback);
-			//if (control == IntPtr.Zero && hwndPreferences != IntPtr.Zero)
-			//{
-			//	form = hwndPreferences;
-			//	Win32.EnumChildWindows(form, callback);
-			//}
 
 			hwndControl = control;
 			return form;

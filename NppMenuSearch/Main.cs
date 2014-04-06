@@ -17,6 +17,8 @@ namespace NppMenuSearch
 		internal const string PluginName  = "NppMenuSearch";
 		static string 		  xmlFilePath = null;
 
+		internal const string RepeatPreviousCommandLabel = "Repeat previous command";
+
 		internal static NppListener NppListener { get; private set; }
 
 		internal static ToolbarSearchForm ToolbarSearchForm { get; private set; }
@@ -38,7 +40,7 @@ namespace NppMenuSearch
 
 			PluginBase.SetCommand(0, "Menu Search...",		 	   MenuSearchFunction, 	  	  new ShortcutKey(true,  false, false, Keys.M));
 			PluginBase.SetCommand(1, "Clear “Recently Used” List", ClearRecentlyUsedList, 	  new ShortcutKey(false, false, false, Keys.None));
-			PluginBase.SetCommand(2, "Repeat previous command",    RepeatLastCommandFunction, new ShortcutKey(false, false, false, Keys.None));
+			PluginBase.SetCommand(2, RepeatPreviousCommandLabel,   RepeatLastCommandFunction, new ShortcutKey(false, false, false, Keys.None));
 			PluginBase.SetCommand(3, "---", 				 	   null);
 			PluginBase.SetCommand(4, "About...", 			 	   AboutFunction, 	   	  	  new ShortcutKey(false, false, false, Keys.None));
 		}
@@ -154,7 +156,7 @@ namespace NppMenuSearch
 			if (lastUsedItem == null)
 			{
 				Win32.EnableMenuItem(menu, rlcIndex, Win32.MF_BYPOSITION | Win32.MF_DISABLED | Win32.MF_GRAYED);
-				caption = "Repeat previous command";
+				caption = Main.RepeatPreviousCommandLabel;
 			}
 			else
 			{

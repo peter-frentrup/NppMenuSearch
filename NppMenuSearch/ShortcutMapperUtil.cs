@@ -41,6 +41,18 @@ namespace NppMenuSearch
 			{
 				switch (menuItem.Parent.Text)
 				{
+					case Main.PluginName:
+						{
+							uint cmdId;
+							uint index;
+							Main.FindRepeatLastCommandMenuItem(out cmdId, out index);
+							if (menuItem.CommandId == cmdId)
+							{
+								searchText = Main.RepeatPreviousCommandLabel;
+							}
+						}
+						break;
+
 					case "TextFX Convert":
 						searchText = "C:" + searchText;
 						break;
