@@ -34,6 +34,10 @@
 			this.panInfo = new System.Windows.Forms.Panel();
 			this.label1 = new System.Windows.Forms.Label();
 			this.viewResults = new System.Windows.Forms.ListView();
+			this.popupMenu = new System.Windows.Forms.ContextMenu();
+			this.menuGotoShortcutDefinition = new System.Windows.Forms.MenuItem();
+			this.menuExecuteMenuItem = new System.Windows.Forms.MenuItem();
+			this.menuOpenDialog = new System.Windows.Forms.MenuItem();
 			this.panInfo.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -61,7 +65,7 @@
 			this.label1.Size = new System.Drawing.Size(506, 14);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Press CTRL+M again to show all results. TAB to switch groups: Recently Used ↔ Men" +
-				"u ↔ Preferences";
+    "u ↔ Preferences";
 			// 
 			// viewResults
 			// 
@@ -81,8 +85,36 @@
 			this.viewResults.UseCompatibleStateImageBehavior = false;
 			this.viewResults.View = System.Windows.Forms.View.Tile;
 			this.viewResults.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.viewResults_DrawItem);
-			this.viewResults.Click += new System.EventHandler(this.viewResults_Click);
+			this.viewResults.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewResults_MouseClick);
 			this.viewResults.Resize += new System.EventHandler(this.viewResults_Resize);
+			// 
+			// popupMenu
+			// 
+			this.popupMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuGotoShortcutDefinition,
+            this.menuExecuteMenuItem,
+            this.menuOpenDialog});
+			this.popupMenu.Popup += new System.EventHandler(this.popupMenu_Popup);
+			// 
+			// menuGotoShortcutDefinition
+			// 
+			this.menuGotoShortcutDefinition.Index = 0;
+			this.menuGotoShortcutDefinition.Text = "Change &Shortcut";
+			this.menuGotoShortcutDefinition.Click += new System.EventHandler(this.menuGotoShortcutDefinition_Click);
+			// 
+			// menuExecuteMenuItem
+			// 
+			this.menuExecuteMenuItem.DefaultItem = true;
+			this.menuExecuteMenuItem.Index = 1;
+			this.menuExecuteMenuItem.Text = "E&xecute";
+			this.menuExecuteMenuItem.Click += new System.EventHandler(this.menuExecuteMenuItem_Click);
+			// 
+			// menuOpenDialog
+			// 
+			this.menuOpenDialog.DefaultItem = true;
+			this.menuOpenDialog.Index = 2;
+			this.menuOpenDialog.Text = "&Open Dialog";
+			this.menuOpenDialog.Click += new System.EventHandler(this.menuOpenDialog_Click);
 			// 
 			// ResultsPopup
 			// 
@@ -113,5 +145,9 @@
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.ListView viewResults;
 		internal System.Windows.Forms.Timer timerIdle;
+		private System.Windows.Forms.ContextMenu popupMenu;
+		private System.Windows.Forms.MenuItem menuGotoShortcutDefinition;
+		private System.Windows.Forms.MenuItem menuExecuteMenuItem;
+		private System.Windows.Forms.MenuItem menuOpenDialog;
 	}
 }

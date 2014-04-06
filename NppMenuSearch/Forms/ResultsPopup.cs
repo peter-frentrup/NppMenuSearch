@@ -47,11 +47,12 @@ namespace NppMenuSearch.Forms
 			Main.NppListener.AfterReloadNativeLang += new EventHandler(NppListener_AfterReloadNativeLang);
 
 			Main.MakeNppOwnerOf(this);
+
+			viewResults.ContextMenu = popupMenu;
 		}
 
 		void NppListener_AfterReloadNativeLang(object sender, EventArgs e)
 		{
-			Console.WriteLine("NppListener_AfterReloadNativeLang");
 			isPreferenceDialogValid = false;
 		}
 
@@ -244,6 +245,15 @@ namespace NppMenuSearch.Forms
 					e.Handled = true;
 					ItemSelected();
 					break;
+
+				case Keys.Apps:
+					if(viewResults.SelectedItems.Count > 0){
+						var item = viewResults.SelectedItems[0];
+
+						e.Handled = true;
+						popupMenu.Show(viewResults, new Point(item.Bounds.Right, item.Bounds.Bottom), LeftRightAlignment.Right);
+					}
+					break;
 			}
 		}
 
@@ -363,7 +373,6 @@ namespace NppMenuSearch.Forms
 
 				if (OwnerTextBox.Focused)
 				{
-					Console.WriteLine("focus");
 					Win32.SetFocus(PluginBase.GetCurrentScintilla());
 				}
 
@@ -391,105 +400,6 @@ namespace NppMenuSearch.Forms
 		{
 			if (Finished != null)
 				Finished(this, new EventArgs());
-		}
-
-		static void ChangeTabPage(IntPtr hwndDialog, IntPtr hwndTabControl, int index)
-		{
-			Win32.NMHDR nmhdr = new Win32.NMHDR();
-			nmhdr.hwndFrom = hwndTabControl;
-			nmhdr.idFrom = (uint)Win32.GetDlgCtrlID(hwndTabControl);
-
-			// does not send a TCN_SELCHANGING or TCN_SELCHANGE notification code:
-			Win32.SendMessage(hwndTabControl, (NppMsg)Win32.TCM_SETCURSEL, index, 0);
-
-			nmhdr.code = unchecked((uint)Win32.TCN_SELCHANGE);
-			Win32.SendMessage(hwndDialog, Win32.WM_NOTIFY, (int)nmhdr.idFrom, ref nmhdr);
-		}
-
-		static void ChangeListboxSelection(IntPtr hwndDialog, IntPtr hwndListboxControl, int index)
-		{
-			// does not send a CBN_SELCHANGE command:
-			Win32.SendMessage(hwndListboxControl, (NppMsg)Win32.LB_SETCURSEL, index, 0);
-
-			uint wID = (uint)Win32.GetDlgCtrlID(hwndListboxControl);
-			uint wNotifyCode = Win32.CBN_SELCHANGE;
-
-			int wParam = unchecked((int)((wID & 0xFFFF) | ((wNotifyCode & 0xFFFF) << 16)));
-
-			Win32.SendMessage(hwndDialog, Win32.WM_COMMAND, wParam, hwndListboxControl);
-		}
-
-		// does not work with nested/multiple tab controls!
-		static void NavigateToChild(IntPtr hwndForm, IntPtr hwndChild)
-		{
-			if (Win32.IsWindowVisible(hwndChild))
-				return;
-
-			/* Before N++ 6.4.0, the preferences dialog used a tab-control.
-			 * Since 6.4.0, it uses a list-box for the various settings dialogs.
-			 */
-
-			IntPtr hwndTab = IntPtr.Zero;
-			IntPtr hwndTabList = IntPtr.Zero;
-			Win32.EnumChildWindows(hwndForm, hwndFormChild =>
-			{
-				if (!Win32.IsWindowVisible(hwndFormChild))
-					return true;
-
-				StringBuilder sb = new StringBuilder(256);
-				Win32.GetClassName(hwndFormChild, sb, sb.Capacity);
-
-				var classname = sb.ToString(); 
-				switch(sb.ToString()) {
-					case "SysTabControl32":
-						hwndTab = hwndFormChild;
-						return false;
-
-					case "ListBox":
-						if (Win32.GetWindowLong(hwndFormChild, Win32.GWL_ID) == (int)NppResources.IDC_LIST_DLGTITLE)
-						{
-							hwndTabList = hwndFormChild;
-							return false;
-						}
-						break;
-				}
-
-				return true;
-			});
-
-			if (hwndTabList != IntPtr.Zero)
-			{
-				int count = (int)Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_GETCOUNT, 0, 0);
-				int sel = (int)Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_GETCURSEL, 0, 0);
-
-				Console.WriteLine("navigate via listbox, count: {0}, sel: {1}", count, sel);
-
-				for (int i = 0; i < count; ++i)
-				{
-					ChangeListboxSelection(hwndForm, hwndTabList, i);
-
-					if (Win32.IsWindowVisible(hwndChild))
-						return;
-				}
-
-				Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_SETCURSEL, sel, 0);
-			}
-
-			if (hwndTab != IntPtr.Zero)
-			{
-				int count = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETITEMCOUNT, 0, 0);
-				int sel = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETCURSEL, 0, 0);
-
-				for (int i = 0; i < count; ++i)
-				{
-					ChangeTabPage(hwndForm, hwndTab, i);
-
-					if (Win32.IsWindowVisible(hwndChild))
-						return;
-				}
-
-				Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_SETCURSEL, sel, 0);
-			}
 		}
 
 		public void Highlight(IntPtr hwnd)
@@ -531,12 +441,13 @@ namespace NppMenuSearch.Forms
 				return hwndPreferences;
 
 			IntPtr hwndClosebutton;
-			return FindPreferencesDialog(6001, out hwndClosebutton);
+			hwndPreferences = FindDialogByChildControlId(6001, out hwndClosebutton);
+			return hwndPreferences;
 		}
 
-		public static IntPtr FindPreferencesDialog(uint controlId, out IntPtr hwndControl)
+		public static IntPtr FindDialogByChildControlId(uint controlId, out IntPtr hwndControl)
 		{
-			IntPtr form = Win32.GetForegroundWindow();
+			IntPtr form = Win32.GetActiveWindow();//Win32.GetForegroundWindow();
 
 			hwndControl = IntPtr.Zero;
 			if (controlId == 0)
@@ -547,22 +458,22 @@ namespace NppMenuSearch.Forms
 			{
 				if (Win32.GetDlgCtrlID(hwndChild) == controlId)
 				{
-					control 		= hwndChild;
-					hwndPreferences = form;
+					control = hwndChild;
+					//hwndPreferences = form;
 					return false;
 				}
 				return true;
 			};
 
 			Win32.EnumChildWindows(form, callback);
-			if (control == IntPtr.Zero && hwndPreferences != IntPtr.Zero)
-			{
-				form = hwndPreferences;
-				Win32.EnumChildWindows(form, callback);
-			}
+			//if (control == IntPtr.Zero && hwndPreferences != IntPtr.Zero)
+			//{
+			//	form = hwndPreferences;
+			//	Win32.EnumChildWindows(form, callback);
+			//}
 
 			hwndControl = control;
-			return hwndPreferences;
+			return form;
 		}
 
 		public void OpenPreferences(uint destinationControlId)
@@ -580,11 +491,11 @@ namespace NppMenuSearch.Forms
 				((Timer)timer).Tick -= tick;
 
 				IntPtr hwndDestinationControl;
-				IntPtr hwndPreferences = FindPreferencesDialog(destinationControlId, out hwndDestinationControl);
+				IntPtr hwndPreferences = FindDialogByChildControlId(destinationControlId, out hwndDestinationControl);
 
 				if (hwndDestinationControl != IntPtr.Zero)
 				{
-					NavigateToChild(hwndPreferences, hwndDestinationControl);
+					DialogHelper.NavigateToChild(hwndPreferences, hwndDestinationControl);
 					if (Win32.IsWindowVisible(hwndDestinationControl))
 					{
 						Win32.SetFocus(hwndDestinationControl);
@@ -602,11 +513,6 @@ namespace NppMenuSearch.Forms
 		private void viewResults_Resize(object sender, EventArgs e)
 		{
 			viewResults.TileSize = new Size(viewResults.ClientSize.Width - 20, viewResults.TileSize.Height);
-		}
-
-		private void viewResults_Click(object sender, EventArgs e)
-		{
-			ItemSelected();
 		}
 
 		private void viewResults_DrawItem(object sender, DrawListViewItemEventArgs e)
@@ -652,6 +558,98 @@ namespace NppMenuSearch.Forms
 					textBounds.Location,
 					format);
 			}
+		}
+
+		private void viewResults_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				ItemSelected();
+				return;
+			}
+
+			//OwnerTextBox.Focus();
+		}
+
+		private void menuGotoShortcutDefinition_Click(object sender, EventArgs e)
+		{
+			if (viewResults.SelectedItems.Count == 0)
+				return;
+
+			MenuItem menuItem = viewResults.SelectedItems[0].Tag as MenuItem;
+			if (menuItem != null)
+			{
+				OpenShortcutMapper(menuItem);
+
+				OnFinished();
+				return;
+			}
+
+			Win32.MessageBeep(Win32.BeepType.MB_ICONERROR);
+		}
+
+		private void OpenShortcutMapper(MenuItem menuItem)
+		{
+			Console.WriteLine("search shortcut for {0} ({1})", menuItem.CommandId, menuItem);
+
+			Hide();
+			OwnerTextBox.Text = "";
+
+			EventHandler tick = null;
+			tick = (timer, ev) =>
+			{
+				((Timer)timer).Stop();
+				((Timer)timer).Tick -= tick;
+
+				IntPtr hwndGrid;
+				IntPtr hwndShortcutMapper = FindDialogByChildControlId(ShortcutMapperUtil.IDD_BABYGRID_ID1, out hwndGrid);
+
+				if (hwndShortcutMapper != IntPtr.Zero && hwndGrid != IntPtr.Zero)
+				{
+					if (ShortcutMapperUtil.GotoGridItem(hwndShortcutMapper, hwndGrid, menuItem))
+						return;
+				}
+
+				Win32.MessageBeep(Win32.BeepType.MB_ICONERROR);
+			};
+
+			timerIdle.Tick += tick;
+
+			timerIdle.Start();
+			Win32.SendMessage(PluginBase.nppData._nppHandle, (NppMsg)Win32.WM_COMMAND, (int)NppMenuCmd.IDM_SETTING_SHORTCUT_MAPPER, 0);
+		}
+
+		private void popupMenu_Popup(object sender, EventArgs e)
+		{
+			menuGotoShortcutDefinition.Enabled = false;
+			menuOpenDialog.Visible = false;
+
+			if (viewResults.SelectedItems.Count > 0)
+			{
+				MenuItem menuItem = viewResults.SelectedItems[0].Tag as MenuItem;
+				if (menuItem != null)
+				{
+					menuGotoShortcutDefinition.Enabled = true;
+				}
+
+				DialogItem dialogItem = viewResults.SelectedItems[0].Tag as DialogItem;
+				if (dialogItem != null)
+				{
+					menuOpenDialog.Visible = true;
+				}
+			}
+
+			menuExecuteMenuItem.Visible = !menuOpenDialog.Visible;
+		}
+
+		private void menuExecuteMenuItem_Click(object sender, EventArgs e)
+		{
+			ItemSelected();
+		}
+
+		private void menuOpenDialog_Click(object sender, EventArgs e)
+		{
+			ItemSelected();
 		}
 	}
 }

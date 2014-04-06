@@ -629,7 +629,19 @@ namespace NppPluginNET
 
 	public enum NppMenuCmd : uint
 	{
-		IDM    = 40000,
+		ID_MACRO = 20000,
+		ID_MACRO_LIMIT = 20200,
+		
+		ID_USER_CMD = 21000,
+		ID_USER_CMD_LIMIT =21200,
+
+		ID_PLUGINS_CMD = 22000,
+		ID_PLUGINS_CMD_LIMIT = 22500,
+		ID_PLUGINS_CMD_DYNAMIC = 23000,
+		ID_PLUGINS_CMD_DYNAMIC_LIMIT = 24999,
+
+
+		IDM = 40000,
 
 		IDM_FILE    = (IDM + 1000),
 			IDM_FILE_NEW                     = (IDM_FILE + 1),
@@ -1057,7 +1069,7 @@ namespace NppPluginNET
 
 		IDD_PREFERENCE_BACKUP_BOX = 6800,
 
-		IDD_PREFERENCE_AUTOCOMPLETION_BOX = 6850
+		IDD_PREFERENCE_AUTOCOMPLETION_BOX = 6850,
 	};
 
 	[Flags]
@@ -1105,6 +1117,24 @@ namespace NppPluginNET
 		public IntPtr hToolbarBmp;
 		public IntPtr hToolbarIcon;
 	}
+
+
+	public enum BabyGridMsg : uint
+	{
+		BABYGRID_USER = (0x400/*WM_USER*/ + 7000),
+
+		BGM_GETCELLDATA = BABYGRID_USER + 4,
+		BGM_GETROWS = BABYGRID_USER + 23,
+		BGM_GETROW = BABYGRID_USER + 27
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct _BGCELL
+	{
+		public int Row;
+		public int Column;
+	};
+
 	#endregion
 
 	#region " Scintilla "
@@ -2124,6 +2154,11 @@ namespace NppPluginNET
 		public static extern IntPtr SendMessage(IntPtr hWnd, NppMsg Msg, IntPtr wParam, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
 
 		[DllImport("user32")]
+		public static extern IntPtr SendMessage(IntPtr hWnd, BabyGridMsg Msg, int wParam, int lParam);
+		[DllImport("user32")]
+		public static extern IntPtr SendMessage(IntPtr hWnd, BabyGridMsg Msg, ref _BGCELL wParam, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder lParam);
+
+		[DllImport("user32")]
 		public static extern IntPtr SendMessage(IntPtr hWnd, SciMsg Msg, int wParam, IntPtr lParam);
 		[DllImport("user32")]
 		public static extern IntPtr SendMessage(IntPtr hWnd, SciMsg Msg, int wParam, string lParam);
@@ -2245,8 +2280,11 @@ namespace NppPluginNET
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool IsWindowVisible(IntPtr hWnd);
 
+		//[DllImport("user32.dll")]
+		//public static extern IntPtr GetForegroundWindow();
+
 		[DllImport("user32.dll")]
-		public static extern IntPtr GetForegroundWindow();
+		public static extern IntPtr GetActiveWindow();
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr GetFocus();
@@ -2260,10 +2298,10 @@ namespace NppPluginNET
 		[DllImport("user32.dll")]
 		public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
-		[DllImport("user32.dll", SetLastError = true)]
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
-		[DllImport("user32.dll", SetLastError = true)]
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		public static extern int GetWindowTextLength(IntPtr hWnd);
 
 		public static string GetWindowText(IntPtr hWnd)
@@ -2277,6 +2315,9 @@ namespace NppPluginNET
 
 			return sb.ToString();
 		}
+
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		public static extern bool SetWindowText(IntPtr hwnd, String lpString);
 
 		public const int SW_HIDE = 0;
 		public const int SW_SHOWNOACTIVATE = 4;

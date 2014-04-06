@@ -45,5 +45,104 @@ namespace NppMenuSearch
 		static extern IntPtr CreateDialogParam(IntPtr hInstance, IntPtr templateId,
 		   IntPtr hwndParent, DLGPROC lpDialogFunc, IntPtr dwInitParam);
 
+
+
+
+		public static void ChangeTabPage(IntPtr hwndDialog, IntPtr hwndTabControl, int index)
+		{
+			Win32.NMHDR nmhdr = new Win32.NMHDR();
+			nmhdr.hwndFrom = hwndTabControl;
+			nmhdr.idFrom = (uint)Win32.GetDlgCtrlID(hwndTabControl);
+
+			// does not send a TCN_SELCHANGING or TCN_SELCHANGE notification code:
+			Win32.SendMessage(hwndTabControl, (NppMsg)Win32.TCM_SETCURSEL, index, 0);
+
+			nmhdr.code = unchecked((uint)Win32.TCN_SELCHANGE);
+			Win32.SendMessage(hwndDialog, Win32.WM_NOTIFY, (int)nmhdr.idFrom, ref nmhdr);
+		}
+
+		public static void ChangeListboxSelection(IntPtr hwndDialog, IntPtr hwndListboxControl, int index)
+		{
+			// does not send a CBN_SELCHANGE command:
+			Win32.SendMessage(hwndListboxControl, (NppMsg)Win32.LB_SETCURSEL, index, 0);
+
+			uint wID = (uint)Win32.GetDlgCtrlID(hwndListboxControl);
+			uint wNotifyCode = Win32.CBN_SELCHANGE;
+
+			int wParam = unchecked((int)((wID & 0xFFFF) | ((wNotifyCode & 0xFFFF) << 16)));
+
+			Win32.SendMessage(hwndDialog, Win32.WM_COMMAND, wParam, hwndListboxControl);
+		}
+
+		// does not work with nested/multiple tab controls!
+		public static void NavigateToChild(IntPtr hwndForm, IntPtr hwndChild)
+		{
+			if (Win32.IsWindowVisible(hwndChild))
+				return;
+
+			/* Before N++ 6.4.0, the preferences dialog used a tab-control.
+			 * Since 6.4.0, it uses a list-box for the various settings dialogs.
+			 */
+
+			IntPtr hwndTab = IntPtr.Zero;
+			IntPtr hwndTabList = IntPtr.Zero;
+			Win32.EnumChildWindows(hwndForm, hwndFormChild =>
+			{
+				if (!Win32.IsWindowVisible(hwndFormChild))
+					return true;
+
+				switch (Win32.GetClassName(hwndFormChild))
+				{
+					case "SysTabControl32":
+						hwndTab = hwndFormChild;
+						return false;
+
+					case "ListBox":
+						if (Win32.GetWindowLong(hwndFormChild, Win32.GWL_ID) == (int)NppResources.IDC_LIST_DLGTITLE)
+						{
+							hwndTabList = hwndFormChild;
+							return false;
+						}
+						break;
+				}
+
+				return true;
+			});
+
+			if (hwndTabList != IntPtr.Zero)
+			{
+				int count = (int)Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_GETCOUNT, 0, 0);
+				int sel = (int)Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_GETCURSEL, 0, 0);
+
+				Console.WriteLine("navigate via listbox, count: {0}, sel: {1}", count, sel);
+
+				for (int i = 0; i < count; ++i)
+				{
+					ChangeListboxSelection(hwndForm, hwndTabList, i);
+
+					if (Win32.IsWindowVisible(hwndChild))
+						return;
+				}
+
+				Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_SETCURSEL, sel, 0);
+			}
+
+			if (hwndTab != IntPtr.Zero)
+			{
+				int count = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETITEMCOUNT, 0, 0);
+				int sel = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETCURSEL, 0, 0);
+
+				for (int i = 0; i < count; ++i)
+				{
+					ChangeTabPage(hwndForm, hwndTab, i);
+
+					if (Win32.IsWindowVisible(hwndChild))
+						return;
+				}
+
+				Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_SETCURSEL, sel, 0);
+			}
+		}
+
 	}
 }
