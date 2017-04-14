@@ -54,7 +54,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Search Menu & Preferences (Ctrl+M)";
             this.TopMost = true;
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FlyingSearchForm_FormClosing);
             this.VisibleChanged += new System.EventHandler(this.FlyingSearchForm_VisibleChanged);
             this.ResumeLayout(false);
             this.PerformLayout();

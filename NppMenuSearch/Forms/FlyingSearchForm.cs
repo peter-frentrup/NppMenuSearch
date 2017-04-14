@@ -52,13 +52,7 @@ namespace NppMenuSearch.Forms
                 ResultsPopup.Show();
             }
         }
-
-        private void FlyingSearchForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            e.Cancel = true;
-            Hide();
-        }
-
+        
         public void SelectSearchField()
         {
             if (!Visible)

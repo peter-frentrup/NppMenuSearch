@@ -22,7 +22,7 @@ namespace NppMenuSearch
         internal static NppListener NppListener { get; private set; }
 
         internal static ToolbarSearchForm ToolbarSearchForm { get; private set; }
-        internal static FlyingSearchForm FlyingSearchForm { get; private set; }
+        private static FlyingSearchForm FlyingSearchForm { get; set; }
 
         internal static void CommandMenuInit()
         {
@@ -178,12 +178,9 @@ namespace NppMenuSearch
             NppListener = new NppListener();
 
             ToolbarSearchForm = new ToolbarSearchForm();
-            FlyingSearchForm = new FlyingSearchForm();
+            FlyingSearchForm = null;
 
             NppListener.AssignHandle(PluginBase.nppData._nppHandle);
-
-            MakeNppOwnerOf(FlyingSearchForm);
-            FlyingSearchForm.ResultsPopup.Finished += FlyingSearchForm_ResultsPopup_Finished;
 
             ToolbarSearchForm.CheckToolbarVisiblity();
             RecalcRepeatLastCommandMenuItem();
@@ -191,9 +188,26 @@ namespace NppMenuSearch
             Win32.SendMessage(PluginBase.GetCurrentScintilla(), SciMsg.SCI_GRABFOCUS, 0, 0);
         }
 
+        private static FlyingSearchForm NeedFlyingSearchForm()
+        {
+            if (FlyingSearchForm == null)
+            {
+                FlyingSearchForm = new FlyingSearchForm();
+                FlyingSearchForm.Disposed += FlyingSearchForm_Disposed;
+                MakeNppOwnerOf(FlyingSearchForm);
+                FlyingSearchForm.ResultsPopup.Finished += FlyingSearchForm_ResultsPopup_Finished;
+            }
+            return FlyingSearchForm;
+        }
+
+        private static void FlyingSearchForm_Disposed(object sender, EventArgs e)
+        {
+            FlyingSearchForm = null;
+        }
+
         static void FlyingSearchForm_ResultsPopup_Finished(object sender, EventArgs e)
         {
-            FlyingSearchForm.Hide();
+            FlyingSearchForm?.Hide();
         }
 
         internal static void PluginCleanUp()
@@ -230,7 +244,7 @@ namespace NppMenuSearch
             if (Win32.IsWindowVisible(ToolbarSearchForm.Handle))
                 ToolbarSearchForm.SelectSearchField();
             else
-                FlyingSearchForm.SelectSearchField();
+                NeedFlyingSearchForm().SelectSearchField();
         }
 
         internal static void ClearRecentlyUsedList()
