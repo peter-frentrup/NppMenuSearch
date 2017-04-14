@@ -1,129 +1,124 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using NppPluginNET;
 
 namespace NppMenuSearch.Forms
 {
-	public partial class FlyingSearchForm : Form
-	{
-		public ResultsPopup ResultsPopup { get; private set; }
+    public partial class FlyingSearchForm : Form
+    {
+        public ResultsPopup ResultsPopup { get; private set; }
 
-		public FlyingSearchForm()
-		{
-			InitializeComponent();
+        public FlyingSearchForm()
+        {
+            InitializeComponent();
 
-			ResultsPopup = new ResultsPopup();
-			ResultsPopup.OwnerTextBox = txtSearch;
-		}
+            ResultsPopup = new ResultsPopup();
+            ResultsPopup.OwnerTextBox = txtSearch;
+        }
 
-		private void FlyingSearchForm_VisibleChanged(object sender, EventArgs e)
-		{
-			if (!Visible)
-			{
-				txtSearch.Text = "";
-				ResultsPopup.Hide();
-			}
-		}
+        private void FlyingSearchForm_VisibleChanged(object sender, EventArgs e)
+        {
+            if (!Visible)
+            {
+                txtSearch.Text = "";
+                ResultsPopup.Hide();
+            }
+        }
 
-		private void txtSearch_TextChanged(object sender, EventArgs e)
-		{
-			if (txtSearch.TextLength == 0)
-			{
-				ResultsPopup.Hide();
-				return;
-			}
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            if (txtSearch.TextLength == 0)
+            {
+                ResultsPopup.Hide();
+                return;
+            }
 
-			if (txtSearch.TextLength > 0 && !ResultsPopup.Visible)
-			{
-				Point pt = Location;
-				pt.Y += Height;
-				pt.X += Width - ResultsPopup.Width;
-				ResultsPopup.Location = pt;
+            if (txtSearch.TextLength > 0 && !ResultsPopup.Visible)
+            {
+                Point pt = Location;
+                pt.Y += Height;
+                pt.X += Width - ResultsPopup.Width;
+                ResultsPopup.Location = pt;
 
-				EventHandler activated = null;
-				activated = (object _sender, EventArgs _e) =>
-				{
-					Win32.SetFocus(txtSearch.Handle);
+                EventHandler activated = null;
+                activated = (object _sender, EventArgs _e) =>
+                {
+                    Win32.SetFocus(txtSearch.Handle);
 
-					ResultsPopup.Activated -= activated;
-				};
-				ResultsPopup.Activated += activated;
-				ResultsPopup.Show();
-			}
-		}
+                    ResultsPopup.Activated -= activated;
+                };
+                ResultsPopup.Activated += activated;
+                ResultsPopup.Show();
+            }
+        }
 
-		private void FlyingSearchForm_FormClosing(object sender, FormClosingEventArgs e)
-		{
-			e.Cancel = true;
-			Hide();
-		}
+        private void FlyingSearchForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            Hide();
+        }
 
-		public void SelectSearchField()
-		{
-			if (!Visible)
-			{
-				IntPtr hwndMain = Main.GetNppMainWindow();
-				RECT rect;
-				Win32.GetClientRect(hwndMain, out rect);
+        public void SelectSearchField()
+        {
+            if (!Visible)
+            {
+                IntPtr hwndMain = Main.GetNppMainWindow();
+                RECT rect;
+                Win32.GetClientRect(hwndMain, out rect);
 
-				Point pt = new Point(rect.Right - Width, rect.Top);
-				Win32.ClientToScreen(hwndMain, ref pt);
+                Point pt = new Point(rect.Right - Width, rect.Top);
+                Win32.ClientToScreen(hwndMain, ref pt);
 
-				Location = pt;
-				Show();
-			}
+                Location = pt;
+                Show();
+            }
 
-			if (ResultsPopup.Visible)
-			{
-				ResultsPopup.ShowMoreResults();
-			}
-			else
-			{
-				txtSearch.SelectAll();
-				txtSearch.Focus();
-				txtSearch_TextChanged(null, null);
-			}
-		}
+            if (ResultsPopup.Visible)
+            {
+                ResultsPopup.ShowMoreResults();
+            }
+            else
+            {
+                txtSearch.SelectAll();
+                txtSearch.Focus();
+                txtSearch_TextChanged(null, null);
+            }
+        }
 
-		private bool suppressKeyPress;
+        private bool suppressKeyPress;
 
-		private void txtSearch_KeyDown(object sender, KeyEventArgs e)
-		{
-			suppressKeyPress = false;
+        private void txtSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            suppressKeyPress = false;
 
-			switch (e.KeyCode)
-			{
-				case Keys.Escape:
-					e.Handled = true;
-					suppressKeyPress = true;
-					//txtSearch.Text 	 = "";
-					ResultsPopup.Hide();
-					ResultsPopup.OnFinished();
-					Win32.SetFocus(PluginBase.GetCurrentScintilla());
-					break;
+            switch (e.KeyCode)
+            {
+                case Keys.Escape:
+                    e.Handled = true;
+                    suppressKeyPress = true;
+                    //txtSearch.Text 	 = "";
+                    ResultsPopup.Hide();
+                    ResultsPopup.OnFinished();
+                    Win32.SetFocus(PluginBase.GetCurrentScintilla());
+                    break;
 
-				case Keys.Enter:
-				case Keys.Tab:
-					e.Handled = true;
-					suppressKeyPress = true;
-					break;
-			}
-		}
+                case Keys.Enter:
+                case Keys.Tab:
+                    e.Handled = true;
+                    suppressKeyPress = true;
+                    break;
+            }
+        }
 
-		private void txtSearch_KeyPress(object sender, KeyPressEventArgs e)
-		{
-			if (suppressKeyPress)
-			{
-				suppressKeyPress = false;
-				e.Handled = true;
-			}
-		}
+        private void txtSearch_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (suppressKeyPress)
+            {
+                suppressKeyPress = false;
+                e.Handled = true;
+            }
+        }
 
-	}
+    }
 }
