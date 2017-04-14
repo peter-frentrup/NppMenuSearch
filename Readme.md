@@ -12,6 +12,7 @@ This plugin is available under the *GNU Library General Public License (LGPL 2.0
 Installation
 ------------
 
+Binaries are available on [Sourceforge](https://sourceforge.net/projects/nppmenusearch/files/).
 Put `NppMenuSearch.dll` into the `plugins\` subfolder of the Notepad++ installation folder.
 
 Usage
