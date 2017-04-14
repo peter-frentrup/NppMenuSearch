@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using NppPluginNET;
-using NppPlugin.DllExport;
+using RGiesecke.DllExport;
 
 namespace NppMenuSearch
 {
-	class UnmanagedExports
+    class UnmanagedExports
 	{
 		[DllExport(CallingConvention=CallingConvention.Cdecl)]
 		static bool isUnicode()
