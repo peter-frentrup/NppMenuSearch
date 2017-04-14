@@ -7,6 +7,8 @@ This plugin adds a text field to the toolbar for searching menu items and prefer
 
 The plugin is inspired by a similar Visual Studio 2012 functionality. It is written in C# using the approach described in [http://sourceforge.net/projects/notepad-plus/forums/forum/482781/topic/4404278](http://sourceforge.net/projects/notepad-plus/forums/forum/482781/topic/4404278).
 
+This plugin is available under the *GNU Library General Public License (LGPL 2.0)*, see [LICENSE.md](LICENSE.md).
+
 Installation
 ------------
 
