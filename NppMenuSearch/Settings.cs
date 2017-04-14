@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Xml;
 
 namespace NppMenuSearch
@@ -36,6 +37,18 @@ namespace NppMenuSearch
                         continue;
                     }
                 }
+
+                Main.PreferredToolbarWidth = 0;
+                XmlElement xmlToolbarWidth = doc.SelectNodes("/Settings/PreferredToolbarWidth")
+                    .OfType<XmlElement>()
+                    .FirstOrDefault();
+                if(xmlToolbarWidth != null && xmlToolbarWidth.HasAttribute("value"))
+                {
+                    string widthString = xmlToolbarWidth.GetAttribute("value");
+                    int width;
+                    if (int.TryParse(widthString, out width) && width > 0)
+                        Main.PreferredToolbarWidth = width;
+                }
             }
             catch (Exception ex)
             {
@@ -57,13 +70,13 @@ namespace NppMenuSearch
                 foreach (uint id in Main.RecentlyUsedCommands)
                 {
                     var xmlItem = doc.CreateElement("Item");
-                    var xmlItemId = doc.CreateAttribute("id");
-
-                    xmlItemId.Value = ((int)id).ToString();
-
-                    xmlItem.Attributes.Append(xmlItemId);
+                    xmlItem.SetAttribute("id", ((int)id).ToString());
                     xmlRecentlyUsedItems.AppendChild(xmlItem);
                 }
+
+                var xmlPreferredToolbarWidth = doc.CreateElement("PreferredToolbarWidth");
+                xmlPreferredToolbarWidth.SetAttribute("value", Main.PreferredToolbarWidth.ToString());
+                xmlRoot.AppendChild(xmlPreferredToolbarWidth);
 
                 doc.Save(filename);
             }

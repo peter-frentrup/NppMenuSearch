@@ -2658,6 +2658,8 @@ namespace NppPluginNET
         public const int RBBIM_BACKGROUND = 128;
         public const int RBBIM_ID = 256;
         public const int RBBIM_IDEALSIZE = 512;
+        public const int RBBIM_LPARAM = 1024;
+        public const int RBBIM_HEADERSIZE = 2048;
         public const int RB_INSERTBANDA = 0x400/*WM_USER*/+ 1;
         public const int RB_INSERTBANDW = 0x400/*WM_USER*/+ 10;
         public const int RB_DELETEBAND = 0x400/*WM_USER*/+ 2;
@@ -2694,6 +2696,7 @@ namespace NppPluginNET
         public const int RB_MOVEBAND = 0x400/*WM_USER*/+ 39;
         public const int RB_GETBANDMARGINS = 0x400/*WM_USER*/+ 40;
         public const int RB_PUSHCHEVRON = 0x400/*WM_USER*/+ 43;
+        public const int RB_SETBANDWIDTH = 0x400/*WM_USER*/+ 44;
 
         [StructLayout(LayoutKind.Sequential)]
         public struct REBARBANDINFO

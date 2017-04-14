@@ -13,6 +13,7 @@ namespace NppMenuSearch
     class Main
     {
         public static LinkedList<uint> RecentlyUsedCommands = new LinkedList<uint>();
+        public static int PreferredToolbarWidth = 0;
 
         internal const string PluginName = "NppMenuSearch";
         static string xmlFilePath = null;

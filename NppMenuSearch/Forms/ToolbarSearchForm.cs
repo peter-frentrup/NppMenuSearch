@@ -178,39 +178,30 @@ namespace NppMenuSearch.Forms
                         Handle,
                         Win32.GWL_STYLE,
                         Win32.WS_CHILD | Win32.GetWindowLong(Handle, Win32.GWL_STYLE));
-
                 }
 
                 Win32.REBARBANDINFO band = new Win32.REBARBANDINFO();
                 band.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(band);
-
+                
                 bool show = false; //Win32.IsWindowVisible(hwndToolbar);
                 int toolbarIndex = GetRebarBandIndexByChildHandle(hwndRebar, hwndToolbar);
                 if (toolbarIndex >= 0)
                 {
                     band.fMask = Win32.RBBIM_STYLE;
-
                     Win32.SendMessage(hwndRebar, Win32.RB_GETBANDINFOW, toolbarIndex, ref band);
-
                     show = (band.fStyle & Win32.RBBS_HIDDEN) == 0;
                 }
 
                 if (show == Visible)
-                {
                     return;
-                }
 
+                int oldPreferredWidth = Main.PreferredToolbarWidth;
                 int searchBarIndex = GetRebarBandIndexByChildHandle(hwndRebar, Handle);
                 if (searchBarIndex >= 0)
                 {
                     Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_SHOWBAND, searchBarIndex, show ? 1 : 0);
-
-                    if (searchBarIndex > 0 && show)
-                    {
-                        Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MINIMIZEBAND, searchBarIndex - 1, 0);
-                        Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MAXIMIZEBAND, searchBarIndex - 1, 1);
-                    }
-
+                    Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MINIMIZEBAND, searchBarIndex, 0);
+                    Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MAXIMIZEBAND, searchBarIndex, 1);
                     return;
                 }
 
@@ -220,8 +211,8 @@ namespace NppMenuSearch.Forms
                 band.fStyle = Win32.RBBS_GRIPPERALWAYS;
                 band.hwndChild = Handle;
                 band.cx = Size.Width;
-                band.cxIdeal = Size.Width;
                 band.cxMinChild = 120;
+                band.cxIdeal = 0;
                 band.cyMinChild = frmSearch.Height;
                 band.cyMaxChild = frmSearch.Height;
                 band.cyChild = 0;
@@ -232,12 +223,23 @@ namespace NppMenuSearch.Forms
                 if (!show)
                     band.fStyle |= Win32.RBBS_HIDDEN;
 
-                int count = (int)Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_GETBANDCOUNT, 0, 0);
-                Win32.SendMessage(hwndRebar, Win32.RB_INSERTBANDW, count, ref band);
-                if (count > 0 && show)
+                searchBarIndex = (int)Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_GETBANDCOUNT, 0, 0);
+                Win32.SendMessage(hwndRebar, Win32.RB_INSERTBANDW, searchBarIndex, ref band);
+
+                if (searchBarIndex > 0 && show)
                 {
-                    Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MINIMIZEBAND, count - 1, 0);
-                    Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MAXIMIZEBAND, count - 1, 1);
+                    //Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MINIMIZEBAND, searchBarIndex - 1, 0);
+                    //Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MAXIMIZEBAND, searchBarIndex - 1, 1);
+
+                    band.fMask = Win32.RBBIM_SIZE | Win32.RBBIM_IDEALSIZE | Win32.RBBIM_CHILDSIZE | Win32.RBBIM_HEADERSIZE;
+                    Win32.SendMessage(hwndRebar, Win32.RB_GETBANDINFOW, searchBarIndex, ref band);
+
+                    // needs to be > cxMinChild, otherwise RB_MAXIMIZEBAND will maximize to fill width
+                    band.cxIdeal = Math.Max(oldPreferredWidth - (Width - band.cxMinChild), band.cxMinChild + 1); 
+                    Win32.SendMessage(hwndRebar, Win32.RB_SETBANDINFOW, searchBarIndex, ref band);
+
+                    Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MINIMIZEBAND, searchBarIndex, 0);
+                    Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MAXIMIZEBAND, searchBarIndex, 1);
                 }
 
                 Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETCUEBANNER, 0, "Search Menu & Preferences (Ctrl+M)");
@@ -355,6 +357,12 @@ namespace NppMenuSearch.Forms
         {
             txtSearch.Text = "";
             Win32.SetFocus(PluginBase.GetCurrentScintilla());
+        }
+
+        private void ToolbarSearchForm_SizeChanged(object sender, EventArgs e)
+        {
+            if (Visible)
+                Main.PreferredToolbarWidth = Width;
         }
     }
 }
