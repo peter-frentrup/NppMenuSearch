@@ -7,7 +7,7 @@ environment:
     - PlatformToolset: v140_xp
 
 platform:
-    #- x64
+    - x64
     - x86
 
 configuration:
@@ -34,7 +34,7 @@ after_build:
     - ps: >-
 
         if ($env:PLATFORM -eq "x64" -and $env:CONFIGURATION -eq "Release") {
-            #Push-AppveyorArtifact "bin\$env:PLATFORM\$env:CONFIGURATION\" -FileName NppMenuSearch.dll
+            Push-AppveyorArtifact "bin\$env:PLATFORM\$env:CONFIGURATION\NppMenuSearch.dll" -FileName NppMenuSearch.dll
         }
 
         if ($env:PLATFORM -eq "x86" -and $env:CONFIGURATION -eq "Release") {

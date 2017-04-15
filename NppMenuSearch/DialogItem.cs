@@ -105,7 +105,7 @@ namespace NppMenuSearch
                         return true;
 
                     if (item.Text != "" &&
-                        Win32.BS_GROUPBOX == (Win32.BS_TYPEMASK & Win32.GetWindowLong(descendent, Win32.GWL_STYLE)))
+                        Win32.BS_GROUPBOX == (Win32.BS_TYPEMASK & (int)Win32.GetWindowLongPtr(descendent, Win32.GWL_STYLE)))
                     {
                         if (Win32.GetClassName(descendent) == "Button")
                         {

@@ -174,10 +174,10 @@ namespace NppMenuSearch.Forms
                 {
                     InitToolbar();
 
-                    Win32.SetWindowLong(
+                    Win32.SetWindowLongPtr(
                         Handle,
                         Win32.GWL_STYLE,
-                        Win32.WS_CHILD | Win32.GetWindowLong(Handle, Win32.GWL_STYLE));
+                        (IntPtr)(Win32.WS_CHILD | (int)Win32.GetWindowLongPtr(Handle, Win32.GWL_STYLE)));
                 }
 
                 Win32.REBARBANDINFO band = new Win32.REBARBANDINFO();
