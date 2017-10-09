@@ -2324,10 +2324,12 @@ namespace NppPluginNET
 
         [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-
+        
+        public const int SWP_NOSIZE = 0x0001;
+        public const int SWP_NOMOVE = 0x0002;
         public const uint SWP_NOACTIVATE = 0x0010;
-        public const int HWND_TOPMOST = -1;
+        public static IntPtr HWND_TOP = (IntPtr)0;
+        public static IntPtr HWND_TOPMOST = (IntPtr)(-1);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);

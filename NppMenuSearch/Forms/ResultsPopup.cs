@@ -155,6 +155,24 @@ namespace NppMenuSearch.Forms
             }
         }
 
+        protected override void SetVisibleCore(bool value)
+        {
+            base.SetVisibleCore(value);
+            if (value)
+            {
+                /* fix for Issue 9: Results window behind Npp until Npp is deactivated and then activated again.
+                 * I have no idea, why this happens.
+                 * 
+                 * We do not use BringToFront() because that tries to activate the window which causes
+                 * short flickering.
+                 */
+                Win32.SetWindowPos(
+                    Handle, Win32.HWND_TOP,
+                    0, 0, 0, 0,
+                    Win32.SWP_NOACTIVATE | Win32.SWP_NOMOVE | Win32.SWP_NOSIZE);
+            }
+        }
+        
         void OwnerTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
