@@ -236,7 +236,7 @@ namespace NppMenuSearch
                 //if (!Win32.IsWindowVisible(hwndFormChild))
                 //	return true;
 
-                if (Win32.GetWindowLong(hwndFormChild, Win32.GWL_ID) != IDC_BABYGRID_TABBAR)
+                if (Win32.GetWindowLongPtr(hwndFormChild, Win32.GWL_ID) != (IntPtr)IDC_BABYGRID_TABBAR)
                     return true;
 
                 if (Win32.GetClassName(hwndFormChild) == "SysTabControl32")
