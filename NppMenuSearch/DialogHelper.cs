@@ -95,7 +95,7 @@ namespace NppMenuSearch
                         return false;
 
                     case "ListBox":
-                        if (Win32.GetWindowLong(hwndFormChild, Win32.GWL_ID) == (int)NppResources.IDC_LIST_DLGTITLE)
+                        if (Win32.GetWindowLongPtr(hwndFormChild, Win32.GWL_ID) == (IntPtr)NppResources.IDC_LIST_DLGTITLE)
                         {
                             hwndTabList = hwndFormChild;
                             return false;

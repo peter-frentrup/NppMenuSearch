@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
 
 namespace NppPluginNET
 {
@@ -43,24 +42,6 @@ namespace NppPluginNET
             int curScintilla;
             Win32.SendMessage(nppData._nppHandle, NppMsg.NPPM_GETCURRENTSCINTILLA, 0, out curScintilla);
             return (curScintilla == 0) ? nppData._scintillaMainHandle : nppData._scintillaSecondHandle;
-        }
-
-        internal static void MakeNppOwnerOf(Form form)
-        {
-            IntPtr dummy;
-            IntPtr thisThread = Win32.GetWindowThreadProcessId(form.Handle, out dummy);
-            IntPtr parent = nppData._nppHandle;
-            while (parent != IntPtr.Zero)
-            {
-                IntPtr grandParent = Win32.GetParent(parent);
-
-                if (Win32.GetWindowThreadProcessId(grandParent, out dummy) != thisThread)
-                    break;
-
-                parent = grandParent;
-            }
-
-            Win32.SetWindowLongPtr(form.Handle, Win32.GWL_HWNDPARENT, parent);
         }
     }
 }
