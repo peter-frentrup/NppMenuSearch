@@ -1,2 +1,9 @@
 *.suo
 /packages
+/.vs/VSWorkspaceState.json
+/.vs/slnx.sqlite
+/.vs/ProjectSettings.json
+/.vs/NppMenuSearch/v15/Server/sqlite3/storage.ide-wal
+/.vs/NppMenuSearch/v15/Server/sqlite3/storage.ide-shm
+/.vs/NppMenuSearch/v15/Server/sqlite3/storage.ide
+/.vs/NppMenuSearch/v15/Server/sqlite3/db.lock
