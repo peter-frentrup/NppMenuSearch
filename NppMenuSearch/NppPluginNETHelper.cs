@@ -75,17 +75,17 @@ namespace NppPluginNET
                 RtlMoveMemory(newPointer, _nativePointer, oldSize);
                 Marshal.FreeHGlobal(_nativePointer);
             }
-            IntPtr ptrPosNewItem = (IntPtr)((int)newPointer + oldSize);
+            IntPtr ptrPosNewItem = (IntPtr)(newPointer.ToInt64() + oldSize);
             byte[] aB = Encoding.Unicode.GetBytes(funcItem._itemName + "\0");
             Marshal.Copy(aB, 0, ptrPosNewItem, aB.Length);
-            ptrPosNewItem = (IntPtr)((int)ptrPosNewItem + 128);
+            ptrPosNewItem = (IntPtr)(ptrPosNewItem.ToInt64() + 128);
             IntPtr p = (funcItem._pFunc != null) ? Marshal.GetFunctionPointerForDelegate(funcItem._pFunc) : IntPtr.Zero;
             Marshal.WriteIntPtr(ptrPosNewItem, p);
-            ptrPosNewItem = (IntPtr)((int)ptrPosNewItem + IntPtr.Size);
+            ptrPosNewItem = (IntPtr)(ptrPosNewItem.ToInt64() + IntPtr.Size);
             Marshal.WriteInt32(ptrPosNewItem, funcItem._cmdID);
-            ptrPosNewItem = (IntPtr)((int)ptrPosNewItem + 4);
+            ptrPosNewItem = (IntPtr)(ptrPosNewItem.ToInt64() + 4);
             Marshal.WriteInt32(ptrPosNewItem, Convert.ToInt32(funcItem._init2Check));
-            ptrPosNewItem = (IntPtr)((int)ptrPosNewItem + 4);
+            ptrPosNewItem = (IntPtr)(ptrPosNewItem.ToInt64() + 4);
             if (funcItem._pShKey._key != 0)
             {
                 IntPtr newShortCutKey = Marshal.AllocHGlobal(4);
@@ -104,15 +104,15 @@ namespace NppPluginNET
             {
                 FuncItem updatedItem = new FuncItem();
                 updatedItem._itemName = _funcItems[i]._itemName;
-                ptrPosItem = (IntPtr)((int)ptrPosItem + 128);
+                ptrPosItem = (IntPtr)(ptrPosItem.ToInt64() + 128);
                 updatedItem._pFunc = _funcItems[i]._pFunc;
-                ptrPosItem = (IntPtr)((int)ptrPosItem + IntPtr.Size);
+                ptrPosItem = (IntPtr)(ptrPosItem.ToInt64() + IntPtr.Size);
                 updatedItem._cmdID = Marshal.ReadInt32(ptrPosItem);
-                ptrPosItem = (IntPtr)((int)ptrPosItem + 4);
+                ptrPosItem = (IntPtr)(ptrPosItem.ToInt64() + 4);
                 updatedItem._init2Check = _funcItems[i]._init2Check;
-                ptrPosItem = (IntPtr)((int)ptrPosItem + 4);
+                ptrPosItem = (IntPtr)(ptrPosItem.ToInt64() + 4);
                 updatedItem._pShKey = _funcItems[i]._pShKey;
-                ptrPosItem = (IntPtr)((int)ptrPosItem + IntPtr.Size);
+                ptrPosItem = (IntPtr)(ptrPosItem.ToInt64() + IntPtr.Size);
 
                 _funcItems[i] = updatedItem;
             }
@@ -422,16 +422,16 @@ namespace NppPluginNET
         //use int, see formatType
 
         /*
-		NPPM_ADDREBAR = (NPPMSG + 57),
-		// BOOL NPPM_ADDREBAR(0, REBARBANDINFO *)
-		// Returns assigned ID in wID value of struct pointer
-		NPPM_UPDATEREBAR = (NPPMSG + 58),
-		// BOOL NPPM_ADDREBAR(INT ID, REBARBANDINFO *)
-		//Use ID assigned with NPPM_ADDREBAR
-		NPPM_REMOVEREBAR = (NPPMSG + 59),
-		// BOOL NPPM_ADDREBAR(INT ID, 0)
-		//Use ID assigned with NPPM_ADDREBAR
-		*/
+        NPPM_ADDREBAR = (NPPMSG + 57),
+        // BOOL NPPM_ADDREBAR(0, REBARBANDINFO *)
+        // Returns assigned ID in wID value of struct pointer
+        NPPM_UPDATEREBAR = (NPPMSG + 58),
+        // BOOL NPPM_ADDREBAR(INT ID, REBARBANDINFO *)
+        //Use ID assigned with NPPM_ADDREBAR
+        NPPM_REMOVEREBAR = (NPPMSG + 59),
+        // BOOL NPPM_ADDREBAR(INT ID, 0)
+        //Use ID assigned with NPPM_ADDREBAR
+        */
 
         NPPM_HIDETOOLBAR = (NPPMSG + 70),
         // BOOL NPPM_HIDETOOLBAR(0, BOOL hideOrNot)
@@ -1142,8 +1142,8 @@ namespace NppPluginNET
     public struct Sci_NotifyHeader
     {
         /* Compatible with Windows NMHDR.
-		 * hwndFrom is really an environment specific window handle or pointer
-		 * but most clients of Scintilla.h do not have this type visible. */
+         * hwndFrom is really an environment specific window handle or pointer
+         * but most clients of Scintilla.h do not have this type visible. */
         public IntPtr hwndFrom;
         public IntPtr idFrom;
         public uint code;
@@ -2324,7 +2324,7 @@ namespace NppPluginNET
 
         [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        
+
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_NOMOVE = 0x0002;
         public const uint SWP_NOACTIVATE = 0x0010;
