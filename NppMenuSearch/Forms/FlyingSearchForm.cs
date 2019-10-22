@@ -15,6 +15,7 @@ namespace NppMenuSearch.Forms
 
             ResultsPopup = new ResultsPopup();
             ResultsPopup.OwnerTextBox = txtSearch;
+            components.Add(ResultsPopup);
         }
 
         private void FlyingSearchForm_VisibleChanged(object sender, EventArgs e)

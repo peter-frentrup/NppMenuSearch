@@ -20,6 +20,7 @@ namespace NppMenuSearch.Forms
             InitializeComponent();
             ResultsPopup = new ResultsPopup();
             ResultsPopup.OwnerTextBox = txtSearch;
+            components.Add(ResultsPopup);
 
             Main.NppListener.AfterHideShowToolbar += new NppListener.HideShowEventHandler(NppListener_AfterHideShowToolbar);
 
