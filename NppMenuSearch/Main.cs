@@ -12,8 +12,9 @@ namespace NppMenuSearch
 {
     class Main
     {
-        public static LinkedList<uint> RecentlyUsedCommands = new LinkedList<uint>();
+        public static LinkedList<uint> RecentlyUsedCommands { get; } = new LinkedList<uint>();
         public static int PreferredToolbarWidth = 0;
+        public static bool IsClosing { get; private set; }
 
         internal const string PluginName = "NppMenuSearch";
         static string xmlFilePath = null;
@@ -214,7 +215,14 @@ namespace NppMenuSearch
         internal static void PluginCleanUp()
         {
             Settings.Save(xmlFilePath);
-            NppListener.ReleaseHandle();
+
+            // Woraround/fix for issue #13 (Plugin causes notepad++.exe process to remain open after quitting app):
+            // Calling NppListener.ReleaseHandle() was an atempt to clean up resources. However, if other code 
+            // (e.g. other plugins) also subclass N++'s main window, then unsubclassing here will probably 
+            // restore the wrong window procedure.
+            // Instead, NppListener now simply ignores messages. This is OK, because N++ does not actually this DLL.
+            ////NppListener.ReleaseHandle();
+            IsClosing = true;
         }
 
         public static IntPtr GetNppMainWindow()

@@ -15,16 +15,19 @@ namespace NppMenuSearch
 
         protected override void WndProc(ref Message m)
         {
-            switch (m.Msg)
+            if (!Main.IsClosing)
             {
-                case (int)NppMsg.NPPM_HIDETOOLBAR:
-                    HandleNppmHideToolbar(ref m);
-                    return;
+                switch (m.Msg)
+                {
+                    case (int)NppMsg.NPPM_HIDETOOLBAR:
+                        HandleNppmHideToolbar(ref m);
+                        return;
 
-                case (int)NppMsg.NPPM_INTERNAL_RELOADNATIVELANG:
-                    base.WndProc(ref m);
-                    OnAfterReloadNativeLang();
-                    return;
+                    case (int)NppMsg.NPPM_INTERNAL_RELOADNATIVELANG:
+                        base.WndProc(ref m);
+                        OnAfterReloadNativeLang();
+                        return;
+                }
             }
 
             base.WndProc(ref m);
