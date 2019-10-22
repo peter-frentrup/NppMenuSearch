@@ -33,10 +33,6 @@ after_build:
     - ps: >-
 
         if ($env:CONFIGURATION -eq "Release") {
-            Push-AppveyorArtifact "bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\NppMenuSearch.dll" -FileName NppMenuSearch.dll
-        }
-
-        if ($($env:APPVEYOR_REPO_TAG) -eq "true" -and $env:CONFIGURATION -eq "Release" -and $env:PLATFORMTOOLSET -eq "v141_xp") {
             if($env:PLATFORM_INPUT -eq "x64"){
                 $ZipFileName = "NppMenuSearch_$($env:APPVEYOR_REPO_TAG_NAME)_x64.zip"
                 7z a $ZipFileName bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\NppMenuSearch.dll
@@ -54,7 +50,7 @@ artifacts:
 deploy:
     provider: GitHub
     auth_token:
-        secure: !!TODO, see https://www.appveyor.com/docs/deployment/github/#provider-settings!!
+        secure: VsOooQwPfiGJ32FFjrxnoRPEFOzeFaBWkhjADfhIF2lxb8K2JunV2DEppw5zHpXj
     artifact: releases
     draft: false
     prerelease: false
