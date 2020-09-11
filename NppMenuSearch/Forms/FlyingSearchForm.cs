@@ -15,6 +15,9 @@ namespace NppMenuSearch.Forms
 
             ResultsPopup = new ResultsPopup();
             ResultsPopup.OwnerTextBox = txtSearch;
+
+            if (components == null)
+                components = new System.ComponentModel.Container();
             components.Add(ResultsPopup);
         }
 
