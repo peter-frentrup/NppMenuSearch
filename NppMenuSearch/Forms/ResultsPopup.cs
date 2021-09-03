@@ -137,6 +137,8 @@ namespace NppMenuSearch.Forms
         {
             if (Visible)
             {
+                viewResults.TileSize = new Size(viewResults.TileSize.Width, (int)(1.2 * viewResults.Font.Height));
+
                 MaxMenuResults = DefaultMaxMenuResults;
                 MaxPreferencesResults = DefaultMaxPreferencesResults;
                 panInfo.Visible = true;
