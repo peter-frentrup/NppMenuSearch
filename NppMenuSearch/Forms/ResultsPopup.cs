@@ -139,6 +139,13 @@ namespace NppMenuSearch.Forms
             {
                 viewResults.TileSize = new Size(viewResults.TileSize.Width, (int)(1.2 * viewResults.Font.Height));
 
+                string helpText = "TAB switches groups: Recently Used ↔ Menu ↔ Preferences";
+                string shortcut = Main.GetMenuSearchShortcut();
+                if (shortcut != "")
+                    helpText = string.Format("Press {0} again for all results. {1}", shortcut, helpText);
+
+                lblHelp.Text = helpText;
+
                 MaxMenuResults = DefaultMaxMenuResults;
                 MaxPreferencesResults = DefaultMaxPreferencesResults;
                 panInfo.Visible = true;
