@@ -2183,6 +2183,8 @@ namespace NppPluginNET
         public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref NMHDR lParam);
         [DllImport("user32")]
         public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, IntPtr lParam);
+        [DllImport("user32")]
+        public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
         public const int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
         public const int FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;

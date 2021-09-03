@@ -234,18 +234,10 @@ namespace NppMenuSearch.Forms
 
                 if (searchBarIndex > 0 && show)
                 {
-                    //Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MINIMIZEBAND, searchBarIndex - 1, 0);
-                    //Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MAXIMIZEBAND, searchBarIndex - 1, 1);
-
-                    band.fMask = Win32.RBBIM_SIZE | Win32.RBBIM_IDEALSIZE | Win32.RBBIM_CHILDSIZE | Win32.RBBIM_HEADERSIZE;
-                    Win32.SendMessage(hwndRebar, Win32.RB_GETBANDINFOW, searchBarIndex, ref band);
-
-                    // needs to be > cxMinChild, otherwise RB_MAXIMIZEBAND will maximize to fill width
-                    band.cxIdeal = Math.Max(oldPreferredWidth - (Width - band.cxMinChild), band.cxMinChild + 1); 
-                    Win32.SendMessage(hwndRebar, Win32.RB_SETBANDINFOW, searchBarIndex, ref band);
-
-                    Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MINIMIZEBAND, searchBarIndex, 0);
-                    Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MAXIMIZEBAND, searchBarIndex, 1);
+                    Win32.SendMessage(hwndRebar, Win32.RB_SETBANDWIDTH, searchBarIndex, oldPreferredWidth);
+                    int extraMargin = Width - oldPreferredWidth;
+                    if(extraMargin > 0 && extraMargin < oldPreferredWidth)
+                        Win32.SendMessage(hwndRebar, Win32.RB_SETBANDWIDTH, searchBarIndex, oldPreferredWidth - extraMargin);
                 }
 
                 string cuebanner = "Search Menu & Preferences";
