@@ -107,6 +107,23 @@ namespace NppMenuSearch
             return IntPtr.Zero;
         }
 
+        internal static string GetMenuSearchShortcut()
+        {
+            uint cmdId = (uint)PluginBase._funcItems.Items[0]._cmdID;
+
+            if (cmdId == 0)
+                return "";
+
+            uint index;
+            IntPtr menu = FindPluginMenuItem(cmdId, out index);
+
+            string text = Win32.GetMenuItemString(menu, index, true);
+            if (text == null)
+                return "";
+
+            return text.After("\t");
+        }
+
         internal static IntPtr FindRepeatLastCommandMenuItem(out uint cmdId, out uint index)
         {
             cmdId = (uint)PluginBase._funcItems.Items[2]._cmdID;

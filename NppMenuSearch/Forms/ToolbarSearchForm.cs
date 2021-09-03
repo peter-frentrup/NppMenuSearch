@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using NppPluginNET;
@@ -20,6 +22,9 @@ namespace NppMenuSearch.Forms
             InitializeComponent();
             ResultsPopup = new ResultsPopup();
             ResultsPopup.OwnerTextBox = txtSearch;
+
+            if (components == null)
+                components = new Container();
             components.Add(ResultsPopup);
 
             Main.NppListener.AfterHideShowToolbar += new NppListener.HideShowEventHandler(NppListener_AfterHideShowToolbar);
@@ -243,7 +248,11 @@ namespace NppMenuSearch.Forms
                     Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MAXIMIZEBAND, searchBarIndex, 1);
                 }
 
-                Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETCUEBANNER, 0, "Search Menu & Preferences (Ctrl+M)");
+                string cuebanner = "Search Menu & Preferences";
+                string shortcut = Main.GetMenuSearchShortcut();
+                if (shortcut != "")
+                    cuebanner = string.Format("{0} ({1})", cuebanner, shortcut);
+                Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETCUEBANNER, 0, cuebanner);
             }
             finally
             {

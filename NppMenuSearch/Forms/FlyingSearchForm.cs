@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using NppPluginNET;
@@ -17,7 +18,7 @@ namespace NppMenuSearch.Forms
             ResultsPopup.OwnerTextBox = txtSearch;
 
             if (components == null)
-                components = new System.ComponentModel.Container();
+                components = new Container();
             components.Add(ResultsPopup);
         }
 
