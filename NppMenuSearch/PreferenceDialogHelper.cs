@@ -30,29 +30,39 @@ namespace NppMenuSearch
         public IEnumerable<DialogInfo> GetPages()
         {
             yield return new DialogInfo(
-                (uint)NppResources.IDD_PREFERENCE_BAR_BOX,
+                (uint)NppResources.IDD_PREFERENCE_SUB_GENRAL,
                 "General",
                 "Global");
 
             yield return new DialogInfo(
-                (uint)NppResources.IDD_PREFERENCE_MARGEIN_BOX,
+                (uint)NppResources.IDD_PREFERENCE_SUB_EDITING,
                 "Editing",
                 "Scintillas");
 
             yield return new DialogInfo(
-                (uint)NppResources.IDD_PREFERENCE_NEWDOCSETTING_BOX,
+                (uint)NppResources.IDD_PREFERENCE_SUB_DARKMODE,
+                "Dark Mode",
+                "DarkMode");
+
+            yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_MARGING_BORDER_EDGE,
+                "Margins/Border/Edge",
+                "MarginsBorderEdge");
+            
+            yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_NEWDOCUMENT,
                 "New Document",
                 "NewDoc");
 
             yield return new DialogInfo(
-                (uint)NppResources.IDD_PREFERENCE_DEFAULTDIRECTORY_BOX,
+                (uint)NppResources.IDD_PREFERENCE_SUB_DEFAULTDIRECTORY,
                 "Default Directory",
                 "DefaultDir");
 
             yield return new DialogInfo(
-                (uint)NppResources.IDD_PREFERENCE_RECENTFILESHISTORY_BOX,
+                (uint)NppResources.IDD_PREFERENCE_SUB_RECENTFILESHISTORY,
                 "Recent Files History",
-                "RecentFilesHistory");
+                "RecentFilesHistory"); // not used any more ...
 
             yield return new DialogInfo(
                 (uint)NppResources.IDD_REGEXT_BOX,
@@ -60,42 +70,57 @@ namespace NppMenuSearch
                 "FileAssoc");
 
             yield return new DialogInfo(
-                (uint)NppResources.IDD_PREFERENCE_LANG_BOX,
-                "Language Menu",
-                "LangMenu");
+                (uint)NppResources.IDD_PREFERENCE_SUB_LANGUAGE,
+                "Language",
+                "Language"); // was LangMenu
 
             yield return new DialogInfo(
-                (uint)NppResources.IDD_PREFERENCE_TABSETTINGS_BOX,
+                (uint)NppResources.IDD_PREFERENCE_SUB_HIGHLIGHTING,
                 "Tab Settings",
                 "TabSettings");
 
             yield return new DialogInfo(
-                (uint)NppResources.IDD_PREFERENCE_PRINT_BOX,
+                (uint)NppResources.IDD_PREFERENCE_SUB_PRINT,
                 "Print",
                 "Print");
 
             yield return new DialogInfo(
-                (uint)NppResources.IDD_PREFERENCE_BACKUP_BOX,
+                (uint)NppResources.IDD_PREFERENCE_SUB_SEARCHING,
+                "Searching",
+                "Searching");
+
+            yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_BACKUP,
                 "Backup",
                 "Backup");
 
             yield return new DialogInfo(
-                (uint)NppResources.IDD_PREFERENCE_AUTOCOMPLETION_BOX,
+                (uint)NppResources.IDD_PREFERENCE_SUB_AUTOCOMPLETION,
                 "Auto-Completion",
                 "AutoCompletion");
 
             yield return new DialogInfo(
-                (uint)NppResources.IDD_PREFERENCE_MULTIINSTANCE_BOX,
+                (uint)NppResources.IDD_PREFERENCE_SUB_MULTIINSTANCE,
                 "Multi-Instance",
                 "MultiInstance");
 
             yield return new DialogInfo(
-                (uint)NppResources.IDD_PREFERENCE_DELIMITERSETTINGS_BOX,
+                (uint)NppResources.IDD_PREFERENCE_SUB_DELIMITER,
                 "Delimiter",
                 "Delimiter");
 
             yield return new DialogInfo(
-                (uint)NppResources.IDD_PREFERENCE_SETTING_BOX,
+                (uint)NppResources.IDD_PREFERENCE_SUB_CLOUD_LINK,
+                "Cloud & Link",
+                "Cloud");
+
+            yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_SEARCHENGINE,
+                "Search Engine",
+                "SearchEngine");
+
+            yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_MISC,
                 "MISC.",
                 "MISC");
         }
