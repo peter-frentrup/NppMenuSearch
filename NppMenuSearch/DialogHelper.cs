@@ -49,7 +49,7 @@ namespace NppMenuSearch
         {
             Win32.NMHDR nmhdr = new Win32.NMHDR();
             nmhdr.hwndFrom = hwndTabControl;
-            nmhdr.idFrom = (uint)Win32.GetDlgCtrlID(hwndTabControl);
+            nmhdr.idFrom = (UIntPtr)(uint)Win32.GetDlgCtrlID(hwndTabControl);
 
             // does not send a TCN_SELCHANGING or TCN_SELCHANGE notification code:
             Win32.SendMessage(hwndTabControl, (NppMsg)Win32.TCM_SETCURSEL, index, 0);
