@@ -2532,6 +2532,24 @@ namespace NppPluginNET
             return s;
         }
 
+        public static IntPtr GetMenuItemBitmap(IntPtr hMenu, uint uItem, bool fByPosition)
+        {
+            Win32.MENUITEMINFO info = new Win32.MENUITEMINFO();
+            info.cbSize = Win32.MENUITEMINFO.Size;
+            info.fMask = Win32.MIIM_BITMAP | Win32.MIIM_CHECKMARKS;
+            Win32.GetMenuItemInfoW(hMenu, uItem, fByPosition, ref info);
+            if(info.hbmpItem != IntPtr.Zero)
+                return info.hbmpItem;
+
+            if (info.hbmpUnchecked == info.hbmpChecked)
+                return info.hbmpUnchecked;
+
+            if (info.hbmpChecked == IntPtr.Zero)
+                return info.hbmpUnchecked;
+
+            return IntPtr.Zero;
+        }
+
         public static IntPtr GetSubMenu(IntPtr hMenu, uint uItem, bool fByPosition)
         {
             Win32.MENUITEMINFO info = new Win32.MENUITEMINFO();

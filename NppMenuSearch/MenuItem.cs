@@ -7,6 +7,7 @@ namespace NppMenuSearch
     {
         public string Shortcut;
         public uint CommandId;
+        public IntPtr NativeIcon;
 
         public MenuItem(IntPtr hmenu)
         {
@@ -28,6 +29,7 @@ namespace NppMenuSearch
                 item.Text = text.Before("\t");
                 item.Shortcut = text.After("\t");
                 item.CommandId = id;
+                item.NativeIcon = Win32.GetMenuItemBitmap(hmenu, (uint)i, true);
                 AddItem(item);
             }
         }

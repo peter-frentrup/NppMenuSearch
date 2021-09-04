@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using NppPluginNET;
 
@@ -574,6 +576,19 @@ namespace NppMenuSearch.Forms
                         bounds.Left,
                         bounds.Top);
                 }
+                else if(e.Item.Tag is MenuItem mi && mi.NativeIcon != IntPtr.Zero) // todo: and no special icon constant
+                {
+                    try
+                    {
+                        using(Bitmap bmp = FromNativeIcon(mi.NativeIcon))
+                        {
+                            e.Graphics.DrawImage(bmp, bounds.Left, bounds.Top);
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
 
                 e.Graphics.DrawString(
                     e.Item.Text,
@@ -582,6 +597,61 @@ namespace NppMenuSearch.Forms
                     textBounds.Location,
                     format);
             }
+        }
+
+        private static Bitmap FromNativeIcon(IntPtr hBitmap)
+        {
+            var bmp = Bitmap.FromHbitmap(hBitmap);
+            if(bmp.PixelFormat == PixelFormat.Format32bppRgb)
+            {
+                try
+                {
+                    // TODO: check that the Alpha channel is really used
+                    BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, bmp.PixelFormat);
+                    try
+                    {
+                        if (!UsesAlphaChannel(bmpData))
+                        {
+                            bmp.UnlockBits(bmpData);
+
+                            var result = bmp;
+                            bmp = null; // so that it is not disposed below
+                            return result;
+                        }
+                        return new Bitmap(
+                            bmpData.Width,
+                            bmpData.Height,
+                            bmpData.Stride,
+                            PixelFormat.Format32bppArgb,
+                            bmpData.Scan0);
+                    }
+                    finally
+                    {
+                        if(bmp != null)
+                            bmp.UnlockBits(bmpData);
+                    }
+                }
+                finally
+                {
+                    if (bmp != null)
+                        bmp.Dispose();
+                }
+            }
+            return bmp;
+        }
+
+        private static bool UsesAlphaChannel(BitmapData bmpData)
+        {
+            for (int y = 0; y <= bmpData.Height - 1; y++)
+            {
+                for (int x = 0; x <= bmpData.Width - 1; x++)
+                {
+                    byte alpha = Marshal.ReadByte(bmpData.Scan0, (bmpData.Stride * y) + (4 * x) + 3);
+                    if (alpha > 0)
+                        return true;
+                }
+            }
+            return false;
         }
 
         private void viewResults_MouseClick(object sender, MouseEventArgs e)
