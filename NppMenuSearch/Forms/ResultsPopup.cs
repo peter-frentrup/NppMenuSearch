@@ -46,6 +46,9 @@ namespace NppMenuSearch.Forms
             Main.MakeNppOwnerOf(this);
 
             viewResults.ContextMenu = popupMenu;
+
+            if (Main.PreferredResultsWindowSize.Width > 0 && Main.PreferredResultsWindowSize.Height > 0)
+                Size = Main.PreferredResultsWindowSize;
         }
 
         void NppListener_AfterReloadNativeLang(object sender, EventArgs e)
@@ -137,6 +140,13 @@ namespace NppMenuSearch.Forms
         {
             if (Visible)
             {
+                Rectangle area = Screen.FromControl(this).WorkingArea;
+                if (area.IntersectsWith(Bounds))
+                {
+                    area.Intersect(Bounds);
+                    Bounds = area;
+                }
+
                 viewResults.TileSize = new Size(viewResults.TileSize.Width, (int)(1.2 * viewResults.Font.Height));
 
                 string helpText = "TAB switches groups: Recently Used ↔ Menu ↔ Preferences";
@@ -664,6 +674,14 @@ namespace NppMenuSearch.Forms
         private void menuOpenDialog_Click(object sender, EventArgs e)
         {
             ItemSelected();
+        }
+
+        private void ResultsPopup_SizeChanged(object sender, EventArgs e)
+        {
+            if (!Visible)
+                return;
+
+            Main.PreferredResultsWindowSize = Size;
         }
     }
 }

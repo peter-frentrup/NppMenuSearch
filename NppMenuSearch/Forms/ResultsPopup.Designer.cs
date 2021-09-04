@@ -130,6 +130,7 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.SizeChanged += new System.EventHandler(this.ResultsPopup_SizeChanged);
             this.VisibleChanged += new System.EventHandler(this.ResultsPopup_VisibleChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OwnerTextBox_KeyDown);
             this.panInfo.ResumeLayout(false);

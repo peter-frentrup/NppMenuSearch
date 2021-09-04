@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -39,15 +40,38 @@ namespace NppMenuSearch
                 }
 
                 Main.PreferredToolbarWidth = 0;
-                XmlElement xmlToolbarWidth = doc.SelectNodes("/Settings/PreferredToolbarWidth")
-                    .OfType<XmlElement>()
-                    .FirstOrDefault();
-                if(xmlToolbarWidth != null && xmlToolbarWidth.HasAttribute("value"))
                 {
-                    string widthString = xmlToolbarWidth.GetAttribute("value");
-                    int width;
-                    if (int.TryParse(widthString, out width) && width > 0)
-                        Main.PreferredToolbarWidth = width;
+                    XmlElement xmlPreferredToolbarWidth = doc.SelectNodes("/Settings/PreferredToolbarWidth")
+                        .OfType<XmlElement>()
+                        .FirstOrDefault();
+                    if (xmlPreferredToolbarWidth != null && xmlPreferredToolbarWidth.HasAttribute("value"))
+                    {
+                        string widthString = xmlPreferredToolbarWidth.GetAttribute("value");
+                        int width;
+                        if (int.TryParse(widthString, out width) && width > 0)
+                            Main.PreferredToolbarWidth = width;
+                    }
+                }
+
+                Main.PreferredResultsWindowSize = new Size(0, 0);
+                {
+                    XmlElement xmlPreferredResultsWindowSize = doc.SelectNodes("/Settings/PreferredResultsWindowSize")
+                        .OfType<XmlElement>()
+                        .FirstOrDefault();
+                    if (xmlPreferredResultsWindowSize != null && 
+                        xmlPreferredResultsWindowSize.HasAttribute("width") &&
+                        xmlPreferredResultsWindowSize.HasAttribute("height"))
+                    {
+                        string widthString = xmlPreferredResultsWindowSize.GetAttribute("width");
+                        string heightString = xmlPreferredResultsWindowSize.GetAttribute("height");
+                        int width, height;
+                        if (int.TryParse(widthString, out width) &&
+                            int.TryParse(heightString, out height) && 
+                            width > 0 && height > 0)
+                        {
+                            Main.PreferredResultsWindowSize = new Size(width, height);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -74,9 +98,18 @@ namespace NppMenuSearch
                     xmlRecentlyUsedItems.AppendChild(xmlItem);
                 }
 
-                var xmlPreferredToolbarWidth = doc.CreateElement("PreferredToolbarWidth");
-                xmlPreferredToolbarWidth.SetAttribute("value", Main.PreferredToolbarWidth.ToString());
-                xmlRoot.AppendChild(xmlPreferredToolbarWidth);
+                {
+                    var xmlPreferredToolbarWidth = doc.CreateElement("PreferredToolbarWidth");
+                    xmlPreferredToolbarWidth.SetAttribute("value", Main.PreferredToolbarWidth.ToString());
+                    xmlRoot.AppendChild(xmlPreferredToolbarWidth);
+                }
+
+                {
+                    var xmlPreferredResultsWindowSize = doc.CreateElement("PreferredResultsWindowSize");
+                    xmlPreferredResultsWindowSize.SetAttribute("width", Main.PreferredResultsWindowSize.Width.ToString());
+                    xmlPreferredResultsWindowSize.SetAttribute("height", Main.PreferredResultsWindowSize.Height.ToString());
+                    xmlRoot.AppendChild(xmlPreferredResultsWindowSize);
+                }
 
                 doc.Save(filename);
             }

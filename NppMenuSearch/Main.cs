@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -14,6 +15,7 @@ namespace NppMenuSearch
     {
         public static LinkedList<uint> RecentlyUsedCommands { get; } = new LinkedList<uint>();
         public static int PreferredToolbarWidth = 0;
+        public static Size PreferredResultsWindowSize = new Size(0, 0);
         public static bool IsClosing { get; private set; }
 
         internal const string PluginName = "NppMenuSearch";
