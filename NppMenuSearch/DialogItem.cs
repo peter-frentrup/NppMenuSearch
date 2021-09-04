@@ -45,7 +45,7 @@ namespace NppMenuSearch
                     Rectangle rect = new Rectangle(winRect.Left, winRect.Top, winRect.Right - winRect.Left, winRect.Bottom - winRect.Top);
 
                     uint id = (uint)Win32.GetDlgCtrlID(descendent);
-                    if (id == 0)
+                    if (id == 0 || (int)id == -1)
                         return true;
 
                     string className = Win32.GetClassName(descendent);
@@ -80,10 +80,18 @@ namespace NppMenuSearch
             var groupBoxes = new Dictionary<DialogItem, Rectangle>();
             var otherItems = new Dictionary<DialogItem, Rectangle>();
 
-            var itToItem = EnumItems()
-                .Select(hi => hi as DialogItem)
-                .Where(di => di != null)
-                .ToDictionary(di => di.ControlId);
+            var itToItem = new Dictionary<uint, DialogItem>();
+            foreach(var di in EnumItems().Select(hi => hi as DialogItem).Where(di => di != null))
+            {
+                if(itToItem.ContainsKey(di.ControlId))
+                {
+                    Console.WriteLine("controlId {0} used twice:\n  {1}\n  {2}", 
+                        (int)di.ControlId,
+                        itToItem[di.ControlId],
+                        di);
+                }
+                itToItem[di.ControlId] = di;
+            }
 
             Win32.EnumChildWindows(hwndDialog, descendent =>
             {
@@ -109,12 +117,28 @@ namespace NppMenuSearch
                     {
                         if (Win32.GetClassName(descendent) == "Button")
                         {
-                            groupBoxes.Add(item, rect);
+                            if(groupBoxes.ContainsKey(item))
+                            {
+                                Console.WriteLine("group {0} ({1}) already has a rectangle: {2} and {3}",
+                                    (int)item.ControlId, 
+                                    item,
+                                    groupBoxes[item], 
+                                    rect);
+                            }
+                            groupBoxes[item] = rect;
                             return true;
                         }
                     }
 
-                    otherItems.Add(item, rect);
+                    if(otherItems.ContainsKey(item))
+                    {
+                        Console.WriteLine("group {0} ({1}) already has a rectangle: {2} and {3}",
+                            (int)item.ControlId,
+                            item,
+                            otherItems[item],
+                            rect);
+                    }
+                    otherItems[item] = rect;
                 }
 
                 return true;
