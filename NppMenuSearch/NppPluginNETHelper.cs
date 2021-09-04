@@ -2182,6 +2182,8 @@ namespace NppPluginNET
         [DllImport("user32")]
         public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref NMHDR lParam);
         [DllImport("user32")]
+        public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref TBBUTTONINFO lParam);
+        [DllImport("user32")]
         public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, IntPtr lParam);
         [DllImport("user32")]
         public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
@@ -2261,6 +2263,20 @@ namespace NppPluginNET
         public const int EC_LEFTMARGIN = 1;
         public const int EC_RIGHTMARGIN = 2;
 
+        public const int TB_GETBITMAP = 0x0400 + 44;
+        public const int TB_GETIMAGELIST = 0x0400 + 49;
+        public const int TB_GETBUTTONSIZE = 0x0400 + 58;
+        public const int TB_GETBUTTONINFOW = 0x0400 + 63;
+
+        public const uint TBIF_IMAGE = 0x1;
+        public const uint TBIF_TEXT = 0x2;
+        public const uint TBIF_STATE = 0x4;
+        public const uint TBIF_STYLE = 0x8;
+        public const uint TBIF_LPARAM = 0x10;
+        public const uint TBIF_COMMAND = 0x20;
+        public const uint TBIF_SIZE = 0x40;
+        public const uint TBIF_BYINDEX = 0x80000000u;
+
         [DllImport("user32.dll")]
         public static extern bool GetComboBoxInfo(IntPtr hwnd, ref COMBOBOXINFO pcbi);
 
@@ -2282,6 +2298,23 @@ namespace NppPluginNET
             public IntPtr hwndCombo;
             public IntPtr hwndItem;
             public IntPtr hwndList;
+        }
+
+        [Flags]
+        public enum ImageListDrawingStyle : int
+        {
+            Normal = 0x00000000,
+            Transparent = 0x00000001,
+            Blend25 = 0x00000002,
+            Blend50 = 0x00000004,
+            Mask = 0x00000010,
+            Image = 0x00000020,
+            Rop = 0x00000040,
+            OverlayMask = 0x00000F00,
+            PreserveAlpha = 0x00001000, // This preserves the alpha channel in dest
+            Scale = 0x00002000, // Causes the image to be scaled to cx, cy instead of clipped
+            DpiScale = 0x00004000,
+            Async = 0x00008000,
         }
 
         [DllImport("user32.dll")]
@@ -2493,6 +2526,27 @@ namespace NppPluginNET
             }
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct TBBUTTONINFO
+        {
+            public uint cbSize;
+            public uint dwMask;
+            public int idCommand;
+            public int iImage;
+            public byte fsState;
+            public byte fsStyle;
+            public short cx;
+            public IntPtr lParam;
+            public IntPtr pszText;
+            public int cchText;
+
+            // return the size of the structure
+            public static uint Size
+            {
+                get { return (uint)Marshal.SizeOf(typeof(TBBUTTONINFO)); }
+            }
+        }
+
         [DllImport("user32.dll")]
         public static extern bool GetMenuItemInfoW(IntPtr hMenu, uint uItem, bool fByPosition, ref MENUITEMINFO lpmii);
 
@@ -2570,6 +2624,18 @@ namespace NppPluginNET
 
         [DllImport("user32.dll")]
         public static extern int GetMenuItemCount(IntPtr hMenu);
+
+        [DllImport("comctl32.dll", SetLastError = true)]
+        public static extern bool ImageList_GetIconSize(IntPtr himl, out int cx, out int cy);
+
+        [DllImport("comctl32.dll", SetLastError = true)]
+        public static extern bool ImageList_Draw(IntPtr himl, int i, IntPtr hdcDst, int x, int y, ImageListDrawingStyle fStyle);
+
+        public const uint CLR_NONE = 0xFFFFFFFFu;
+        public const uint CLR_DEFAULT = 0xFF000000u;
+
+        [DllImport("comctl32.dll", SetLastError = true)]
+        public static extern bool ImageList_DrawEx(IntPtr himl, int i, IntPtr hdcDst, int x, int y, int dx, int dy, uint rgbBk, uint rgbFg, ImageListDrawingStyle fStyle);
 
         [DllImport("user32.dll")]
         public static extern int GetDlgCtrlID(IntPtr hwndCtl);

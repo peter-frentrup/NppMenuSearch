@@ -149,7 +149,20 @@ namespace NppMenuSearch.Forms
                     Bounds = area;
                 }
 
-                viewResults.TileSize = new Size(viewResults.TileSize.Width, (int)(1.2 * viewResults.Font.Height));
+                int toolbarButtonHeight = 0;
+                if(Main.ToolbarSearchForm != null && Main.ToolbarSearchForm.HwndToolbar != IntPtr.Zero)
+                {
+                    IntPtr hImgList = Win32.SendMessage(Main.ToolbarSearchForm.HwndToolbar, Win32.TB_GETIMAGELIST, 0, 0);
+                    if(hImgList != IntPtr.Zero)
+                    {
+                        if (Win32.ImageList_GetIconSize(hImgList, out int cx, out int cy))
+                            toolbarButtonHeight = cy;
+                    }
+                }
+
+                viewResults.TileSize = new Size(
+                    viewResults.TileSize.Width, 
+                    Math.Max(toolbarButtonHeight, (int)(1.2 * viewResults.Font.Height)));
 
                 string helpText = "TAB switches groups: Recently Used ↔ Menu ↔ Preferences";
                 string shortcut = Main.GetMenuSearchShortcut();
@@ -561,14 +574,13 @@ namespace NppMenuSearch.Forms
             using (Brush foreground = new SolidBrush(foregroundColor))
             {
                 Rectangle bounds = new Rectangle(e.Bounds.Left + 10, e.Bounds.Top, e.Bounds.Width - 10, e.Bounds.Height);
-                Rectangle textBounds = new Rectangle(bounds.Left + 16, bounds.Top, bounds.Width - 16, bounds.Height);
+                Rectangle textBounds = new Rectangle(bounds.Left + bounds.Height + 4, bounds.Top, bounds.Width - bounds.Height - 4, bounds.Height);
 
                 e.Graphics.FillRectangle(background, bounds);
 
                 StringFormat format = new StringFormat(
                     StringFormatFlags.NoWrap | StringFormatFlags.NoClip | StringFormatFlags.FitBlackBox);
                 format.SetTabStops(20f, new float[] { 20f });
-
                 if (e.Item.Tag is DialogItem)
                 {
                     e.Graphics.DrawImage(
@@ -576,17 +588,44 @@ namespace NppMenuSearch.Forms
                         bounds.Left,
                         bounds.Top);
                 }
-                else if(e.Item.Tag is MenuItem mi && mi.NativeIcon != IntPtr.Zero) // todo: and no special icon constant
-                {
-                    try
+                else if(e.Item.Tag is MenuItem mi) {
+                    if (mi.NativeIcon != IntPtr.Zero) // todo: and no special icon constant
                     {
-                        using(Bitmap bmp = FromNativeIcon(mi.NativeIcon))
+                        try
                         {
-                            e.Graphics.DrawImage(bmp, bounds.Left, bounds.Top);
+                            using (Bitmap bmp = FromNativeIcon(mi.NativeIcon))
+                            {
+                                e.Graphics.DrawImage(bmp, bounds.Left, bounds.Top);
+                            }
+                        }
+                        catch
+                        {
                         }
                     }
-                    catch
+                    else if (Main.ToolbarSearchForm != null && Main.ToolbarSearchForm.HwndToolbar != IntPtr.Zero)
                     {
+                        Win32.TBBUTTONINFO tbi = new Win32.TBBUTTONINFO();
+                        tbi.cbSize = Win32.TBBUTTONINFO.Size;
+                        tbi.dwMask = Win32.TBIF_IMAGE;
+                        IntPtr index = Win32.SendMessage(Main.ToolbarSearchForm.HwndToolbar, Win32.TB_GETBUTTONINFOW, (int)mi.CommandId, ref tbi);
+                        if (index != (IntPtr)(-1))
+                        {
+                            IntPtr hImgList = Win32.SendMessage(Main.ToolbarSearchForm.HwndToolbar, Win32.TB_GETIMAGELIST, 0, 0);
+                            IntPtr hdc = e.Graphics.GetHdc();
+                            try
+                            {
+                                Win32.ImageList_Draw(
+                                    hImgList, tbi.iImage, hdc, 
+                                    bounds.Left, bounds.Top, 
+                                    //bounds.Height, bounds.Height,
+                                    //Win32.CLR_NONE, Win32.CLR_NONE,
+                                    Win32.ImageListDrawingStyle.Transparent);
+                            }
+                            finally
+                            {
+                                e.Graphics.ReleaseHdc(hdc);
+                            }
+                        }
                     }
                 }
 

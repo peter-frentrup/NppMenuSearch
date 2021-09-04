@@ -13,7 +13,7 @@ namespace NppMenuSearch.Forms
         public ResultsPopup ResultsPopup { get; private set; }
 
         IntPtr hwndRebar = IntPtr.Zero;
-        IntPtr hwndToolbar = IntPtr.Zero;
+        public IntPtr HwndToolbar { get; private set; }
 
         bool currentlyCheckingToolbarVisiblity = false;
 
@@ -74,7 +74,7 @@ namespace NppMenuSearch.Forms
         {
             IntPtr main = Main.GetNppMainWindow();
             hwndRebar = IntPtr.Zero;
-            hwndToolbar = IntPtr.Zero;
+            HwndToolbar = IntPtr.Zero;
 
             Win32.EnumChildWindows(main, child =>
             {
@@ -100,14 +100,14 @@ namespace NppMenuSearch.Forms
 
                         if (sb2.ToString() == "ToolbarWindow32")
                         {
-                            hwndToolbar = rebarChild;
+                            HwndToolbar = rebarChild;
                             return false;
                         }
 
                         return true;
                     });
 
-                    if (hwndToolbar != IntPtr.Zero)
+                    if (HwndToolbar != IntPtr.Zero)
                     {
                         hwndRebar = child;
                         return false;
@@ -176,7 +176,7 @@ namespace NppMenuSearch.Forms
             try
             {
                 currentlyCheckingToolbarVisiblity = true;
-                if (!Win32.IsWindow(hwndRebar) || !Win32.IsWindow(hwndToolbar))
+                if (!Win32.IsWindow(hwndRebar) || !Win32.IsWindow(HwndToolbar))
                 {
                     InitToolbar();
 
@@ -190,7 +190,7 @@ namespace NppMenuSearch.Forms
                 band.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(band);
                 
                 bool show = false; //Win32.IsWindowVisible(hwndToolbar);
-                int toolbarIndex = GetRebarBandIndexByChildHandle(hwndRebar, hwndToolbar);
+                int toolbarIndex = GetRebarBandIndexByChildHandle(hwndRebar, HwndToolbar);
                 if (toolbarIndex >= 0)
                 {
                     band.fMask = Win32.RBBIM_STYLE;
