@@ -364,7 +364,7 @@ namespace NppMenuSearch.Forms
                 lvitem.Group = resultGroupMenu;
                 viewResults.Items.Add(lvitem);
 #if DEBUG
-				lvitem.Text 		= string.Format("[{1:0.0000}] {0}", item, item.MatchingSimilarity(words));
+				lvitem.Text = string.Format("[{1:0.0000}] {0}", item, item.MatchingSimilarity(words));
 #endif
             }
 
@@ -383,7 +383,7 @@ namespace NppMenuSearch.Forms
                 lvitem.Group = resultGroupPreferences;
                 viewResults.Items.Add(lvitem);
 #if DEBUG
-				lvitem.Text 		= string.Format("[{1}] {0}", item, item.MatchingSimilarity(words));
+				lvitem.Text = string.Format("[{1}] {0}", item, item.MatchingSimilarity(words));
 #endif
             }
 
@@ -595,8 +595,11 @@ namespace NppMenuSearch.Forms
                         {
                             WithNativeIcon(mi.NativeIcon, bmp => e.Graphics.DrawImage(bmp, bounds.Left, bounds.Top));
                         }
-                        catch
+                        catch(Exception ex)
                         {
+#if DEBUG
+                            Console.WriteLine(ex);
+#endif
                         }
                     }
                     else if (Main.ToolbarSearchForm != null && Main.ToolbarSearchForm.HwndToolbar != IntPtr.Zero)
@@ -708,8 +711,9 @@ namespace NppMenuSearch.Forms
 
         private void OpenShortcutMapper(MenuItem menuItem)
         {
+#if DEBUG
             Console.WriteLine("search shortcut for {0} ({1})", menuItem.CommandId, menuItem);
-
+#endif
             Hide();
             OwnerTextBox.Text = "";
 
