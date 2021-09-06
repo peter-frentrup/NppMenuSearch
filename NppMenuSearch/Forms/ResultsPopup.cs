@@ -593,10 +593,7 @@ namespace NppMenuSearch.Forms
                     {
                         try
                         {
-                            using (Bitmap bmp = FromNativeIcon(mi.NativeIcon))
-                            {
-                                e.Graphics.DrawImage(bmp, bounds.Left, bounds.Top);
-                            }
+                            WithNativeIcon(mi.NativeIcon, bmp => e.Graphics.DrawImage(bmp, bounds.Left, bounds.Top));
                         }
                         catch
                         {
@@ -638,45 +635,33 @@ namespace NppMenuSearch.Forms
             }
         }
 
-        private static Bitmap FromNativeIcon(IntPtr hBitmap)
+        private static void WithNativeIcon(IntPtr hBitmap, Action<Bitmap> draw)
         {
-            var bmp = Bitmap.FromHbitmap(hBitmap);
-            if(bmp.PixelFormat == PixelFormat.Format32bppRgb)
+            using (var bmp = Bitmap.FromHbitmap(hBitmap))
             {
-                try
+                if (bmp.PixelFormat == PixelFormat.Format32bppRgb)
                 {
-                    // TODO: check that the Alpha channel is really used
                     BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, bmp.PixelFormat);
                     try
                     {
-                        if (!UsesAlphaChannel(bmpData))
+                        if (UsesAlphaChannel(bmpData))
                         {
-                            bmp.UnlockBits(bmpData);
-
-                            var result = bmp;
-                            bmp = null; // so that it is not disposed below
-                            return result;
+                            using(var alphaBmp = new Bitmap(bmpData.Width, bmpData.Height, bmpData.Stride, PixelFormat.Format32bppArgb, bmpData.Scan0))
+                            {
+                                draw(alphaBmp);
+                                return;
+                            }
                         }
-                        return new Bitmap(
-                            bmpData.Width,
-                            bmpData.Height,
-                            bmpData.Stride,
-                            PixelFormat.Format32bppArgb,
-                            bmpData.Scan0);
                     }
                     finally
                     {
-                        if(bmp != null)
-                            bmp.UnlockBits(bmpData);
+                        bmp.UnlockBits(bmpData);
                     }
                 }
-                finally
-                {
-                    if (bmp != null)
-                        bmp.Dispose();
-                }
+
+                draw(bmp);
+                return;
             }
-            return bmp;
         }
 
         private static bool UsesAlphaChannel(BitmapData bmpData)
