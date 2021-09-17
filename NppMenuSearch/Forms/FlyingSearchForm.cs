@@ -111,6 +111,14 @@ namespace NppMenuSearch.Forms
                     e.Handled = true;
                     suppressKeyPress = true;
                     break;
+
+                case Keys.Back:
+                    if (e.Control)
+                    {
+                        // Ctrl+BackSpace
+                        txtSearch.Text = "";
+                    }
+                    break;
             }
         }
 
@@ -120,6 +128,14 @@ namespace NppMenuSearch.Forms
             {
                 suppressKeyPress = false;
                 e.Handled = true;
+            }
+            else
+            {
+                if (e.KeyChar == '\x7F') // 0x7F corresponds to Ctrl+BackSpace. Why? Ask Microsoft...
+                {
+                    e.KeyChar = '\x00';
+                    e.Handled = true;
+                }
             }
         }
 
