@@ -87,6 +87,15 @@ namespace NppMenuSearch.Forms
 
         private bool suppressKeyPress;
 
+        private string RemoveLastWord(string S)
+        {
+            int n = S.Length - 1;
+            while (n >= 0 && Char.IsWhiteSpace(S[n])) { --n; } // skipping the trailing spaces
+            while (n >= 0 && !Char.IsWhiteSpace(S[n])) { --n; } // skipping the last word
+            while (n >= 0 && Char.IsWhiteSpace(S[n])) { --n; } // skipping the spaces before the last word
+            return (n >= 0) ? S.Substring(0, n + 1) : "";
+        }
+
         private void txtSearch_KeyDown(object sender, KeyEventArgs e)
         {
             suppressKeyPress = false;
@@ -112,7 +121,9 @@ namespace NppMenuSearch.Forms
                     if (e.Control)
                     {
                         // Ctrl+BackSpace
-                        txtSearch.Text = "";
+                        txtSearch.Text = RemoveLastWord(txtSearch.Text);
+                        int n = txtSearch.Text.Length;
+                        txtSearch.Select(n, n);
                     }
                     break;
             }
