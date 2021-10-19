@@ -16,6 +16,7 @@ namespace NppMenuSearch
         public static LinkedList<uint> RecentlyUsedCommands { get; } = new LinkedList<uint>();
         public static int PreferredToolbarWidth = 0;
         public static Size PreferredResultsWindowSize = new Size(0, 0);
+        public static bool IsDarkModeEnabled { get; set; }
         public static bool IsClosing { get; private set; }
 
         internal const string PluginName = "NppMenuSearch";
@@ -45,8 +46,9 @@ namespace NppMenuSearch
             PluginBase.SetCommand(0, "Menu Search...", MenuSearchFunction, new ShortcutKey(true, false, false, Keys.M));
             PluginBase.SetCommand(1, "Clear “Recently Used” List", ClearRecentlyUsedList, new ShortcutKey(false, false, false, Keys.None));
             PluginBase.SetCommand(2, RepeatPreviousCommandLabel, RepeatLastCommandFunction, new ShortcutKey(false, false, false, Keys.None));
-            PluginBase.SetCommand(3, "---", null);
-            PluginBase.SetCommand(4, "About...", AboutFunction, new ShortcutKey(false, false, false, Keys.None));
+            PluginBase.SetCommand(3, "Dark Mode", DarkModeFunction, new ShortcutKey(false, false, false, Keys.None), IsDarkModeEnabled);
+            PluginBase.SetCommand(4, "---", null);
+            PluginBase.SetCommand(5, "About...", AboutFunction, new ShortcutKey(false, false, false, Keys.None));
         }
 
         internal static string GetNativeLangXml()
@@ -292,6 +294,17 @@ namespace NppMenuSearch
             }
 
             Win32.SendMessage(PluginBase.nppData._nppHandle, (NppMsg)Win32.WM_COMMAND, (int)lastUsedItem.CommandId, 0);
+        }
+
+        internal static void DarkModeFunction()
+        {
+            IsDarkModeEnabled = !IsDarkModeEnabled;
+            Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETMENUITEMCHECK, PluginBase._funcItems.Items[3]._cmdID, IsDarkModeEnabled ? 1 : 0);
+            MessageBox.Show(
+                "Dark Mode "+(IsDarkModeEnabled?"enabled": "disabled")+ ". Please restart Notepad++ for the changes to take effect.",
+                "NppMenuSearch",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
         }
 
         internal static void AboutFunction()

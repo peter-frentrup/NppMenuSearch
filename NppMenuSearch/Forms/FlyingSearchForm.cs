@@ -13,6 +13,13 @@ namespace NppMenuSearch.Forms
         public FlyingSearchForm()
         {
             InitializeComponent();
+            if (Main.IsDarkModeEnabled)
+            {
+                txtSearch.BackColor = Color.FromArgb(64, 64, 64);
+                txtSearch.ForeColor = Color.FromArgb(224, 224, 224);
+                BackColor = Color.FromArgb(64, 64, 64);
+                ForeColor = Color.FromArgb(224, 224, 224);
+            }
 
             ResultsPopup = new ResultsPopup();
             ResultsPopup.OwnerTextBox = txtSearch;

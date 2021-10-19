@@ -73,6 +73,20 @@ namespace NppMenuSearch
                         }
                     }
                 }
+
+                Main.IsDarkModeEnabled = false;
+                {
+                    XmlElement xmlIsDarkModeEnabled = doc.SelectNodes("/Settings/IsDarkModeEnabled")
+                        .OfType<XmlElement>()
+                        .FirstOrDefault();
+                    if (xmlIsDarkModeEnabled != null && xmlIsDarkModeEnabled.HasAttribute("value"))
+                    {
+                        string enabledString = xmlIsDarkModeEnabled.GetAttribute("value");
+                        bool isDarkModeEnabled;
+                        if (bool.TryParse(enabledString, out isDarkModeEnabled))
+                            Main.IsDarkModeEnabled = isDarkModeEnabled;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -109,6 +123,12 @@ namespace NppMenuSearch
                     xmlPreferredResultsWindowSize.SetAttribute("width", Main.PreferredResultsWindowSize.Width.ToString());
                     xmlPreferredResultsWindowSize.SetAttribute("height", Main.PreferredResultsWindowSize.Height.ToString());
                     xmlRoot.AppendChild(xmlPreferredResultsWindowSize);
+                }
+
+                {
+                    var IsDarkModeEnabled = doc.CreateElement("IsDarkModeEnabled");
+                    IsDarkModeEnabled.SetAttribute("value", Main.IsDarkModeEnabled.ToString());
+                    xmlRoot.AppendChild(IsDarkModeEnabled);
                 }
 
                 doc.Save(filename);

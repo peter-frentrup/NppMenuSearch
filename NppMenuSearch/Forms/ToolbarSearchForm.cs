@@ -20,6 +20,18 @@ namespace NppMenuSearch.Forms
         public ToolbarSearchForm()
         {
             InitializeComponent();
+
+            if (Main.IsDarkModeEnabled)
+            {
+                frmSearch.BackColor = Color.FromArgb(64, 64, 64);
+                frmSearch.ForeColor = Color.FromArgb(224, 224, 224);
+                txtSearch.BackColor = Color.FromArgb(32, 32, 32);
+                txtSearch.ForeColor = Color.FromArgb(224, 224, 224);
+                txtSearch.BorderStyle = BorderStyle.FixedSingle;
+                BackColor = Color.FromArgb(64, 64, 64);
+                ForeColor = Color.FromArgb(224, 224, 224);
+            }
+
             ResultsPopup = new ResultsPopup();
             ResultsPopup.OwnerTextBox = txtSearch;
 
@@ -296,7 +308,7 @@ namespace NppMenuSearch.Forms
                 ResultsPopup.Activated += activated;
                 ResultsPopup.Show();
 
-                SetClearImage(Properties.Resources.ClearNormal);
+                SetClearImage(Main.IsDarkModeEnabled ? Properties.Resources.ClearNormal_dark : Properties.Resources.ClearNormal);
             }
         }
 
@@ -339,7 +351,7 @@ namespace NppMenuSearch.Forms
             {
                 if (txtSearch.TextLength > 0)
                 {
-                    picClear.Image = Properties.Resources.ClearPressed;
+                    picClear.Image = Main.IsDarkModeEnabled ? Properties.Resources.ClearPressed_dark : Properties.Resources.ClearPressed;
                 }
             }
         }
@@ -350,7 +362,7 @@ namespace NppMenuSearch.Forms
             {
                 if (txtSearch.TextLength > 0)
                 {
-                    picClear.Image = Properties.Resources.ClearNormal;
+                    picClear.Image = Main.IsDarkModeEnabled ? Properties.Resources.ClearNormal_dark : Properties.Resources.ClearNormal;
                 }
             }
         }

@@ -33,6 +33,17 @@ namespace NppMenuSearch.Forms
         {
             InitializeComponent();
 
+            if (Main.IsDarkModeEnabled)
+            {
+                ForeColor = Color.FromArgb(224, 224, 224);
+                panInfo.BackColor = Color.FromArgb(64, 64, 64);
+                panInfo.ForeColor = Color.FromArgb(224, 224, 224);
+                viewResults.BackColor = Color.FromArgb(64, 64, 64);
+                viewResults.ForeColor = Color.FromArgb(224, 224, 224);
+                BackColor = Color.FromArgb(64, 64, 64);
+                FormBorderStyle = FormBorderStyle.None;
+            }
+
             viewResults.Groups.Add(resultGroupRecentlyUsed);
             viewResults.Groups.Add(resultGroupMenu);
             viewResults.Groups.Add(resultGroupPreferences);
@@ -561,13 +572,13 @@ namespace NppMenuSearch.Forms
 
             if (e.Item.Selected)
             {
-                backgroundColor = Color.LightGray;
-                foregroundColor = Color.Black;
+                backgroundColor = Main.IsDarkModeEnabled ? Color.FromArgb(0, 120, 215) : Color.LightGray;
+                foregroundColor = Main.IsDarkModeEnabled ? Color.FromArgb(224, 224, 224) : Color.Black;
             }
             else
             {
-                backgroundColor = SystemColors.Window;
-                foregroundColor = SystemColors.WindowText;
+                backgroundColor = Main.IsDarkModeEnabled ? Color.FromArgb(64, 64, 64) : SystemColors.Window;
+                foregroundColor = Main.IsDarkModeEnabled ? Color.FromArgb(224, 224, 224) : SystemColors.WindowText;
             }
 
             using (Brush background = new SolidBrush(backgroundColor))
@@ -584,7 +595,7 @@ namespace NppMenuSearch.Forms
                 if (e.Item.Tag is DialogItem)
                 {
                     e.Graphics.DrawImage(
-                        Properties.Resources.Gear,
+                        Main.IsDarkModeEnabled ? Properties.Resources.Gear_dark : Properties.Resources.Gear,
                         bounds.Left,
                         bounds.Top);
                 }

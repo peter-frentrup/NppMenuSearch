@@ -73,6 +73,16 @@ namespace NppMenuSearch.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ClearNormal_dark {
+            get {
+                object obj = ResourceManager.GetObject("ClearNormal_dark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ClearPressed {
             get {
                 object obj = ResourceManager.GetObject("ClearPressed", resourceCulture);
@@ -83,9 +93,29 @@ namespace NppMenuSearch.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ClearPressed_dark {
+            get {
+                object obj = ResourceManager.GetObject("ClearPressed_dark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Gear {
             get {
                 object obj = ResourceManager.GetObject("Gear", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Gear_dark {
+            get {
+                object obj = ResourceManager.GetObject("Gear_dark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

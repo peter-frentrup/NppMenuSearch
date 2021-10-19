@@ -121,6 +121,15 @@
   <ItemGroup>
     <None Include="Resources\x - normal.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Gear - dark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\x - light - dark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\x - normal - dark.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="../packages/UnmanagedExports.1.2.7/tools/RGiesecke.DllExport.targets" Condition="Exists('../packages/UnmanagedExports.1.2.7/tools/RGiesecke.DllExport.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
