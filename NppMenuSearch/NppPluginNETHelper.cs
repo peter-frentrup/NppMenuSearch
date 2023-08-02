@@ -2937,10 +2937,10 @@ namespace NppPluginNET
             for (int i = 0; i < num; i++)
             {
                 IntPtr item = Marshal.AllocHGlobal(stringCapacity);
-                Marshal.WriteIntPtr((IntPtr)((int)_nativeArray + (i * IntPtr.Size)), item);
+                Marshal.WriteIntPtr((IntPtr)((Int64)_nativeArray + (i * IntPtr.Size)), item);
                 _nativeItems.Add(item);
             }
-            Marshal.WriteIntPtr((IntPtr)((int)_nativeArray + (num * IntPtr.Size)), IntPtr.Zero);
+            Marshal.WriteIntPtr((IntPtr)((Int64)_nativeArray + (num * IntPtr.Size)), IntPtr.Zero);
         }
 
         public IntPtr NativePointer { get { return _nativeArray; } }

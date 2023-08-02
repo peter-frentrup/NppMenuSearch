@@ -65,6 +65,7 @@
     <Compile Include="Forms\FlyingSearchForm.Designer.cs">
       <DependentUpon>FlyingSearchForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TabItem.cs" />
     <Compile Include="Forms\ResultsPopup.cs">
       <SubType>Form</SubType>
     </Compile>
