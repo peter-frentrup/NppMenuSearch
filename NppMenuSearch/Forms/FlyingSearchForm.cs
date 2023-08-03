@@ -24,7 +24,11 @@ namespace NppMenuSearch.Forms
 
         private void FlyingSearchForm_VisibleChanged(object sender, EventArgs e)
         {
-            if (!Visible)
+            if (Visible)
+            {
+                Text = Main.GetMenuSearchTitle();
+            }
+            else
             {
                 txtSearch.Text = "";
                 ResultsPopup.Hide();

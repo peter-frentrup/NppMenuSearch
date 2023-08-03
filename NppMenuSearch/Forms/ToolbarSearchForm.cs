@@ -240,10 +240,7 @@ namespace NppMenuSearch.Forms
                         Win32.SendMessage(hwndRebar, Win32.RB_SETBANDWIDTH, searchBarIndex, oldPreferredWidth - extraMargin);
                 }
 
-                string cuebanner = "Search Menu & Preferences";
-                string shortcut = Main.GetMenuSearchShortcut();
-                if (shortcut != "")
-                    cuebanner = string.Format("{0} ({1})", cuebanner, shortcut);
+                string cuebanner = Main.GetMenuSearchTitle();
                 Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETCUEBANNER, 0, cuebanner);
             }
             finally

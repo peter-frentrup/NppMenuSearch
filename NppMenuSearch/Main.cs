@@ -126,6 +126,15 @@ namespace NppMenuSearch
             return text.After("\t");
         }
 
+        internal static string GetMenuSearchTitle()
+        {
+            string title = "Search Notepad++";
+            string shortcut = GetMenuSearchShortcut();
+            if (shortcut != "")
+                title = $"{title} ({shortcut})";
+            return title;
+        }
+
         internal static IntPtr FindRepeatLastCommandMenuItem(out uint cmdId, out uint index)
         {
             cmdId = (uint)PluginBase._funcItems.Items[2]._cmdID;
