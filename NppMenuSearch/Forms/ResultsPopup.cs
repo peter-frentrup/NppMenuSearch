@@ -12,7 +12,7 @@ namespace NppMenuSearch.Forms
 {
     public partial class ResultsPopup : Form
     {
-        const int DefaultMaxMenuResults = 12;
+        const int DefaultMaxMenuResults = 10;
         const int DefaultMaxPreferencesResults = 7;
         const int RecentlyUsedListCount = 5;
         const int BlinkRepeat = 4;
