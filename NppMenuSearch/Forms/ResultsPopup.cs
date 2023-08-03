@@ -169,7 +169,7 @@ namespace NppMenuSearch.Forms
                     viewResults.TileSize.Width,
                     Math.Max(toolbarButtonHeight, (int)(1.2 * viewResults.Font.Height)));
 
-                string helpText = "TAB switches groups: Recently Used ↔ Menu ↔ Preferences";
+                string helpText = "TAB switches groups: Recently Used ↔ Menu ↔ Open Files ↔ Preferences";
                 string shortcut = Main.GetMenuSearchShortcut();
                 if (shortcut != "")
                     helpText = string.Format("Press {0} again for all results. {1}", shortcut, helpText);
@@ -416,6 +416,7 @@ namespace NppMenuSearch.Forms
                 {
                     Tag = item,
                     Text = item.ToString(),
+                    ToolTipText = item.ToolTipText,
                     Group = resultGroupTabs,
                 });
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using NppPluginNET;
 
 namespace NppMenuSearch
 {
@@ -17,12 +18,16 @@ namespace NppMenuSearch
             return Path.GetFileName(FullFileName).IndexOf(search, StringComparison.InvariantCultureIgnoreCase) >= 0;
         }
 
+        private string ViewName { get { return Index == (int)NppMsg.MAIN_VIEW ? "Primary View" : "Secondary View"; } }
+
+        public string ToolTipText { get { return $"{ViewName}: {FullFileName}"; } }
+
         public override string ToString()
         {
             if (FullFileName == null)
                 return "";
 
-            return $"{Path.GetFileName(FullFileName)} ({Path.GetDirectoryName(FullFileName)})";
+            return Path.GetFileName(FullFileName);
         }
     }
 }

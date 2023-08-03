@@ -62,10 +62,10 @@
             this.lblHelp.Location = new System.Drawing.Point(0, 2);
             this.lblHelp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblHelp.Name = "lblHelp";
-            this.lblHelp.Size = new System.Drawing.Size(654, 16);
+            this.lblHelp.Size = new System.Drawing.Size(574, 14);
             this.lblHelp.TabIndex = 0;
             this.lblHelp.Text = "Press CTRL+M again to show all results. TAB to switch groups: Recently Used ↔ Men" +
-    "u ↔ Preferences";
+    "u ↔ Open Files ↔ Preferences";
             // 
             // viewResults
             // 
@@ -79,6 +79,7 @@
             this.viewResults.MultiSelect = false;
             this.viewResults.Name = "viewResults";
             this.viewResults.OwnerDraw = true;
+            this.viewResults.ShowItemToolTips = true;
             this.viewResults.Size = new System.Drawing.Size(592, 453);
             this.viewResults.TabIndex = 1;
             this.viewResults.TileSize = new System.Drawing.Size(317, 16);
