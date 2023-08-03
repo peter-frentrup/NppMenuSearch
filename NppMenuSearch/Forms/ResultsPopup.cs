@@ -30,7 +30,7 @@ namespace NppMenuSearch.Forms
         public TextBox OwnerTextBox;
         public MenuItem MainMenu;
         private DialogItem PreferenceDialog;
-        private List<TabItem> tabList;
+        private List<TabItem> TabList;
 
         public ResultsPopup()
         {
@@ -43,7 +43,7 @@ namespace NppMenuSearch.Forms
 
             MainMenu = new MenuItem(IntPtr.Zero);
             PreferenceDialog = new DialogItem("Preferences");
-            tabList = new List<TabItem>();
+            TabList = new List<TabItem>();
 
             // Lazy initializing the dialog on first search then steals the keyboard focus :( So do it here.
             InitPreferencesDialog();
@@ -199,44 +199,27 @@ namespace NppMenuSearch.Forms
 
         private void FillTabList()
         {
-            tabList = new List<TabItem>();
+            TabList = EnumOpenFileTabs(true).Concat(EnumOpenFileTabs(false)).ToList();
+        }
 
-            int openFileCount0 = Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETNBOPENFILES, 0, (int)NppMsg.PRIMARY_VIEW).ToInt32();
-            int openFileCount1 = Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETNBOPENFILES, 0, (int)NppMsg.SECOND_VIEW).ToInt32();
+        private static IEnumerable<TabItem> EnumOpenFileTabs(bool primaryView)
+        {
+            int count = Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETNBOPENFILES, 0, primaryView ? (int)NppMsg.PRIMARY_VIEW : (int)NppMsg.SECOND_VIEW).ToInt32();
 
-            using (ClikeStringArray nativeStringList = new ClikeStringArray(openFileCount0, 2 * 1024))
+            using (ClikeStringArray nativeStringList = new ClikeStringArray(count, 2 * 1024))
             {
-                int listFileCount = Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETOPENFILENAMESPRIMARY, nativeStringList.NativePointer, openFileCount0).ToInt32();
+                int listFileCount = Win32.SendMessage(PluginBase.nppData._nppHandle, primaryView ? NppMsg.NPPM_GETOPENFILENAMESPRIMARY : NppMsg.NPPM_GETOPENFILENAMESSECOND, nativeStringList.NativePointer, count).ToInt32();
 
                 List<string> filenameList = nativeStringList.ManagedStringsUnicode;
 
-                for (int i = 0; i < filenameList.Count; i++)
+                for (int i = 0; i < listFileCount; i++)
                 {
-                    TabItem tabItem = new TabItem()
+                    yield return new TabItem()
                     {
-                        ViewNumber = (int)NppMsg.MAIN_VIEW,
+                        ViewNumber = primaryView ? (int)NppMsg.MAIN_VIEW : (int)NppMsg.SUB_VIEW,
                         Index = i,
                         FullFileName = filenameList[i]
                     };
-                    tabList.Add(tabItem);
-                }
-            }
-
-            using (ClikeStringArray nativeStringList = new ClikeStringArray(openFileCount1, 2 * 1024))
-            {
-                int listFileCount = Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETOPENFILENAMESSECOND, nativeStringList.NativePointer, openFileCount1).ToInt32();
-
-                List<string> filenameList = nativeStringList.ManagedStringsUnicode;
-
-                for (int i = 0; i < filenameList.Count; i++)
-                {
-                    TabItem tabItem = new TabItem()
-                    {
-                        ViewNumber = (int)NppMsg.SUB_VIEW,
-                        Index = i,
-                        FullFileName = filenameList[i]
-                    };
-                    tabList.Add(tabItem);
                 }
             }
         }
@@ -386,7 +369,7 @@ namespace NppMenuSearch.Forms
 
             List<TabItem> openTabsFiltered = new List<TabItem>();
 
-            openTabsFiltered = tabList
+            openTabsFiltered = TabList
                 .Where(q => q.FullFileName != null && Path.GetFileName(q.FullFileName)?.ToLowerInvariant().Contains(OwnerTextBox.Text.ToLowerInvariant()) == true)
                 .ToList();
             
