@@ -815,31 +815,33 @@ namespace NppMenuSearch.Forms
         {
             menuGotoShortcutDefinition.Enabled = false;
             menuOpenDialog.Visible = false;
+            menuSelectTab.Visible = false;
 
             if (viewResults.SelectedItems.Count > 0)
             {
-                MenuItem menuItem = viewResults.SelectedItems[0].Tag as MenuItem;
-                if (menuItem != null)
+                if (viewResults.SelectedItems[0].Tag is MenuItem)
                 {
                     menuGotoShortcutDefinition.Enabled = true;
                 }
 
-                DialogItem dialogItem = viewResults.SelectedItems[0].Tag as DialogItem;
-                if (dialogItem != null)
+                if (viewResults.SelectedItems[0].Tag is DialogItem)
                 {
                     menuOpenDialog.Visible = true;
                 }
+                else if (viewResults.SelectedItems[0].Tag is TabItem)
+                {
+                    menuSelectTab.Visible = true;
+                }
+
+                menuExecute.Enabled = true;
             }
+            else
+                menuExecute.Enabled = false;
 
-            menuExecuteMenuItem.Visible = !menuOpenDialog.Visible;
+            menuExecute.Visible = !menuOpenDialog.Visible && !menuSelectTab.Visible;
         }
 
-        private void menuExecuteMenuItem_Click(object sender, EventArgs e)
-        {
-            ItemSelected();
-        }
-
-        private void menuOpenDialog_Click(object sender, EventArgs e)
+        private void menuExecute_Click(object sender, EventArgs e)
         {
             ItemSelected();
         }
