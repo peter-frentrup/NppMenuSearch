@@ -155,10 +155,10 @@ namespace NppMenuSearch.Forms
                 }
 
                 int toolbarButtonHeight = 0;
-                if(Main.ToolbarSearchForm != null && Main.ToolbarSearchForm.HwndToolbar != IntPtr.Zero)
+                if (Main.ToolbarSearchForm != null && Main.ToolbarSearchForm.HwndToolbar != IntPtr.Zero)
                 {
                     IntPtr hImgList = Win32.SendMessage(Main.ToolbarSearchForm.HwndToolbar, Win32.TB_GETIMAGELIST, 0, 0);
-                    if(hImgList != IntPtr.Zero)
+                    if (hImgList != IntPtr.Zero)
                     {
                         if (Win32.ImageList_GetIconSize(hImgList, out int cx, out int cy))
                             toolbarButtonHeight = cy;
@@ -166,7 +166,7 @@ namespace NppMenuSearch.Forms
                 }
 
                 viewResults.TileSize = new Size(
-                    viewResults.TileSize.Width, 
+                    viewResults.TileSize.Width,
                     Math.Max(toolbarButtonHeight, (int)(1.2 * viewResults.Font.Height)));
 
                 string helpText = "TAB switches groups: Recently Used ↔ Menu ↔ Preferences";
@@ -241,7 +241,7 @@ namespace NppMenuSearch.Forms
                     Win32.SWP_NOACTIVATE | Win32.SWP_NOMOVE | Win32.SWP_NOSIZE);
             }
         }
-        
+
         void OwnerTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
@@ -346,7 +346,6 @@ namespace NppMenuSearch.Forms
                 .Select(item => new KeyValuePair<double, HierarchyItem>(item.MatchingSimilarity(words), item))
                 .Where(kv => kv.Key > 0.0)
                 .OrderByDescending(kv => kv.Key)
-                //.Take(MaxMenuResults)
                 .Select(kv => (MenuItem)kv.Value)
                 .ToArray();
 
@@ -355,7 +354,6 @@ namespace NppMenuSearch.Forms
                 .Select(item => new KeyValuePair<double, HierarchyItem>(item.MatchingSimilarity(words), item))
                 .Where(kv => kv.Key > 0.0)
                 .OrderByDescending(kv => kv.Key)
-                //.Take(MaxPreferencesResults)
                 .Select(kv => (DialogItem)kv.Value)
                 .ToArray();
 
@@ -367,13 +365,12 @@ namespace NppMenuSearch.Forms
                 .Take(RecentlyUsedListCount)
                 .ToArray();
 
-            List<TabItem> openTabsFiltered = new List<TabItem>();
-
-            openTabsFiltered = TabList
-                .Where(q => q.FullFileName != null && Path.GetFileName(q.FullFileName)?.ToLowerInvariant().Contains(OwnerTextBox.Text.ToLowerInvariant()) == true)
+            List<TabItem> openTabsFiltered = TabList
+                .Where(item => item.MatchesSearchTerm(OwnerTextBox.Text))
+                .Take(MaxMenuResults)
                 .ToList();
-            
-            
+
+
             viewResults.Items.Clear();
 
             resultGroupTabs.Header = $"Open Files ({openTabsFiltered.Count})";
@@ -388,7 +385,7 @@ namespace NppMenuSearch.Forms
                 item.Group = resultGroupRecentlyUsed;
                 viewResults.Items.Add(item);
 #if DEBUG
-				item.Text = string.Format("[{1:0.0000}] {0}", hi, hi.MatchingSimilarity(words));
+                item.Text = string.Format("[{1:0.0000}] {0}", hi, hi.MatchingSimilarity(words));
 #endif
             }
 
@@ -401,27 +398,26 @@ namespace NppMenuSearch.Forms
                 if (i++ == MaxMenuResults)
                     break;
 
-                ListViewItem lvitem = new ListViewItem();
-                lvitem.Tag = item;
-                lvitem.Text = item + "";
-                lvitem.Group = resultGroupMenu;
+                ListViewItem lvitem = new ListViewItem()
+                {
+                    Tag = item,
+                    Text = item.ToString(),
+                    Group = resultGroupMenu,
+                };
                 viewResults.Items.Add(lvitem);
 #if DEBUG
-				lvitem.Text = string.Format("[{1:0.0000}] {0}", item, item.MatchingSimilarity(words));
+                lvitem.Text = string.Format("[{1:0.0000}] {0}", item, item.MatchingSimilarity(words));
 #endif
             }
 
-            i = 0;
             foreach (var item in openTabsFiltered)
             {
-                if (i++ == MaxMenuResults)
-                    break;
-
-                ListViewItem lvitem = new ListViewItem();
-                lvitem.Tag = item;
-                lvitem.Text = Path.GetFileName(item.FullFileName);
-                lvitem.Group = resultGroupTabs;
-                viewResults.Items.Add(lvitem);
+                viewResults.Items.Add(new ListViewItem()
+                {
+                    Tag = item,
+                    Text = item.ToString(),
+                    Group = resultGroupTabs,
+                });
             }
 
             i = 0;
@@ -433,13 +429,15 @@ namespace NppMenuSearch.Forms
                 if (i++ == MaxPreferencesResults)
                     break;
 
-                ListViewItem lvitem = new ListViewItem();
-                lvitem.Tag = item;
-                lvitem.Text = item + "";
-                lvitem.Group = resultGroupPreferences;
+                ListViewItem lvitem = new ListViewItem()
+                {
+                    Tag = item,
+                    Text = item.ToString(),
+                    Group = resultGroupPreferences,
+                };
                 viewResults.Items.Add(lvitem);
 #if DEBUG
-				lvitem.Text = string.Format("[{1}] {0}", item, item.MatchingSimilarity(words));
+                lvitem.Text = string.Format("[{1}] {0}", item, item.MatchingSimilarity(words));
 #endif
             }
 
@@ -497,14 +495,14 @@ namespace NppMenuSearch.Forms
             }
 
             TabItem tabItem = viewResults.SelectedItems[0].Tag as TabItem;
-            if (tabItem != null) 
+            if (tabItem != null)
             {
                 int viewNumber = tabItem.ViewNumber;
                 int index = tabItem.Index;
                 Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, viewNumber, index);
 
                 Hide();
-                OwnerTextBox.Text = ""; 
+                OwnerTextBox.Text = "";
 
                 OnFinished();
                 return;
@@ -658,14 +656,15 @@ namespace NppMenuSearch.Forms
                         bounds.Left,
                         bounds.Top);
                 }
-                else if(e.Item.Tag is MenuItem mi) {
+                else if (e.Item.Tag is MenuItem mi)
+                {
                     if (mi.NativeIcon != IntPtr.Zero) // todo: and no special icon constant
                     {
                         try
                         {
                             WithNativeIcon(mi.NativeIcon, bmp => e.Graphics.DrawImage(bmp, bounds.Left, bounds.Top));
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
 #if DEBUG
                             Console.WriteLine(ex);
@@ -685,8 +684,8 @@ namespace NppMenuSearch.Forms
                             try
                             {
                                 Win32.ImageList_Draw(
-                                    hImgList, tbi.iImage, hdc, 
-                                    bounds.Left, bounds.Top, 
+                                    hImgList, tbi.iImage, hdc,
+                                    bounds.Left, bounds.Top,
                                     //bounds.Height, bounds.Height,
                                     //Win32.CLR_NONE, Win32.CLR_NONE,
                                     Win32.ImageListDrawingStyle.Transparent);
@@ -719,7 +718,7 @@ namespace NppMenuSearch.Forms
                     {
                         if (UsesAlphaChannel(bmpData))
                         {
-                            using(var alphaBmp = new Bitmap(bmpData.Width, bmpData.Height, bmpData.Stride, PixelFormat.Format32bppArgb, bmpData.Scan0))
+                            using (var alphaBmp = new Bitmap(bmpData.Width, bmpData.Height, bmpData.Stride, PixelFormat.Format32bppArgb, bmpData.Scan0))
                             {
                                 draw(alphaBmp);
                                 return;
