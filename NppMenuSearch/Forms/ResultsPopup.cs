@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -24,21 +25,25 @@ namespace NppMenuSearch.Forms
         ListViewGroup resultGroupRecentlyUsed = new ListViewGroup("Recently Used", HorizontalAlignment.Left);
         ListViewGroup resultGroupMenu = new ListViewGroup("Menu", HorizontalAlignment.Left);
         ListViewGroup resultGroupPreferences = new ListViewGroup("Preferences", HorizontalAlignment.Left);
+        ListViewGroup resultGroupTabs = new ListViewGroup("Tabs", HorizontalAlignment.Left);
 
         public TextBox OwnerTextBox;
         public MenuItem MainMenu;
         private DialogItem PreferenceDialog;
+        private List<TabItem> tabList;
 
         public ResultsPopup()
         {
             InitializeComponent();
 
+            viewResults.Groups.Add(resultGroupTabs);
             viewResults.Groups.Add(resultGroupRecentlyUsed);
             viewResults.Groups.Add(resultGroupMenu);
             viewResults.Groups.Add(resultGroupPreferences);
 
             MainMenu = new MenuItem(IntPtr.Zero);
             PreferenceDialog = new DialogItem("Preferences");
+            tabList = new List<TabItem>();
 
             // Lazy initializing the dialog on first search then steals the keyboard focus :( So do it here.
             InitPreferencesDialog();
@@ -176,6 +181,9 @@ namespace NppMenuSearch.Forms
                 panInfo.Visible = true;
 
                 MainMenu = new MenuItem(Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_INTERNAL_GETMENU, 0, 0));
+
+                FillTabList();
+
                 //NeedPreferencesDialog();
 
                 OwnerTextBox.TextChanged += OwnerTextBox_TextChanged;
@@ -186,6 +194,50 @@ namespace NppMenuSearch.Forms
             {
                 OwnerTextBox.TextChanged -= OwnerTextBox_TextChanged;
                 OwnerTextBox.KeyDown -= OwnerTextBox_KeyDown;
+            }
+        }
+
+        private void FillTabList()
+        {
+            tabList = new List<TabItem>();
+
+            int openFileCount0 = Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETNBOPENFILES, 0, (int)NppMsg.PRIMARY_VIEW).ToInt32();
+            int openFileCount1 = Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETNBOPENFILES, 0, (int)NppMsg.SECOND_VIEW).ToInt32();
+
+            using (ClikeStringArray nativeStringList = new ClikeStringArray(openFileCount0, 2 * 1024))
+            {
+                int listFileCount = Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETOPENFILENAMESPRIMARY, nativeStringList.NativePointer, openFileCount0).ToInt32();
+
+                List<string> filenameList = nativeStringList.ManagedStringsUnicode;
+
+                for (int i = 0; i < filenameList.Count; i++)
+                {
+                    TabItem tabItem = new TabItem()
+                    {
+                        ViewNumber = (int)NppMsg.MAIN_VIEW,
+                        Index = i,
+                        FullFileName = filenameList[i]
+                    };
+                    tabList.Add(tabItem);
+                }
+            }
+
+            using (ClikeStringArray nativeStringList = new ClikeStringArray(openFileCount1, 2 * 1024))
+            {
+                int listFileCount = Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETOPENFILENAMESSECOND, nativeStringList.NativePointer, openFileCount1).ToInt32();
+
+                List<string> filenameList = nativeStringList.ManagedStringsUnicode;
+
+                for (int i = 0; i < filenameList.Count; i++)
+                {
+                    TabItem tabItem = new TabItem()
+                    {
+                        ViewNumber = (int)NppMsg.SUB_VIEW,
+                        Index = i,
+                        FullFileName = filenameList[i]
+                    };
+                    tabList.Add(tabItem);
+                }
             }
         }
 
@@ -332,8 +384,16 @@ namespace NppMenuSearch.Forms
                 .Take(RecentlyUsedListCount)
                 .ToArray();
 
+            List<TabItem> openTabsFiltered = new List<TabItem>();
+
+            openTabsFiltered = tabList
+                .Where(q => q.FullFileName != null && Path.GetFileName(q.FullFileName)?.ToLowerInvariant().Contains(OwnerTextBox.Text.ToLowerInvariant()) == true)
+                .ToList();
+            
+            
             viewResults.Items.Clear();
 
+            resultGroupTabs.Header = $"Tabs ({openTabsFiltered.Count})";
             resultGroupMenu.Header = string.Format("Menu ({0})", menuItems.Length - recentlyUsed.Where(hi => hi is MenuItem).Count());
             resultGroupPreferences.Header = string.Format("Preferences ({0})", prefDialogItems.Length - recentlyUsed.Where(hi => hi is DialogItem).Count());
 
@@ -350,6 +410,19 @@ namespace NppMenuSearch.Forms
             }
 
             int i = 0;
+            foreach (var item in openTabsFiltered)
+            {
+                if (i++ == MaxMenuResults)
+                    break;
+
+                ListViewItem lvitem = new ListViewItem();
+                lvitem.Tag = item;
+                lvitem.Text = Path.GetFileName(item.FullFileName);
+                lvitem.Group = resultGroupTabs;
+                viewResults.Items.Add(lvitem);
+            }
+
+            i = 0;
             foreach (var item in menuItems)
             {
                 if (recentlyUsed.Contains(item))
@@ -435,6 +508,20 @@ namespace NppMenuSearch.Forms
                 OpenPreferences(dialogItem.ControlId);
                 Hide();
                 OwnerTextBox.Text = "";
+
+                OnFinished();
+                return;
+            }
+
+            TabItem tabItem = viewResults.SelectedItems[0].Tag as TabItem;
+            if (tabItem != null) 
+            {
+                int viewNumber = tabItem.ViewNumber;
+                int index = tabItem.Index;
+                Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, viewNumber, index);
+
+                Hide();
+                OwnerTextBox.Text = ""; 
 
                 OnFinished();
                 return;
