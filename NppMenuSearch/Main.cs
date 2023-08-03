@@ -42,7 +42,7 @@ namespace NppMenuSearch
             xmlFilePath = Path.Combine(xmlFilePath, PluginName + ".xml");
             Settings.Load(xmlFilePath);
 
-            PluginBase.SetCommand(0, "Menu Search...", MenuSearchFunction, new ShortcutKey(true, false, false, Keys.M));
+            PluginBase.SetCommand(0, "Menu Search...", MenuSearchFunction, new ShortcutKey(true, false, false, Keys.F1));
             PluginBase.SetCommand(1, "Clear “Recently Used” List", ClearRecentlyUsedList, new ShortcutKey(false, false, false, Keys.None));
             PluginBase.SetCommand(2, RepeatPreviousCommandLabel, RepeatLastCommandFunction, new ShortcutKey(false, false, false, Keys.None));
             PluginBase.SetCommand(3, "---", null);
