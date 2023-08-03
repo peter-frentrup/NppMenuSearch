@@ -36,9 +36,9 @@ namespace NppMenuSearch.Forms
         {
             InitializeComponent();
 
-            viewResults.Groups.Add(resultGroupTabs);
             viewResults.Groups.Add(resultGroupRecentlyUsed);
             viewResults.Groups.Add(resultGroupMenu);
+            viewResults.Groups.Add(resultGroupTabs);
             viewResults.Groups.Add(resultGroupPreferences);
 
             MainMenu = new MenuItem(IntPtr.Zero);
@@ -410,19 +410,6 @@ namespace NppMenuSearch.Forms
             }
 
             int i = 0;
-            foreach (var item in openTabsFiltered)
-            {
-                if (i++ == MaxMenuResults)
-                    break;
-
-                ListViewItem lvitem = new ListViewItem();
-                lvitem.Tag = item;
-                lvitem.Text = Path.GetFileName(item.FullFileName);
-                lvitem.Group = resultGroupTabs;
-                viewResults.Items.Add(lvitem);
-            }
-
-            i = 0;
             foreach (var item in menuItems)
             {
                 if (recentlyUsed.Contains(item))
@@ -439,6 +426,19 @@ namespace NppMenuSearch.Forms
 #if DEBUG
 				lvitem.Text = string.Format("[{1:0.0000}] {0}", item, item.MatchingSimilarity(words));
 #endif
+            }
+
+            i = 0;
+            foreach (var item in openTabsFiltered)
+            {
+                if (i++ == MaxMenuResults)
+                    break;
+
+                ListViewItem lvitem = new ListViewItem();
+                lvitem.Tag = item;
+                lvitem.Text = Path.GetFileName(item.FullFileName);
+                lvitem.Group = resultGroupTabs;
+                viewResults.Items.Add(lvitem);
             }
 
             i = 0;
