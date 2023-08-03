@@ -25,7 +25,7 @@ namespace NppMenuSearch.Forms
         ListViewGroup resultGroupRecentlyUsed = new ListViewGroup("Recently Used", HorizontalAlignment.Left);
         ListViewGroup resultGroupMenu = new ListViewGroup("Menu", HorizontalAlignment.Left);
         ListViewGroup resultGroupPreferences = new ListViewGroup("Preferences", HorizontalAlignment.Left);
-        ListViewGroup resultGroupTabs = new ListViewGroup("Tabs", HorizontalAlignment.Left);
+        ListViewGroup resultGroupTabs = new ListViewGroup("Open Files", HorizontalAlignment.Left);
 
         public TextBox OwnerTextBox;
         public MenuItem MainMenu;
@@ -393,7 +393,7 @@ namespace NppMenuSearch.Forms
             
             viewResults.Items.Clear();
 
-            resultGroupTabs.Header = $"Tabs ({openTabsFiltered.Count})";
+            resultGroupTabs.Header = $"Open Files ({openTabsFiltered.Count})";
             resultGroupMenu.Header = string.Format("Menu ({0})", menuItems.Length - recentlyUsed.Where(hi => hi is MenuItem).Count());
             resultGroupPreferences.Header = string.Format("Preferences ({0})", prefDialogItems.Length - recentlyUsed.Where(hi => hi is DialogItem).Count());
 
