@@ -299,15 +299,6 @@ namespace NppMenuSearch.Forms
 
         private bool suppressKeyPress;
 
-        private string RemovePrevioustWord(string S, int pos)
-        {
-            int n = ((pos <= S.Length) ? pos : S.Length) - 1;
-            while (n >= 0 && Char.IsWhiteSpace(S[n])) { --n; } // skipping the trailing spaces
-            while (n >= 0 && !Char.IsWhiteSpace(S[n])) { --n; } // skipping the last word
-            while (n >= 0 && Char.IsWhiteSpace(S[n])) { --n; } // skipping the spaces before the last word
-            return S.Substring(0, n + 1) + S.Substring(pos);
-        }
-
         private void txtSearch_KeyDown(object sender, KeyEventArgs e)
         {
             suppressKeyPress = false;
@@ -332,11 +323,12 @@ namespace NppMenuSearch.Forms
                     if (e.Control)
                     {
                         // Ctrl+BackSpace
+                        suppressKeyPress = true; // Ctrl+BackSpace triggers a KeyPress with e.KeyChar == '\x7F'
                         int pos = txtSearch.SelectionStart;
                         if (txtSearch.SelectionLength == 0)
                         {
                             int len = txtSearch.Text.Length;
-                            txtSearch.Text = RemovePrevioustWord(txtSearch.Text, pos);
+                            txtSearch.Text = txtSearch.Text.RemovePrevioustWord(pos);
                             pos -= (len - txtSearch.Text.Length);
                         }
                         else
@@ -355,14 +347,6 @@ namespace NppMenuSearch.Forms
             {
                 suppressKeyPress = false;
                 e.Handled = true;
-            }
-            else
-            {
-                if (e.KeyChar == '\x7F') // 0x7F corresponds to Ctrl+BackSpace. Why? Ask Microsoft...
-                {
-                    e.KeyChar = '\x00';
-                    e.Handled = true;
-                }
             }
         }
 
