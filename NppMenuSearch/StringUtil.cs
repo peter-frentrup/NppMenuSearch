@@ -144,7 +144,7 @@ namespace NppMenuSearch
             return sb.ToString();
         }
 
-        public static string RemovePrevioustWord(this string s, int pos)
+        public static string RemovePreviousWord(this string s, int pos)
         {
             int n = ((pos <= s.Length) ? pos : s.Length) - 1;
             while (n >= 0 && Char.IsWhiteSpace(s[n])) { --n; } // skipping the trailing spaces

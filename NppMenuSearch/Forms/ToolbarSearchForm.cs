@@ -328,7 +328,7 @@ namespace NppMenuSearch.Forms
                         if (txtSearch.SelectionLength == 0)
                         {
                             int len = txtSearch.Text.Length;
-                            txtSearch.Text = txtSearch.Text.RemovePrevioustWord(pos);
+                            txtSearch.Text = txtSearch.Text.RemovePreviousWord(pos);
                             pos -= (len - txtSearch.Text.Length);
                         }
                         else
