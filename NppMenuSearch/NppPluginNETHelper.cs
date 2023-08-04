@@ -2255,6 +2255,8 @@ namespace NppPluginNET
         public const int WM_UNICHAR = 0x0109;
         public const int WM_INITDIALOG = 0x0110;
         public const int WM_COMMAND = 0x0111;
+        public const int WM_INITMENUPOPUP = 0x0117;
+        public const int WM_UNINITMENUPOPUP = 0x0125;
 
         public const int WM_REFLECT = 0x2000;
 

@@ -15,6 +15,7 @@ namespace NppMenuSearch
             Shortcut = "";
             CommandId = 0;
 
+            Win32.SendMessage(PluginBase.nppData._nppHandle, (NppMsg)Win32.WM_INITMENUPOPUP, hmenu, 0);
             int count = Win32.GetMenuItemCount(hmenu);
             for (int i = 0; i < count; ++i)
             {
@@ -32,6 +33,8 @@ namespace NppMenuSearch
                 item.NativeIcon = Win32.GetMenuItemBitmap(hmenu, (uint)i, true);
                 AddItem(item);
             }
+            // WM_UNINITMENUPOPUP is not used by Notepad++
+            //Win32.SendMessage(PluginBase.nppData._nppHandle, (NppMsg)Win32.WM_UNINITMENUPOPUP, hmenu, 0);
         }
 
         public override string ToString()
