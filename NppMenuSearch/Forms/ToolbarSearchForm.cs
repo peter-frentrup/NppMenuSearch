@@ -217,7 +217,7 @@ namespace NppMenuSearch.Forms
                 band.fStyle = Win32.RBBS_GRIPPERALWAYS;
                 band.hwndChild = Handle;
                 band.cx = Size.Width;
-                band.cxMinChild = 120;
+                band.cxMinChild = 170;
                 band.cxIdeal = 0;
                 band.cyMinChild = frmSearch.Height;
                 band.cyMaxChild = frmSearch.Height;
@@ -234,6 +234,9 @@ namespace NppMenuSearch.Forms
 
                 if (searchBarIndex > 0 && show)
                 {
+                    if (oldPreferredWidth < band.cxMinChild)
+                        oldPreferredWidth = band.cxMinChild;
+
                     Win32.SendMessage(hwndRebar, Win32.RB_SETBANDWIDTH, searchBarIndex, oldPreferredWidth);
                     int extraMargin = Width - oldPreferredWidth;
                     if(extraMargin > 0 && extraMargin < oldPreferredWidth)
