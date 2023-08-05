@@ -2625,6 +2625,9 @@ namespace NppPluginNET
         }
 
         [DllImport("user32.dll")]
+        public static extern bool IsMenu(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
         public static extern int GetMenuItemCount(IntPtr hMenu);
 
         [DllImport("comctl32.dll", SetLastError = true)]
