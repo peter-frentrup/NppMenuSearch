@@ -496,6 +496,44 @@ namespace NppPluginNET
         // Allocates a marker number to a plugin
         // Returns: TRUE if successful, FALSE otherwise. startNumber will also be set to 0 if unsuccessful
 
+
+
+
+        NPPM_GETEDITORDEFAULTFOREGROUNDCOLOR = (NPPMSG + 90),
+        // INT NPPM_GETEDITORDEFAULTFOREGROUNDCOLOR(0, 0)
+        // Return: current editor default foreground color. You should convert the returned value in COLORREF
+
+        NPPM_GETEDITORDEFAULTBACKGROUNDCOLOR = (NPPMSG + 91),
+        // INT NPPM_GETEDITORDEFAULTBACKGROUNDCOLOR(0, 0)
+        // Return: current editor default background color. You should convert the returned value in COLORREF
+
+
+        NPPM_ISDARKMODEENABLED = (NPPMSG + 107),
+        // bool NPPM_ISDARKMODEENABLED(0, 0)
+        // Returns true when Notepad++ Dark Mode is enable, false when it is not.
+
+        NPPM_GETDARKMODECOLORS = (NPPMSG + 108),
+        // bool NPPM_GETDARKMODECOLORS (size_t cbSize, NppDarkMode::Colors* returnColors)
+        // - cbSize must be filled with sizeof(NppDarkMode::Colors).
+        // - returnColors must be a pre-allocated NppDarkMode::Colors struct.
+        // Returns true when successful, false otherwise.
+        //
+        // Note: in the case of calling failure ("false" is returned), you may need to change NppDarkMode::Colors structure to:
+        // https://github.com/notepad-plus-plus/notepad-plus-plus/blob/master/PowerEditor/src/NppDarkMode.h#L32
+
+
+        NPPM_DARKMODESUBCLASSANDTHEME = (NPPMSG + 112),
+        // ULONG NPPM_DARKMODESUBCLASSANDTHEME(ULONG dmFlags, HWND hwnd)
+        // Add support for generic dark mode.
+        //
+        // Docking panels don't need to call NPPM_DARKMODESUBCLASSANDTHEME for main hwnd.
+        // Subclassing is applied automatically unless DWS_USEOWNDARKMODE flag is used.
+        //
+        // Might not work properly in C# plugins.
+        //
+        // Returns succesful combinations of flags.
+
+
         RUNCOMMAND_USER = (0x400/*WM_USER*/ + 3000),
         NPPM_GETFULLCURRENTPATH = (RUNCOMMAND_USER + FULL_CURRENT_PATH),
         NPPM_GETCURRENTDIRECTORY = (RUNCOMMAND_USER + CURRENT_DIRECTORY),
@@ -621,10 +659,67 @@ namespace NppPluginNET
         DOCSTAUS_READONLY = 1,
         DOCSTAUS_BUFFERDIRTY = 2,
 
-        NPPN_DOCORDERCHANGED = (NPPN_FIRST + 16)  // To notify plugins that document order is changed
-                                                  //scnNotification->nmhdr.code = NPPN_DOCORDERCHANGED;
-                                                  //scnNotification->nmhdr.hwndFrom = newIndex;
-                                                  //scnNotification->nmhdr.idFrom = BufferID;
+        NPPN_DOCORDERCHANGED = (NPPN_FIRST + 17),  // To notify plugins that document order is changed
+                                                   //scnNotification->nmhdr.code = NPPN_DOCORDERCHANGED;
+                                                   //scnNotification->nmhdr.hwndFrom = newIndex;
+                                                   //scnNotification->nmhdr.idFrom = BufferID;
+
+
+        NPPN_SNAPSHOTDIRTYFILELOADED = (NPPN_FIRST + 18), // To notify plugins that a snapshot dirty file is loaded on startup
+                                                          //scnNotification->nmhdr.code = NPPN_SNAPSHOTDIRTYFILELOADED;
+                                                          //scnNotification->nmhdr.hwndFrom = NULL;
+                                                          //scnNotification->nmhdr.idFrom = BufferID;
+
+        NPPN_BEFORESHUTDOWN = (NPPN_FIRST + 19), // To notify plugins that Npp shutdown has been triggered, files have not been closed yet
+                                                 //scnNotification->nmhdr.code = NPPN_BEFORESHUTDOWN;
+                                                 //scnNotification->nmhdr.hwndFrom = hwndNpp;
+                                                 //scnNotification->nmhdr.idFrom = 0;
+
+        NPPN_CANCELSHUTDOWN = (NPPN_FIRST + 20), // To notify plugins that Npp shutdown has been cancelled
+                                                 //scnNotification->nmhdr.code = NPPN_CANCELSHUTDOWN;
+                                                 //scnNotification->nmhdr.hwndFrom = hwndNpp;
+                                                 //scnNotification->nmhdr.idFrom = 0;
+
+        NPPN_FILEBEFORERENAME = (NPPN_FIRST + 21), // To notify plugins that file is to be renamed
+                                                   //scnNotification->nmhdr.code = NPPN_FILEBEFORERENAME;
+                                                   //scnNotification->nmhdr.hwndFrom = hwndNpp;
+                                                   //scnNotification->nmhdr.idFrom = BufferID;
+
+        NPPN_FILERENAMECANCEL = (NPPN_FIRST + 22), // To notify plugins that file rename has been cancelled
+                                                   //scnNotification->nmhdr.code = NPPN_FILERENAMECANCEL;
+                                                   //scnNotification->nmhdr.hwndFrom = hwndNpp;
+                                                   //scnNotification->nmhdr.idFrom = BufferID;
+
+        NPPN_FILERENAMED = (NPPN_FIRST + 23), // To notify plugins that file has been renamed
+                                              //scnNotification->nmhdr.code = NPPN_FILERENAMED;
+                                              //scnNotification->nmhdr.hwndFrom = hwndNpp;
+                                              //scnNotification->nmhdr.idFrom = BufferID;
+
+        NPPN_FILEBEFOREDELETE = (NPPN_FIRST + 24), // To notify plugins that file is to be deleted
+                                                   //scnNotification->nmhdr.code = NPPN_FILEBEFOREDELETE;
+                                                   //scnNotification->nmhdr.hwndFrom = hwndNpp;
+                                                   //scnNotification->nmhdr.idFrom = BufferID;
+
+        NPPN_FILEDELETEFAILED = (NPPN_FIRST + 25), // To notify plugins that file deletion has failed
+                                                   //scnNotification->nmhdr.code = NPPN_FILEDELETEFAILED;
+                                                   //scnNotification->nmhdr.hwndFrom = hwndNpp;
+                                                   //scnNotification->nmhdr.idFrom = BufferID;
+
+        NPPN_FILEDELETED = (NPPN_FIRST + 26),  // To notify plugins that file has been deleted
+                                               //scnNotification->nmhdr.code = NPPN_FILEDELETED;
+                                               //scnNotification->nmhdr.hwndFrom = hwndNpp;
+                                               //scnNotification->nmhdr.idFrom = BufferID;
+
+        NPPN_DARKMODECHANGED = (NPPN_FIRST + 27), // To notify plugins that Dark Mode was enabled/disabled
+                                                  //scnNotification->nmhdr.code = NPPN_DARKMODECHANGED;
+                                                  //scnNotification->nmhdr.hwndFrom = hwndNpp;
+                                                  //scnNotification->nmhdr.idFrom = 0;    
+
+        NPPN_CMDLINEPLUGINMSG = (NPPN_FIRST + 28), // To notify plugins that the new argument for plugins (via '-pluginMessage="YOUR_PLUGIN_ARGUMENT"' in command line) is available
+	                                               //scnNotification->nmhdr.code = NPPN_CMDLINEPLUGINMSG;
+	                                               //scnNotification->nmhdr.hwndFrom = hwndNpp;
+	                                               //scnNotification->nmhdr.idFrom = pluginMessage; //where pluginMessage is pointer of type wchar_t
+
     }
 
     public enum NppMenuCmd : uint
@@ -1081,6 +1176,87 @@ namespace NppPluginNET
 
         IDD_PREFERENCE_SUB_DARKMODE = 7100,
     };
+
+    /// <summary>
+    /// Indices into COLOREF array filled by <see cref="NppMsg.NPPM_GETDARKMODECOLORS"/>.
+    /// </summary>
+    public enum NppDarkModeColorIndex
+    {
+        Background = 0, // Since Npp 8.1.2
+        SofterBackground = 1, // Since Npp 8.1.2
+        HotBackground = 2, // Since Npp 8.1.2
+        PureBackground = 3, // Since Npp 8.1.2
+        ErrorBackground = 4, // Since Npp 8.1.2
+        Text = 5, // Since Npp 8.1.2
+        DarkerText = 6, // Since Npp 8.1.2
+        DisabledText = 7, // Since Npp 8.1.2
+
+        LinkText = 8, // Since Npp 8.1.3
+        Edge_on_Npp8_1_2 = 8, // Only in Npp 8.1.2, index was moved later
+        Edge_since_Npp8_1_3 = 9, // Since Npp 8.1.3
+
+        HotEdge = 10, // Since Npp 8.4.1
+        DisabledEdge = 11, // Since Npp 8.4.3
+    }
+
+    /// <summary>
+    /// Flags for <see cref="NppMsg.NPPM_DARKMODESUBCLASSANDTHEME"/>. Subclassing probably does not work for C# (WinForms) controls.
+    /// </summary>
+    [Flags]
+    public enum NppDarkModeFlags
+    {
+        /// <summary>
+        /// Used on parent of edit, listbox, static text, treeview, listview and toolbar controls.
+        /// Should be used only one time on parent control after its creation
+        /// even when starting in light mode.
+        /// e.g. in WM_INITDIALOG, in WM_CREATE or after CreateWindow.
+        /// </summary>
+        SubclassParent = 0x00000001,
+
+        /// <summary>
+        /// Should be used only one time on main control/window after initializations of all its children controls
+        /// even when starting in light mode.
+        /// Will also use dmfSetThemeChildren flag.
+        /// e.g. in WM_INITDIALOG, in WM_CREATE or after CreateWindow.
+        /// </summary>
+        SubclassChildren = 0x00000002,
+
+        /// <summary>
+        /// Will apply theme on buttons with style:
+        /// BS_PUSHLIKE, BS_PUSHBUTTON, BS_DEFPUSHBUTTON, BS_SPLITBUTTON or BS_DEFSPLITBUTTON.
+        /// Will apply theme for scrollbars on edit, listbox and rich edit controls.
+        /// Will apply theme for tooltips on listview, treeview and toolbar buttons.
+        /// Should be handled after controls initializations and in NPPN_DARKMODECHANGED.
+        /// Requires at least Windows 10 to work properly.
+        /// </summary>
+        SetThemeChildren = 0x00000004,
+
+        /// <summary>
+        /// Set dark title bar.
+        /// Should be handled after controls initializations and in NPPN_DARKMODECHANGED.
+        /// Requires at least Windows 10 and WS_CAPTION style to work properly.
+        /// </summary>
+        SetTitleBar = 0x00000008,
+
+        /// <summary>
+        /// Will apply dark explorer theme.
+        /// Used mainly for scrollbars and tooltips not handled with dmfSetThemeChildren.
+        /// Might also change style for other elements.
+        /// Should be handled after controls initializations and in NPPN_DARKMODECHANGED.
+        /// Requires at least Windows 10 to work properly.
+        /// </summary>
+        SetThemeDirectly = 0x00000010,
+
+        /// <summary>
+        /// Standard flags for main parent after its children are initialized.
+        /// </summary>
+        Init = 0x0000000B,
+
+        /// <summary>
+        /// Standard flags for main parent usually used in NPPN_DARKMODECHANGED.
+        /// </summary>
+        HandleChange = 0x0000000C,
+    }
 
     [Flags]
     public enum DockMgrMsg : uint
@@ -2162,6 +2338,8 @@ namespace NppPluginNET
         public static extern IntPtr SendMessage(IntPtr hWnd, NppMsg Msg, int wParam, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
         [DllImport("user32")]
         public static extern IntPtr SendMessage(IntPtr hWnd, NppMsg Msg, IntPtr wParam, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
+        [DllImport("user32")]
+        public static extern IntPtr SendMessage(IntPtr hWnd, NppMsg Msg, int wParam, uint[] lParam);
 
         [DllImport("user32")]
         public static extern IntPtr SendMessage(IntPtr hWnd, BabyGridMsg Msg, int wParam, int lParam);
@@ -2257,6 +2435,7 @@ namespace NppPluginNET
         public const int WM_COMMAND = 0x0111;
         public const int WM_INITMENUPOPUP = 0x0117;
         public const int WM_UNINITMENUPOPUP = 0x0125;
+        public const int WM_THEMECHANGED = 0x031A;
 
         public const int WM_REFLECT = 0x2000;
 

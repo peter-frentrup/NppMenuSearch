@@ -65,6 +65,9 @@ namespace NppMenuSearch
                         Marshal.FreeHGlobal(_ptrPluginName);
                         break;
 
+                    case (uint)NppMsg.NPPN_DARKMODECHANGED:
+                        DarkMode.OnChanged();
+                        break;
                 }
 
             }

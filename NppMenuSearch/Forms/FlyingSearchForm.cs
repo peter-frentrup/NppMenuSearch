@@ -20,6 +20,15 @@ namespace NppMenuSearch.Forms
             if (components == null)
                 components = new Container();
             components.Add(ResultsPopup);
+
+
+            DarkMode.Changed += DarkMode_Changed;
+            DarkMode_Changed();
+        }
+
+        private void DarkMode_Changed()
+        {
+            DarkMode.ApplyThemeRecursive(this);
         }
 
         private void FlyingSearchForm_VisibleChanged(object sender, EventArgs e)

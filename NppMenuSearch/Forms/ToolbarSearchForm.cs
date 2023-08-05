@@ -38,6 +38,16 @@ namespace NppMenuSearch.Forms
             //uint rightMargin = margins >> 16;
             //rightMargin+= 16;
             //Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETMARGINS, Win32.EC_RIGHTMARGIN, (int)(rightMargin << 16));
+
+            DarkMode.Changed += DarkMode_Changed;
+            DarkMode_Changed();
+
+            txtSearch.HandleCreated += (sender, e) => DarkMode.ApplyTheme((Control)sender);
+        }
+
+        private void DarkMode_Changed()
+        {
+            DarkMode.ApplyThemeRecursive(this);
         }
 
         void NppListener_AfterHideShowToolbar(bool show)
@@ -296,7 +306,7 @@ namespace NppMenuSearch.Forms
                 ResultsPopup.Activated += activated;
                 ResultsPopup.Show();
 
-                SetClearImage(Properties.Resources.ClearNormal);
+                SetClearImage(DarkMode.ClearNormalIcon);
             }
         }
 
@@ -359,7 +369,7 @@ namespace NppMenuSearch.Forms
             {
                 if (txtSearch.TextLength > 0)
                 {
-                    picClear.Image = Properties.Resources.ClearPressed;
+                    picClear.Image = DarkMode.ClearPressedIcon;
                 }
             }
         }
@@ -370,7 +380,7 @@ namespace NppMenuSearch.Forms
             {
                 if (txtSearch.TextLength > 0)
                 {
-                    picClear.Image = Properties.Resources.ClearNormal;
+                    picClear.Image = DarkMode.ClearNormalIcon;
                 }
             }
         }

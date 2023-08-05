@@ -28,6 +28,7 @@ namespace NppMenuSearch
         internal static ToolbarSearchForm ToolbarSearchForm { get; private set; }
         private static FlyingSearchForm FlyingSearchForm { get; set; }
 
+
         internal static void CommandMenuInit()
         {
 #if DEBUG
@@ -205,6 +206,8 @@ namespace NppMenuSearch
 
         internal static void PluginReady()
         {
+            DarkMode.OnChanged();
+
             NppListener = new NppListener();
 
             ToolbarSearchForm = new ToolbarSearchForm();

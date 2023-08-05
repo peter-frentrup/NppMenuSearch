@@ -51,11 +51,18 @@ namespace NppMenuSearch.Forms
             Main.NppListener.AfterReloadNativeLang += new EventHandler(NppListener_AfterReloadNativeLang);
 
             Main.MakeNppOwnerOf(this);
+            DarkMode.Changed += DarkMode_Changed;
+            DarkMode_Changed();
 
             viewResults.ContextMenu = popupMenu;
 
             if (Main.PreferredResultsWindowSize.Width > 0 && Main.PreferredResultsWindowSize.Height > 0)
                 Size = Main.PreferredResultsWindowSize;
+        }
+
+        private void DarkMode_Changed()
+        {
+            DarkMode.ApplyThemeRecursive(this);
         }
 
         void NppListener_AfterReloadNativeLang(object sender, EventArgs e)
@@ -127,13 +134,7 @@ namespace NppMenuSearch.Forms
             base.WndProc(ref m);
         }
 
-        protected override bool ShowWithoutActivation
-        {
-            get
-            {
-                return true;
-            }
-        }
+        protected override bool ShowWithoutActivation { get { return true; } }
 
         public void ShowMoreResults()
         {
@@ -630,13 +631,13 @@ namespace NppMenuSearch.Forms
 
             if (e.Item.Selected)
             {
-                backgroundColor = Color.LightGray;
-                foregroundColor = Color.Black;
+                backgroundColor = DarkMode.SelectedItemBackColor;
+                foregroundColor = DarkMode.SelectedItemForeColor;
             }
             else
             {
-                backgroundColor = SystemColors.Window;
-                foregroundColor = SystemColors.WindowText;
+                backgroundColor = DarkMode.TextBackColor;
+                foregroundColor = DarkMode.TextForeColor;
             }
 
             using (Brush background = new SolidBrush(backgroundColor))
@@ -653,7 +654,7 @@ namespace NppMenuSearch.Forms
                 if (e.Item.Tag is DialogItem)
                 {
                     e.Graphics.DrawImage(
-                        Properties.Resources.Gear,
+                        e.Item.Selected ? DarkMode.SelectedGearIcon : DarkMode.GearIcon,
                         bounds.Left,
                         bounds.Top);
                 }

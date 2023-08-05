@@ -57,6 +57,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DarkMode.cs" />
     <Compile Include="DialogHelper.cs" />
     <Compile Include="DialogItem.cs" />
     <Compile Include="Forms\FlyingSearchForm.cs">
@@ -117,10 +118,19 @@
     <None Include="Resources\Gear.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\x - light.png" />
+    <None Include="Resources\ClearPressed.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\x - normal.png" />
+    <None Include="Resources\ClearNormal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Gear_DarkMode.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ClearNormal_DarkMode.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ClearPressed_DarkMode.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="../packages/UnmanagedExports.1.2.7/tools/RGiesecke.DllExport.targets" Condition="Exists('../packages/UnmanagedExports.1.2.7/tools/RGiesecke.DllExport.targets')" />
