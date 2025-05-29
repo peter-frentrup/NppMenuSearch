@@ -35,9 +35,24 @@ namespace NppMenuSearch
                 "Global");
 
             yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_TOOLBAR,
+                "Toolbar",
+                "Toolbar");
+
+            yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_TABBAR,
+                "Tab Bar",
+                "Tabbar");
+
+            yield return new DialogInfo(
                 (uint)NppResources.IDD_PREFERENCE_SUB_EDITING,
-                "Editing",
+                "Editing 1",
                 "Scintillas");
+
+            yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_EDITING2,
+                "Editing 2",
+                "Scintillas2");
 
             yield return new DialogInfo(
                 (uint)NppResources.IDD_PREFERENCE_SUB_DARKMODE,
@@ -75,9 +90,14 @@ namespace NppMenuSearch
                 "Language"); // was LangMenu
 
             yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_INDENTATION,
+                "Indentation",
+                "Indentation");
+
+            yield return new DialogInfo(
                 (uint)NppResources.IDD_PREFERENCE_SUB_HIGHLIGHTING,
-                "Tab Settings",
-                "TabSettings");
+                "Highlighting",
+                "Highlighting");
 
             yield return new DialogInfo(
                 (uint)NppResources.IDD_PREFERENCE_SUB_PRINT,
@@ -108,6 +128,11 @@ namespace NppMenuSearch
                 (uint)NppResources.IDD_PREFERENCE_SUB_DELIMITER,
                 "Delimiter",
                 "Delimiter");
+
+            yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_PERFORMANCE,
+                "Performance",
+                "Performance");
 
             yield return new DialogInfo(
                 (uint)NppResources.IDD_PREFERENCE_SUB_CLOUD_LINK,

@@ -1135,6 +1135,10 @@ namespace NppPluginNET
         IDC_BUTTON_CLOSE = IDD_PREFERENCE_BOX + 1,
         IDC_LIST_DLGTITLE = IDD_PREFERENCE_BOX + 2,
 
+        IDD_PREFERENCE_SUB_TOOLBAR = 6010,
+
+        IDD_PREFERENCE_SUB_TABBAR = 6040,
+
         IDD_PREFERENCE_SUB_GENRAL = 6100,
 
         IDD_PREFERENCE_SUB_MULTIINSTANCE = 6150,
@@ -1159,6 +1163,8 @@ namespace NppPluginNET
 
         IDD_PREFERENCE_SUB_LANGUAGE = 6500,
 
+        IDD_PREFERENCE_SUB_EDITING2 = 6520,
+
         IDD_PREFERENCE_SUB_HIGHLIGHTING = 6550,
 
         IDD_PREFERENCE_SUB_PRINT = 6600,
@@ -1175,6 +1181,10 @@ namespace NppPluginNET
         IDD_PREFERENCE_SUB_SEARCHING = 6900,
 
         IDD_PREFERENCE_SUB_DARKMODE = 7100,
+
+        IDD_PREFERENCE_SUB_PERFORMANCE = 7140,
+
+        IDD_PREFERENCE_SUB_INDENTATION = 7160,
     };
 
     /// <summary>
@@ -2823,6 +2833,9 @@ namespace NppPluginNET
 
         [DllImport("user32.dll")]
         public static extern int GetDlgCtrlID(IntPtr hwndCtl);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetDlgItem(IntPtr hWnd, int nIDDlgItem);
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out IntPtr lpdwProcessId);
