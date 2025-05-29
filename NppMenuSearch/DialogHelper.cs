@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using NppPluginNET;
 
@@ -72,10 +73,13 @@ namespace NppMenuSearch
         }
 
         // does not work with nested/multiple tab controls!
-        public static void NavigateToChild(IntPtr hwndForm, IntPtr hwndChild)
+        public static IntPtr NavigateToChild(IntPtr hwndForm, List<IntPtr> hwndChild, uint dlgIdx)
         {
-            if (Win32.IsWindowVisible(hwndChild))
-                return;
+            foreach (var hwnd in hwndChild)
+            {
+                if (Win32.IsWindowVisible(hwnd))
+                    return hwnd;
+            }
 
             /* Before N++ 6.4.0, the preferences dialog used a tab-control.
 			 * Since 6.4.0, it uses a list-box for the various settings dialogs.
@@ -111,14 +115,25 @@ namespace NppMenuSearch
                 int count = (int)Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_GETCOUNT, 0, 0);
                 int sel = (int)Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_GETCURSEL, 0, 0);
 
+                if (dlgIdx != 0 && dlgIdx <= count && hwndChild.Count > 1)
+                {
+                    ChangeListboxSelection(hwndForm, hwndTabList, (int)dlgIdx - 1);
+
+                    foreach (var hwnd in hwndChild)
+                    {
+                        if (Win32.IsWindowVisible(hwnd))
+                            return hwnd;
+                    }
+                }
+
                 Console.WriteLine("navigate via listbox, count: {0}, sel: {1}", count, sel);
 
                 for (int i = 0; i < count; ++i)
                 {
                     ChangeListboxSelection(hwndForm, hwndTabList, i);
 
-                    if (Win32.IsWindowVisible(hwndChild))
-                        return;
+                    if (Win32.IsWindowVisible(hwndChild[0]))
+                        return hwndChild[0];
                 }
 
                 Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_SETCURSEL, sel, 0);
@@ -129,16 +144,29 @@ namespace NppMenuSearch
                 int count = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETITEMCOUNT, 0, 0);
                 int sel = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETCURSEL, 0, 0);
 
+                if (dlgIdx != 0 && dlgIdx <= count && hwndChild.Count > 1)
+                {
+                    ChangeTabPage(hwndForm, hwndTab, (int)dlgIdx - 1);
+
+                    foreach (var hwnd in hwndChild)
+                    {
+                        if (Win32.IsWindowVisible(hwnd))
+                            return hwnd;
+                    }
+                }
+
                 for (int i = 0; i < count; ++i)
                 {
                     ChangeTabPage(hwndForm, hwndTab, i);
 
-                    if (Win32.IsWindowVisible(hwndChild))
-                        return;
+                    if (Win32.IsWindowVisible(hwndChild[0]))
+                        return hwndChild[0];
                 }
 
                 Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_SETCURSEL, sel, 0);
             }
+
+            return IntPtr.Zero;
         }
 
     }
