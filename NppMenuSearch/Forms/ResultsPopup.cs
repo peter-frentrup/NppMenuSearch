@@ -363,8 +363,8 @@ namespace NppMenuSearch.Forms
 
             HierarchyItem[] recentlyUsed = Main.RecentlyUsedCommands
                 .Select(id =>
-                    (HierarchyItem)menuItems.Where(item => item.CommandId == id).FirstOrDefault() ??
-                    (HierarchyItem)prefDialogItems.Where(item => item.ControlId == id).FirstOrDefault())
+                    (HierarchyItem)menuItems.Where(item => item.CommandId == id.cmdId).FirstOrDefault() ??
+                    (HierarchyItem)prefDialogItems.Where(item => item.ControlId == id.cmdId && item.DlgIdx == id.dlgIdx).FirstOrDefault())
                 .Where(item => item != null)
                 .Take(RecentlyUsedListCount)
                 .ToArray();
@@ -467,8 +467,12 @@ namespace NppMenuSearch.Forms
             MenuItem menuItem = viewResults.SelectedItems[0].Tag as MenuItem;
             if (menuItem != null)
             {
-                Main.RecentlyUsedCommands.Remove(menuItem.CommandId);
-                Main.RecentlyUsedCommands.AddFirst(menuItem.CommandId);
+                var recentCmd = new Main.RecentCmd() {
+                    cmdId = menuItem.CommandId,
+                    dlgIdx = 0
+                };
+                Main.RecentlyUsedCommands.Remove(recentCmd);
+                Main.RecentlyUsedCommands.AddFirst(recentCmd);
 
                 //Console.WriteLine("Selected {0}", item.CommandId);
                 Win32.SendMessage(PluginBase.nppData._nppHandle, (NppMsg)Win32.WM_COMMAND, (int)menuItem.CommandId, 0);
@@ -488,8 +492,12 @@ namespace NppMenuSearch.Forms
             DialogItem dialogItem = viewResults.SelectedItems[0].Tag as DialogItem;
             if (dialogItem != null)
             {
-                Main.RecentlyUsedCommands.Remove(dialogItem.ControlId);
-                Main.RecentlyUsedCommands.AddFirst(dialogItem.ControlId);
+                var recentCmd = new Main.RecentCmd() {
+                    cmdId = dialogItem.ControlId,
+                    dlgIdx = dialogItem.DlgIdx
+                };
+                Main.RecentlyUsedCommands.Remove(recentCmd);
+                Main.RecentlyUsedCommands.AddFirst(recentCmd);
 
                 OpenPreferences(dialogItem.ControlId, dialogItem.DlgIdx);
                 Hide();

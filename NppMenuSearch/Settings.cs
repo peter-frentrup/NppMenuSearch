@@ -23,18 +23,28 @@ namespace NppMenuSearch
                 foreach (XmlElement xmlItem in xmlRecentlyUsedItems.ChildNodes)
                 {
                     string idString = xmlItem.GetAttribute("id");
+                    string dlgIdxString = xmlItem.GetAttribute("dlgIdx");
 
-                    uint uid;
-                    if (uint.TryParse(idString, out uid))
+                    uint uid, udlgIdx;
+                    if (uint.TryParse(idString, out uid) && uint.TryParse(dlgIdxString, out udlgIdx))
                     {
-                        Main.RecentlyUsedCommands.AddLast(uid);
+                        var recentCmd = new Main.RecentCmd() {
+                            cmdId = uid,
+                            dlgIdx = udlgIdx
+                        };
+                        Main.RecentlyUsedCommands.AddLast(recentCmd);
                         continue;
                     }
 
-                    int id;
-                    if (int.TryParse(idString, out id))
+                    int id, idlgIdx;
+                    if (int.TryParse(idString, out id) && int.TryParse(dlgIdxString, out idlgIdx))
                     {
-                        Main.RecentlyUsedCommands.AddLast((uint)id);
+                        var recentCmd = new Main.RecentCmd()
+                        {
+                            cmdId = (uint)id,
+                            dlgIdx = (uint)idlgIdx
+                        };
+                        Main.RecentlyUsedCommands.AddLast(recentCmd);
                         continue;
                     }
                 }
@@ -91,10 +101,11 @@ namespace NppMenuSearch
                 doc.AppendChild(xmlRoot);
                 xmlRoot.AppendChild(xmlRecentlyUsedItems);
 
-                foreach (uint id in Main.RecentlyUsedCommands)
+                foreach (var recentCmd in Main.RecentlyUsedCommands)
                 {
                     var xmlItem = doc.CreateElement("Item");
-                    xmlItem.SetAttribute("id", ((int)id).ToString());
+                    xmlItem.SetAttribute("id", ((int)recentCmd.cmdId).ToString());
+                    xmlItem.SetAttribute("dlgIdx", ((int)recentCmd.dlgIdx).ToString());
                     xmlRecentlyUsedItems.AppendChild(xmlItem);
                 }
 
