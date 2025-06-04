@@ -75,11 +75,8 @@ namespace NppMenuSearch
         // does not work with nested/multiple tab controls!
         public static IntPtr NavigateToChild(IntPtr hwndForm, List<IntPtr> hwndChild, uint pageIdx)
         {
-            foreach (var hwnd in hwndChild)
-            {
-                if (Win32.IsWindowVisible(hwnd))
-                    return hwnd;
-            }
+            if (hwndChild.Count == 1 && Win32.IsWindowVisible(hwndChild[0]))
+                return hwndChild[0];
 
             /* Before N++ 6.4.0, the preferences dialog used a tab-control.
 			 * Since 6.4.0, it uses a list-box for the various settings dialogs.
