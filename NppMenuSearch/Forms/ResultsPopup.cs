@@ -565,11 +565,11 @@ namespace NppMenuSearch.Forms
                 return hwndPreferences;
 
             List<IntPtr> hwndClosebutton;
-            hwndPreferences = FindDialogByChildControlId(6001, 0, true, out hwndClosebutton);
+            hwndPreferences = FindDialogByChildControlId(6001, true, out hwndClosebutton);
             return hwndPreferences;
         }
 
-        public static IntPtr FindDialogByChildControlId(uint controlId, uint pageIdx, bool onlyFirst, out List<IntPtr> hwndControls)
+        public static IntPtr FindDialogByChildControlId(uint controlId, bool onlyFirst, out List<IntPtr> hwndControls)
         {
             IntPtr form = Win32.GetActiveWindow();//Win32.GetForegroundWindow();
 
@@ -613,7 +613,7 @@ namespace NppMenuSearch.Forms
                 ((Timer)timer).Tick -= tick;
 
                 List<IntPtr> hwndDestinationControls;
-                IntPtr hwndPreferences = FindDialogByChildControlId(destinationControlId, pageIdx, false, out hwndDestinationControls);
+                IntPtr hwndPreferences = FindDialogByChildControlId(destinationControlId, false, out hwndDestinationControls);
 
                 if (hwndDestinationControls.Count != 0)
                 {
@@ -808,7 +808,7 @@ namespace NppMenuSearch.Forms
                 ((Timer)timer).Tick -= tick;
 
                 List<IntPtr> hwndGrid;
-                IntPtr hwndShortcutMapper = FindDialogByChildControlId(ShortcutMapperUtil.IDD_BABYGRID_ID1, 0, true, out hwndGrid);
+                IntPtr hwndShortcutMapper = FindDialogByChildControlId(ShortcutMapperUtil.IDD_BABYGRID_ID1, true, out hwndGrid);
 
                 if (hwndShortcutMapper != IntPtr.Zero && hwndGrid.Count != 0)
                 {
