@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Xml;
 using NppPluginNET;
 
@@ -150,18 +151,23 @@ namespace NppMenuSearch
                 "MISC");
         }
 
-        public IDictionary<uint, string> ControlTranslations;
+        public IDictionary<ulong, string> ControlTranslations;
         public IDictionary<string, string> PageTranslations;
+        private IDictionary<uint, string> PageIdxs;
 
         public PreferenceDialogHelper()
         {
-            ControlTranslations = new Dictionary<uint, string>();
+            ControlTranslations = new Dictionary<ulong, string>();
             PageTranslations = new Dictionary<string, string>();
+            PageIdxs = new Dictionary<uint, string>();
 
+            uint pageIdx = 1;
             PageTranslations[Global.InternalName] = Global.DefaultName;
             foreach (var info in GetPages())
             {
                 PageTranslations[info.InternalName] = info.DefaultName;
+                PageIdxs[pageIdx] = info.InternalName;
+                ++pageIdx;
             }
         }
 
@@ -183,7 +189,7 @@ namespace NppMenuSearch
                 XmlDocument doc = new XmlDocument();
                 doc.Load(nativeLangFile);
 
-                LoadLocalization((XmlElement)doc.SelectSingleNode("/NotepadPlus/Native-Langue/Dialog/Preference"));
+                LoadLocalization((XmlElement)doc.SelectSingleNode("/NotepadPlus/Native-Langue/Dialog/Preference"), 0);
             }
             catch (Exception ex)
             {
@@ -191,7 +197,7 @@ namespace NppMenuSearch
             }
         }
 
-        protected void LoadLocalization(XmlElement xml)
+        protected void LoadLocalization(XmlElement xml, uint pageIdx)
         {
             if (xml.Name == "Item" && xml.HasAttribute("id") && xml.HasAttribute("name"))
             {
@@ -213,19 +219,28 @@ namespace NppMenuSearch
                     controlId = (uint)id;
                 }
 
-                ControlTranslations[controlId] = xml.GetAttribute("name");
+                ulong ctrlId = (((ulong)pageIdx) << 32) + controlId;
+                ControlTranslations[ctrlId] = xml.GetAttribute("name");
                 return;
             }
 
+            string pageName = xml.Name;
             if (xml.HasAttribute("title"))
-                PageTranslations[xml.Name] = xml.GetAttribute("title");
+                PageTranslations[pageName] = xml.GetAttribute("title");
+
+            pageIdx = GetPageIdx(pageName);
 
             foreach (var xmlChildNode in xml.ChildNodes)
             {
                 XmlElement xmlChild = xmlChildNode as XmlElement;
                 if (xmlChild != null)
-                    LoadLocalization(xmlChild);
+                    LoadLocalization(xmlChild, pageIdx);
             }
+        }
+
+        public uint GetPageIdx(string pageInternalName)
+        {
+            return PageIdxs.FirstOrDefault(item => item.Value == pageInternalName).Key;
         }
     }
 }

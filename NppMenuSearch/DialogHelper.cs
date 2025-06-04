@@ -73,7 +73,7 @@ namespace NppMenuSearch
         }
 
         // does not work with nested/multiple tab controls!
-        public static IntPtr NavigateToChild(IntPtr hwndForm, List<IntPtr> hwndChild, uint dlgIdx)
+        public static IntPtr NavigateToChild(IntPtr hwndForm, List<IntPtr> hwndChild, uint pageIdx)
         {
             foreach (var hwnd in hwndChild)
             {
@@ -115,9 +115,9 @@ namespace NppMenuSearch
                 int count = (int)Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_GETCOUNT, 0, 0);
                 int sel = (int)Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_GETCURSEL, 0, 0);
 
-                if (dlgIdx != 0 && dlgIdx <= count && hwndChild.Count > 1)
+                if (pageIdx != 0 && pageIdx <= count && hwndChild.Count > 1)
                 {
-                    ChangeListboxSelection(hwndForm, hwndTabList, (int)dlgIdx - 1);
+                    ChangeListboxSelection(hwndForm, hwndTabList, (int)pageIdx - 1);
 
                     foreach (var hwnd in hwndChild)
                     {
@@ -144,9 +144,9 @@ namespace NppMenuSearch
                 int count = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETITEMCOUNT, 0, 0);
                 int sel = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETCURSEL, 0, 0);
 
-                if (dlgIdx != 0 && dlgIdx <= count && hwndChild.Count > 1)
+                if (pageIdx != 0 && pageIdx <= count && hwndChild.Count > 1)
                 {
-                    ChangeTabPage(hwndForm, hwndTab, (int)dlgIdx - 1);
+                    ChangeTabPage(hwndForm, hwndTab, (int)pageIdx - 1);
 
                     foreach (var hwnd in hwndChild)
                     {

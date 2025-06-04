@@ -9,19 +9,20 @@ namespace NppMenuSearch
     public class DialogItem : HierarchyItem
     {
         public uint ControlId;
-        public uint DlgIdx;
+        public uint PageIdx;
 
         public DialogItem(string text = "", uint id = 0)
             : base(text)
         {
             ControlId = id;
-            DlgIdx = 0;
+            PageIdx = 0;
         }
 
-        public void Translate(IDictionary<uint, string> translations)
+        public void Translate(IDictionary<ulong, string> translations)
         {
             string s;
-            if (ControlId != 0 && translations.TryGetValue(ControlId, out s))
+            ulong ctrlId = (((ulong)PageIdx) << 32) + ControlId;
+            if (ctrlId != 0 && translations.TryGetValue(ctrlId, out s))
                 Text = s;
 
             foreach (var item in this.EnumItems())
@@ -32,7 +33,7 @@ namespace NppMenuSearch
             }
         }
 
-        public static DialogItem CreateFromDialogFlat(IntPtr hwndDialog, uint dlgIdx, string title)
+        public static DialogItem CreateFromDialogFlat(IntPtr hwndDialog, uint pageIdx, string title)
         {
             DialogItem dialog = new DialogItem();
             dialog.Text = title;
@@ -59,7 +60,7 @@ namespace NppMenuSearch
                             {
                                 DialogItem item = new DialogItem();
                                 item.ControlId = id;
-                                item.DlgIdx = dlgIdx;
+                                item.PageIdx = pageIdx;
                                 item.Text = Win32.GetWindowText(descendent);
 
                                 dialog.AddItem(item);

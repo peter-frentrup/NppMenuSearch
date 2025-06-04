@@ -23,26 +23,26 @@ namespace NppMenuSearch
                 foreach (XmlElement xmlItem in xmlRecentlyUsedItems.ChildNodes)
                 {
                     string idString = xmlItem.GetAttribute("id");
-                    string dlgIdxString = xmlItem.GetAttribute("dlgIdx");
+                    string pageIdxString = xmlItem.GetAttribute("pageIdx");
 
-                    uint uid, udlgIdx;
-                    if (uint.TryParse(idString, out uid) && uint.TryParse(dlgIdxString, out udlgIdx))
+                    uint uid, upageIdx;
+                    if (uint.TryParse(idString, out uid) && uint.TryParse(pageIdxString, out upageIdx))
                     {
                         var recentCmd = new Main.RecentCmd() {
                             cmdId = uid,
-                            dlgIdx = udlgIdx
+                            pageIdx = upageIdx
                         };
                         Main.RecentlyUsedCommands.AddLast(recentCmd);
                         continue;
                     }
 
-                    int id, idlgIdx;
-                    if (int.TryParse(idString, out id) && int.TryParse(dlgIdxString, out idlgIdx))
+                    int id, ipageIdx;
+                    if (int.TryParse(idString, out id) && int.TryParse(pageIdxString, out ipageIdx))
                     {
                         var recentCmd = new Main.RecentCmd()
                         {
                             cmdId = (uint)id,
-                            dlgIdx = (uint)idlgIdx
+                            pageIdx = (uint)ipageIdx
                         };
                         Main.RecentlyUsedCommands.AddLast(recentCmd);
                         continue;
@@ -105,7 +105,7 @@ namespace NppMenuSearch
                 {
                     var xmlItem = doc.CreateElement("Item");
                     xmlItem.SetAttribute("id", ((int)recentCmd.cmdId).ToString());
-                    xmlItem.SetAttribute("dlgIdx", ((int)recentCmd.dlgIdx).ToString());
+                    xmlItem.SetAttribute("pageIdx", ((int)recentCmd.pageIdx).ToString());
                     xmlRecentlyUsedItems.AppendChild(xmlItem);
                 }
 

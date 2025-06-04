@@ -88,15 +88,13 @@ namespace NppMenuSearch.Forms
                 DialogHelper.DestroyWindow(hwndDialogPage);
             }
 
-            uint dlgIdx = 1;
-
             foreach (var pageInfo in pdh.GetPages())
             {
                 hwndDialogPage = DialogHelper.LoadNppDialog(Handle, (int)pageInfo.ResourceId);
                 try
                 {
-                    DialogItem pageItem = DialogItem.CreateFromDialogFlat(hwndDialogPage, dlgIdx, pdh.PageTranslation(pageInfo.InternalName));
-                    ++dlgIdx;
+                    uint pageIdx = pdh.GetPageIdx(pageInfo.InternalName);
+                    DialogItem pageItem = DialogItem.CreateFromDialogFlat(hwndDialogPage, pageIdx, pdh.PageTranslation(pageInfo.InternalName));
 
                     pageItem.ReorderItemsByGroupBoxes(hwndDialogPage);
 
@@ -364,7 +362,7 @@ namespace NppMenuSearch.Forms
             HierarchyItem[] recentlyUsed = Main.RecentlyUsedCommands
                 .Select(id =>
                     (HierarchyItem)menuItems.Where(item => item.CommandId == id.cmdId).FirstOrDefault() ??
-                    (HierarchyItem)prefDialogItems.Where(item => item.ControlId == id.cmdId && item.DlgIdx == id.dlgIdx).FirstOrDefault())
+                    (HierarchyItem)prefDialogItems.Where(item => item.ControlId == id.cmdId && item.PageIdx == id.pageIdx).FirstOrDefault())
                 .Where(item => item != null)
                 .Take(RecentlyUsedListCount)
                 .ToArray();
@@ -469,7 +467,7 @@ namespace NppMenuSearch.Forms
             {
                 var recentCmd = new Main.RecentCmd() {
                     cmdId = menuItem.CommandId,
-                    dlgIdx = 0
+                    pageIdx = 0
                 };
                 Main.RecentlyUsedCommands.Remove(recentCmd);
                 Main.RecentlyUsedCommands.AddFirst(recentCmd);
@@ -494,12 +492,12 @@ namespace NppMenuSearch.Forms
             {
                 var recentCmd = new Main.RecentCmd() {
                     cmdId = dialogItem.ControlId,
-                    dlgIdx = dialogItem.DlgIdx
+                    pageIdx = dialogItem.PageIdx
                 };
                 Main.RecentlyUsedCommands.Remove(recentCmd);
                 Main.RecentlyUsedCommands.AddFirst(recentCmd);
 
-                OpenPreferences(dialogItem.ControlId, dialogItem.DlgIdx);
+                OpenPreferences(dialogItem.ControlId, dialogItem.PageIdx);
                 Hide();
                 OwnerTextBox.Text = "";
 
@@ -571,7 +569,7 @@ namespace NppMenuSearch.Forms
             return hwndPreferences;
         }
 
-        public static IntPtr FindDialogByChildControlId(uint controlId, uint dlgIdx, bool onlyFirst, out List<IntPtr> hwndControls)
+        public static IntPtr FindDialogByChildControlId(uint controlId, uint pageIdx, bool onlyFirst, out List<IntPtr> hwndControls)
         {
             IntPtr form = Win32.GetActiveWindow();//Win32.GetForegroundWindow();
 
@@ -600,7 +598,7 @@ namespace NppMenuSearch.Forms
             return form;
         }
 
-        public void OpenPreferences(uint destinationControlId, uint dlgIdx)
+        public void OpenPreferences(uint destinationControlId, uint pageIdx)
         {
             /* WM_TIMER messages have the lowest priority, so the following EventHandler will be called 
 			 * (immediately) after the Preferences Dialog is shown [becuase we use a tick count of 1ms]
@@ -615,11 +613,11 @@ namespace NppMenuSearch.Forms
                 ((Timer)timer).Tick -= tick;
 
                 List<IntPtr> hwndDestinationControls;
-                IntPtr hwndPreferences = FindDialogByChildControlId(destinationControlId, dlgIdx, false, out hwndDestinationControls);
+                IntPtr hwndPreferences = FindDialogByChildControlId(destinationControlId, pageIdx, false, out hwndDestinationControls);
 
                 if (hwndDestinationControls.Count != 0)
                 {
-                    IntPtr hwndCtrl = DialogHelper.NavigateToChild(hwndPreferences, hwndDestinationControls, dlgIdx);
+                    IntPtr hwndCtrl = DialogHelper.NavigateToChild(hwndPreferences, hwndDestinationControls, pageIdx);
                     if (Win32.IsWindowVisible(hwndCtrl))
                     {
                         Win32.SetFocus(hwndCtrl);

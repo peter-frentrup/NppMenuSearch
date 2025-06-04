@@ -16,7 +16,7 @@ namespace NppMenuSearch
         public struct RecentCmd
         {
             public uint cmdId;
-            public uint dlgIdx;
+            public uint pageIdx;
         };
         public static LinkedList<RecentCmd> RecentlyUsedCommands { get; } = new LinkedList<RecentCmd>();
         public static int PreferredToolbarWidth = 0;
