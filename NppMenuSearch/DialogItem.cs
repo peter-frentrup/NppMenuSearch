@@ -21,7 +21,7 @@ namespace NppMenuSearch
         public void Translate(IDictionary<ulong, string> translations)
         {
             string s;
-            ulong ctrlId = (((ulong)PageIdx) << 32) + ControlId;
+            ulong ctrlId = PreferenceDialogHelper.GetCtrlTrnsltIdx(ControlId, PageIdx);
             if (ctrlId != 0 && translations.TryGetValue(ctrlId, out s))
                 Text = s;
 

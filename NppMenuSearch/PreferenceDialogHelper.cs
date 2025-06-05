@@ -219,8 +219,7 @@ namespace NppMenuSearch
                     controlId = (uint)id;
                 }
 
-                ulong ctrlId = (((ulong)pageIdx) << 32) + controlId;
-                ControlTranslations[ctrlId] = xml.GetAttribute("name");
+                ControlTranslations[GetCtrlTrnsltIdx(controlId, pageIdx)] = xml.GetAttribute("name");
                 return;
             }
 
@@ -236,6 +235,11 @@ namespace NppMenuSearch
                 if (xmlChild != null)
                     LoadLocalization(xmlChild, pageIdx);
             }
+        }
+
+        public static ulong GetCtrlTrnsltIdx(uint controlId, uint pageIdx)
+        {
+            return (((ulong)pageIdx) << 32) + controlId;
         }
 
         public uint GetPageIdx(string pageInternalName)
