@@ -28,10 +28,7 @@ namespace NppMenuSearch
                     uint uid, upageIdx;
                     if (uint.TryParse(idString, out uid) && uint.TryParse(pageIdxString, out upageIdx))
                     {
-                        var recentCmd = new Main.RecentCmd() {
-                            cmdId = uid,
-                            pageIdx = upageIdx
-                        };
+                        var recentCmd = new UniqueControlIdx(uid, upageIdx);
                         Main.RecentlyUsedCommands.AddLast(recentCmd);
                         continue;
                     }
@@ -39,11 +36,7 @@ namespace NppMenuSearch
                     int id, ipageIdx;
                     if (int.TryParse(idString, out id) && int.TryParse(pageIdxString, out ipageIdx))
                     {
-                        var recentCmd = new Main.RecentCmd()
-                        {
-                            cmdId = (uint)id,
-                            pageIdx = (uint)ipageIdx
-                        };
+                        var recentCmd = new UniqueControlIdx((uint)id, (uint)ipageIdx);
                         Main.RecentlyUsedCommands.AddLast(recentCmd);
                         continue;
                     }
@@ -104,8 +97,8 @@ namespace NppMenuSearch
                 foreach (var recentCmd in Main.RecentlyUsedCommands)
                 {
                     var xmlItem = doc.CreateElement("Item");
-                    xmlItem.SetAttribute("id", ((int)recentCmd.cmdId).ToString());
-                    xmlItem.SetAttribute("pageIdx", ((int)recentCmd.pageIdx).ToString());
+                    xmlItem.SetAttribute("id", ((int)recentCmd.ControlId).ToString());
+                    xmlItem.SetAttribute("pageIdx", ((int)recentCmd.PageIdx).ToString());
                     xmlRecentlyUsedItems.AppendChild(xmlItem);
                 }
 

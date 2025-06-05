@@ -361,8 +361,8 @@ namespace NppMenuSearch.Forms
 
             HierarchyItem[] recentlyUsed = Main.RecentlyUsedCommands
                 .Select(id =>
-                    (HierarchyItem)menuItems.Where(item => item.CommandId == id.cmdId).FirstOrDefault() ??
-                    (HierarchyItem)prefDialogItems.Where(item => item.ControlId == id.cmdId && item.PageIdx == id.pageIdx).FirstOrDefault())
+                    (HierarchyItem)menuItems.Where(item => item.CommandId == id.ControlId).FirstOrDefault() ??
+                    (HierarchyItem)prefDialogItems.Where(item => item.CtrlIdx == id).FirstOrDefault())
                 .Where(item => item != null)
                 .Take(RecentlyUsedListCount)
                 .ToArray();
@@ -465,10 +465,7 @@ namespace NppMenuSearch.Forms
             MenuItem menuItem = viewResults.SelectedItems[0].Tag as MenuItem;
             if (menuItem != null)
             {
-                var recentCmd = new Main.RecentCmd() {
-                    cmdId = menuItem.CommandId,
-                    pageIdx = 0
-                };
+                var recentCmd = new UniqueControlIdx(menuItem.CommandId, 0);
                 Main.RecentlyUsedCommands.Remove(recentCmd);
                 Main.RecentlyUsedCommands.AddFirst(recentCmd);
 
@@ -490,14 +487,11 @@ namespace NppMenuSearch.Forms
             DialogItem dialogItem = viewResults.SelectedItems[0].Tag as DialogItem;
             if (dialogItem != null)
             {
-                var recentCmd = new Main.RecentCmd() {
-                    cmdId = dialogItem.ControlId,
-                    pageIdx = dialogItem.PageIdx
-                };
+                var recentCmd = dialogItem.CtrlIdx;
                 Main.RecentlyUsedCommands.Remove(recentCmd);
                 Main.RecentlyUsedCommands.AddFirst(recentCmd);
 
-                OpenPreferences(dialogItem.ControlId, dialogItem.PageIdx);
+                OpenPreferences(dialogItem.CtrlIdx);
                 Hide();
                 OwnerTextBox.Text = "";
 
@@ -569,6 +563,8 @@ namespace NppMenuSearch.Forms
             return hwndPreferences;
         }
 
+        // Collects all controls from different pages (child dialogs) where the control ID == `controlID`.
+        // If `onlyFirst` is `true`, returns the very first control with the given `controlID`.
         public static IntPtr FindDialogByChildControlId(uint controlId, bool onlyFirst, out List<IntPtr> hwndControls)
         {
             IntPtr form = Win32.GetActiveWindow();//Win32.GetForegroundWindow();
@@ -598,7 +594,7 @@ namespace NppMenuSearch.Forms
             return form;
         }
 
-        public void OpenPreferences(uint destinationControlId, uint pageIdx)
+        public void OpenPreferences(UniqueControlIdx destinationCtrlIdx)
         {
             /* WM_TIMER messages have the lowest priority, so the following EventHandler will be called 
 			 * (immediately) after the Preferences Dialog is shown [becuase we use a tick count of 1ms]
@@ -613,11 +609,11 @@ namespace NppMenuSearch.Forms
                 ((Timer)timer).Tick -= tick;
 
                 List<IntPtr> hwndDestinationControls;
-                IntPtr hwndPreferences = FindDialogByChildControlId(destinationControlId, false, out hwndDestinationControls);
+                IntPtr hwndPreferences = FindDialogByChildControlId(destinationCtrlIdx.ControlId, false, out hwndDestinationControls);
 
                 if (hwndDestinationControls.Count != 0)
                 {
-                    IntPtr hwndCtrl = DialogHelper.NavigateToChild(hwndPreferences, hwndDestinationControls, pageIdx);
+                    IntPtr hwndCtrl = DialogHelper.NavigateToChild(hwndPreferences, hwndDestinationControls, destinationCtrlIdx.PageIdx);
                     if (Win32.IsWindowVisible(hwndCtrl))
                     {
                         Win32.SetFocus(hwndCtrl);

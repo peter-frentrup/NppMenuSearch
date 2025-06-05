@@ -8,21 +8,18 @@ namespace NppMenuSearch
 {
     public class DialogItem : HierarchyItem
     {
-        public uint ControlId;
-        public uint PageIdx;
+        public UniqueControlIdx CtrlIdx;
 
         public DialogItem(string text = "", uint id = 0)
             : base(text)
         {
-            ControlId = id;
-            PageIdx = 0;
+            CtrlIdx = new UniqueControlIdx(id, 0);
         }
 
-        public void Translate(IDictionary<ulong, string> translations)
+        public void Translate(IDictionary<UniqueControlIdx, string> translations)
         {
             string s;
-            ulong ctrlId = PreferenceDialogHelper.GetCtrlTrnsltIdx(ControlId, PageIdx);
-            if (ctrlId != 0 && translations.TryGetValue(ctrlId, out s))
+            if (CtrlIdx.ControlId != 0 && translations.TryGetValue(CtrlIdx, out s))
                 Text = s;
 
             foreach (var item in this.EnumItems())
@@ -59,8 +56,7 @@ namespace NppMenuSearch
                         case "Static":
                             {
                                 DialogItem item = new DialogItem();
-                                item.ControlId = id;
-                                item.PageIdx = pageIdx;
+                                item.CtrlIdx = new UniqueControlIdx(id, pageIdx);
                                 item.Text = Win32.GetWindowText(descendent);
 
                                 dialog.AddItem(item);
@@ -87,14 +83,14 @@ namespace NppMenuSearch
             var itToItem = new Dictionary<uint, DialogItem>();
             foreach(var di in EnumItems().Select(hi => hi as DialogItem).Where(di => di != null))
             {
-                if(itToItem.ContainsKey(di.ControlId))
+                if(itToItem.ContainsKey(di.CtrlIdx.ControlId))
                 {
                     Console.WriteLine("controlId {0} used twice:\n  {1}\n  {2}", 
-                        (int)di.ControlId,
-                        itToItem[di.ControlId],
+                        (int)di.CtrlIdx.ControlId,
+                        itToItem[di.CtrlIdx.ControlId],
                         di);
                 }
-                itToItem[di.ControlId] = di;
+                itToItem[di.CtrlIdx.ControlId] = di;
             }
 
             Win32.EnumChildWindows(hwndDialog, descendent =>
@@ -124,7 +120,7 @@ namespace NppMenuSearch
                             if(groupBoxes.ContainsKey(item))
                             {
                                 Console.WriteLine("group {0} ({1}) already has a rectangle: {2} and {3}",
-                                    (int)item.ControlId, 
+                                    (int)item.CtrlIdx.ControlId, 
                                     item,
                                     groupBoxes[item], 
                                     rect);
@@ -137,7 +133,7 @@ namespace NppMenuSearch
                     if(otherItems.ContainsKey(item))
                     {
                         Console.WriteLine("group {0} ({1}) already has a rectangle: {2} and {3}",
-                            (int)item.ControlId,
+                            (int)item.CtrlIdx.ControlId,
                             item,
                             otherItems[item],
                             rect);

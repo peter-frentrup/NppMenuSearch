@@ -7,6 +7,47 @@ using NppPluginNET;
 
 namespace NppMenuSearch
 {
+    public struct UniqueControlIdx : IEquatable<UniqueControlIdx>
+    {
+        public uint ControlId; // menu item ID or control ID within a page
+        public uint PageIdx;   // index of a page (each page is a child dialog)
+
+        public UniqueControlIdx(uint ctrlId, uint pageIdx)
+        {
+            ControlId = ctrlId;
+            PageIdx = pageIdx;
+        }
+
+        public bool Equals(UniqueControlIdx other)
+        {
+            return ControlId == other.ControlId && PageIdx == other.PageIdx;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is UniqueControlIdx other)
+            {
+                return Equals(other);
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return ControlId.GetHashCode() ^ PageIdx.GetHashCode();
+        }
+
+        public static bool operator==(UniqueControlIdx left, UniqueControlIdx right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator!=(UniqueControlIdx left, UniqueControlIdx right)
+        {
+            return !left.Equals(right);
+        }
+    }
+
     class PreferenceDialogHelper
     {
         public struct DialogInfo
@@ -151,13 +192,13 @@ namespace NppMenuSearch
                 "MISC");
         }
 
-        public IDictionary<ulong, string> ControlTranslations;
+        public IDictionary<UniqueControlIdx, string> ControlTranslations;
         public IDictionary<string, string> PageTranslations;
         private IDictionary<uint, string> PageIdxs;
 
         public PreferenceDialogHelper()
         {
-            ControlTranslations = new Dictionary<ulong, string>();
+            ControlTranslations = new Dictionary<UniqueControlIdx, string>();
             PageTranslations = new Dictionary<string, string>();
             PageIdxs = new Dictionary<uint, string>();
 
@@ -219,7 +260,7 @@ namespace NppMenuSearch
                     controlId = (uint)id;
                 }
 
-                ControlTranslations[GetCtrlTrnsltIdx(controlId, pageIdx)] = xml.GetAttribute("name");
+                ControlTranslations[new UniqueControlIdx(controlId, pageIdx)] = xml.GetAttribute("name");
                 return;
             }
 
@@ -235,11 +276,6 @@ namespace NppMenuSearch
                 if (xmlChild != null)
                     LoadLocalization(xmlChild, pageIdx);
             }
-        }
-
-        public static ulong GetCtrlTrnsltIdx(uint controlId, uint pageIdx)
-        {
-            return (((ulong)pageIdx) << 32) + controlId;
         }
 
         public uint GetPageIdx(string pageInternalName)

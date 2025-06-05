@@ -72,7 +72,15 @@ namespace NppMenuSearch
             Win32.SendMessage(hwndDialog, Win32.WM_COMMAND, wParam, hwndListboxControl);
         }
 
-        // does not work with nested/multiple tab controls!
+        /// <summary>
+        /// Navigates to and returns the first child control in <paramref name="hwndForm"/> from the list of 
+        /// alternatives <paramref name="hwndChild"/> that is visible on the sub-dialog (list box)
+        /// identified by the 1-based <paramref name="pageIdx"/> or to <c><paramref name="hwndChild"/>[0]</c> 
+        /// if <c><paramref name="pageIdx"/> == 0</c> or <c><paramref name="hwndChild"/>.Count == 1</c>.
+        /// <para>
+        /// Does not work with nested/multiple tab controls.
+        /// </para>
+        /// </summary>
         public static IntPtr NavigateToChild(IntPtr hwndForm, List<IntPtr> hwndChild, uint pageIdx)
         {
             if (hwndChild.Count == 1 && Win32.IsWindowVisible(hwndChild[0]))
