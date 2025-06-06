@@ -81,7 +81,7 @@ namespace NppMenuSearch.Forms
             hwndDialogPage = DialogHelper.LoadNppDialog(Handle, (int)pdh.Global.ResourceId);
             try
             {
-                PreferenceDialog = DialogItem.CreateFromDialogFlat(hwndDialogPage, pdh.PageTranslations[pdh.Global.InternalName]);
+                PreferenceDialog = DialogItem.CreateFromDialogFlat(hwndDialogPage, 0, pdh.PageTranslations[pdh.Global.InternalName]);
             }
             finally
             {
@@ -93,7 +93,8 @@ namespace NppMenuSearch.Forms
                 hwndDialogPage = DialogHelper.LoadNppDialog(Handle, (int)pageInfo.ResourceId);
                 try
                 {
-                    DialogItem pageItem = DialogItem.CreateFromDialogFlat(hwndDialogPage, pdh.PageTranslation(pageInfo.InternalName));
+                    uint pageIdx = pdh.GetPageIdx(pageInfo.InternalName);
+                    DialogItem pageItem = DialogItem.CreateFromDialogFlat(hwndDialogPage, pageIdx, pdh.PageTranslation(pageInfo.InternalName));
 
                     pageItem.ReorderItemsByGroupBoxes(hwndDialogPage);
 
@@ -360,8 +361,8 @@ namespace NppMenuSearch.Forms
 
             HierarchyItem[] recentlyUsed = Main.RecentlyUsedCommands
                 .Select(id =>
-                    (HierarchyItem)menuItems.Where(item => item.CommandId == id).FirstOrDefault() ??
-                    (HierarchyItem)prefDialogItems.Where(item => item.ControlId == id).FirstOrDefault())
+                    (HierarchyItem)menuItems.Where(item => item.CommandId == id.ControlId).FirstOrDefault() ??
+                    (HierarchyItem)prefDialogItems.Where(item => item.CtrlIdx == id).FirstOrDefault())
                 .Where(item => item != null)
                 .Take(RecentlyUsedListCount)
                 .ToArray();
@@ -464,8 +465,9 @@ namespace NppMenuSearch.Forms
             MenuItem menuItem = viewResults.SelectedItems[0].Tag as MenuItem;
             if (menuItem != null)
             {
-                Main.RecentlyUsedCommands.Remove(menuItem.CommandId);
-                Main.RecentlyUsedCommands.AddFirst(menuItem.CommandId);
+                var recentCmd = new UniqueControlIdx(menuItem.CommandId, 0);
+                Main.RecentlyUsedCommands.Remove(recentCmd);
+                Main.RecentlyUsedCommands.AddFirst(recentCmd);
 
                 //Console.WriteLine("Selected {0}", item.CommandId);
                 Win32.SendMessage(PluginBase.nppData._nppHandle, (NppMsg)Win32.WM_COMMAND, (int)menuItem.CommandId, 0);
@@ -485,10 +487,11 @@ namespace NppMenuSearch.Forms
             DialogItem dialogItem = viewResults.SelectedItems[0].Tag as DialogItem;
             if (dialogItem != null)
             {
-                Main.RecentlyUsedCommands.Remove(dialogItem.ControlId);
-                Main.RecentlyUsedCommands.AddFirst(dialogItem.ControlId);
+                var recentCmd = dialogItem.CtrlIdx;
+                Main.RecentlyUsedCommands.Remove(recentCmd);
+                Main.RecentlyUsedCommands.AddFirst(recentCmd);
 
-                OpenPreferences(dialogItem.ControlId);
+                OpenPreferences(dialogItem.CtrlIdx);
                 Hide();
                 OwnerTextBox.Text = "";
 
@@ -555,37 +558,43 @@ namespace NppMenuSearch.Forms
             if (hwndPreferences != IntPtr.Zero)
                 return hwndPreferences;
 
-            IntPtr hwndClosebutton;
-            hwndPreferences = FindDialogByChildControlId(6001, out hwndClosebutton);
+            List<IntPtr> hwndClosebutton;
+            hwndPreferences = FindDialogByChildControlId(6001, true, out hwndClosebutton);
             return hwndPreferences;
         }
 
-        public static IntPtr FindDialogByChildControlId(uint controlId, out IntPtr hwndControl)
+        // Collects all controls from different pages (child dialogs) where the control ID == `controlID`.
+        // If `onlyFirst` is `true`, returns the very first control with the given `controlID`.
+        public static IntPtr FindDialogByChildControlId(uint controlId, bool onlyFirst, out List<IntPtr> hwndControls)
         {
             IntPtr form = Win32.GetActiveWindow();//Win32.GetForegroundWindow();
 
-            hwndControl = IntPtr.Zero;
-            if (controlId == 0)
-                return form;
+            var controls = new List<IntPtr>();
 
-            IntPtr control = IntPtr.Zero;
+            if (controlId == 0)
+            {
+                hwndControls = controls;
+                return form;
+            }
+
             Predicate<IntPtr> callback = hwndChild =>
             {
                 if (Win32.GetDlgCtrlID(hwndChild) == controlId)
                 {
-                    control = hwndChild;
-                    return false;
+                    controls.Add(hwndChild);
+                    if (onlyFirst)
+                        return false;
                 }
                 return true;
             };
 
             Win32.EnumChildWindows(form, callback);
 
-            hwndControl = control;
+            hwndControls = controls;
             return form;
         }
 
-        public void OpenPreferences(uint destinationControlId)
+        public void OpenPreferences(UniqueControlIdx destinationCtrlIdx)
         {
             /* WM_TIMER messages have the lowest priority, so the following EventHandler will be called 
 			 * (immediately) after the Preferences Dialog is shown [becuase we use a tick count of 1ms]
@@ -599,16 +608,16 @@ namespace NppMenuSearch.Forms
                 ((Timer)timer).Stop();
                 ((Timer)timer).Tick -= tick;
 
-                IntPtr hwndDestinationControl;
-                IntPtr hwndPreferences = FindDialogByChildControlId(destinationControlId, out hwndDestinationControl);
+                List<IntPtr> hwndDestinationControls;
+                IntPtr hwndPreferences = FindDialogByChildControlId(destinationCtrlIdx.ControlId, false, out hwndDestinationControls);
 
-                if (hwndDestinationControl != IntPtr.Zero)
+                if (hwndDestinationControls.Count != 0)
                 {
-                    DialogHelper.NavigateToChild(hwndPreferences, hwndDestinationControl);
-                    if (Win32.IsWindowVisible(hwndDestinationControl))
+                    IntPtr hwndCtrl = DialogHelper.NavigateToChild(hwndPreferences, hwndDestinationControls, destinationCtrlIdx.PageIdx);
+                    if (Win32.IsWindowVisible(hwndCtrl))
                     {
-                        Win32.SetFocus(hwndDestinationControl);
-                        Highlight(hwndDestinationControl);
+                        Win32.SetFocus(hwndCtrl);
+                        Highlight(hwndCtrl);
                     }
                 }
             };
@@ -794,12 +803,12 @@ namespace NppMenuSearch.Forms
                 ((Timer)timer).Stop();
                 ((Timer)timer).Tick -= tick;
 
-                IntPtr hwndGrid;
-                IntPtr hwndShortcutMapper = FindDialogByChildControlId(ShortcutMapperUtil.IDD_BABYGRID_ID1, out hwndGrid);
+                List<IntPtr> hwndGrid;
+                IntPtr hwndShortcutMapper = FindDialogByChildControlId(ShortcutMapperUtil.IDD_BABYGRID_ID1, true, out hwndGrid);
 
-                if (hwndShortcutMapper != IntPtr.Zero && hwndGrid != IntPtr.Zero)
+                if (hwndShortcutMapper != IntPtr.Zero && hwndGrid.Count != 0)
                 {
-                    if (ShortcutMapperUtil.GotoGridItem(hwndShortcutMapper, hwndGrid, menuItem))
+                    if (ShortcutMapperUtil.GotoGridItem(hwndShortcutMapper, hwndGrid[0], menuItem))
                         return;
                 }
 

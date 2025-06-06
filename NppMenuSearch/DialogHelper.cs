@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using NppPluginNET;
 
@@ -71,11 +72,19 @@ namespace NppMenuSearch
             Win32.SendMessage(hwndDialog, Win32.WM_COMMAND, wParam, hwndListboxControl);
         }
 
-        // does not work with nested/multiple tab controls!
-        public static void NavigateToChild(IntPtr hwndForm, IntPtr hwndChild)
+        /// <summary>
+        /// Navigates to and returns the first child control in <paramref name="hwndForm"/> from the list of 
+        /// alternatives <paramref name="hwndChild"/> that is visible on the sub-dialog (list box)
+        /// identified by the 1-based <paramref name="pageIdx"/> or to <c><paramref name="hwndChild"/>[0]</c> 
+        /// if <c><paramref name="pageIdx"/> == 0</c> or <c><paramref name="hwndChild"/>.Count == 1</c>.
+        /// <para>
+        /// Does not work with nested/multiple tab controls.
+        /// </para>
+        /// </summary>
+        public static IntPtr NavigateToChild(IntPtr hwndForm, List<IntPtr> hwndChild, uint pageIdx)
         {
-            if (Win32.IsWindowVisible(hwndChild))
-                return;
+            if (hwndChild.Count == 1 && Win32.IsWindowVisible(hwndChild[0]))
+                return hwndChild[0];
 
             /* Before N++ 6.4.0, the preferences dialog used a tab-control.
 			 * Since 6.4.0, it uses a list-box for the various settings dialogs.
@@ -111,14 +120,25 @@ namespace NppMenuSearch
                 int count = (int)Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_GETCOUNT, 0, 0);
                 int sel = (int)Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_GETCURSEL, 0, 0);
 
+                if (pageIdx != 0 && pageIdx <= count && hwndChild.Count > 1)
+                {
+                    ChangeListboxSelection(hwndForm, hwndTabList, (int)pageIdx - 1);
+
+                    foreach (var hwnd in hwndChild)
+                    {
+                        if (Win32.IsWindowVisible(hwnd))
+                            return hwnd;
+                    }
+                }
+
                 Console.WriteLine("navigate via listbox, count: {0}, sel: {1}", count, sel);
 
                 for (int i = 0; i < count; ++i)
                 {
                     ChangeListboxSelection(hwndForm, hwndTabList, i);
 
-                    if (Win32.IsWindowVisible(hwndChild))
-                        return;
+                    if (Win32.IsWindowVisible(hwndChild[0]))
+                        return hwndChild[0];
                 }
 
                 Win32.SendMessage(hwndTabList, (NppMsg)Win32.LB_SETCURSEL, sel, 0);
@@ -129,16 +149,29 @@ namespace NppMenuSearch
                 int count = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETITEMCOUNT, 0, 0);
                 int sel = (int)Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_GETCURSEL, 0, 0);
 
+                if (pageIdx != 0 && pageIdx <= count && hwndChild.Count > 1)
+                {
+                    ChangeTabPage(hwndForm, hwndTab, (int)pageIdx - 1);
+
+                    foreach (var hwnd in hwndChild)
+                    {
+                        if (Win32.IsWindowVisible(hwnd))
+                            return hwnd;
+                    }
+                }
+
                 for (int i = 0; i < count; ++i)
                 {
                     ChangeTabPage(hwndForm, hwndTab, i);
 
-                    if (Win32.IsWindowVisible(hwndChild))
-                        return;
+                    if (Win32.IsWindowVisible(hwndChild[0]))
+                        return hwndChild[0];
                 }
 
                 Win32.SendMessage(hwndTab, (NppMsg)Win32.TCM_SETCURSEL, sel, 0);
             }
+
+            return IntPtr.Zero;
         }
 
     }

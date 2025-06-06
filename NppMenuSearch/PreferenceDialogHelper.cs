@@ -1,11 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Xml;
 using NppPluginNET;
 
 namespace NppMenuSearch
 {
+    public struct UniqueControlIdx : IEquatable<UniqueControlIdx>
+    {
+        public uint ControlId; // menu item ID or control ID within a page
+        public uint PageIdx;   // index of a page (each page is a child dialog)
+
+        public UniqueControlIdx(uint ctrlId, uint pageIdx)
+        {
+            ControlId = ctrlId;
+            PageIdx = pageIdx;
+        }
+
+        public bool Equals(UniqueControlIdx other)
+        {
+            return ControlId == other.ControlId && PageIdx == other.PageIdx;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is UniqueControlIdx other)
+            {
+                return Equals(other);
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return ControlId.GetHashCode() ^ PageIdx.GetHashCode();
+        }
+
+        public static bool operator==(UniqueControlIdx left, UniqueControlIdx right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator!=(UniqueControlIdx left, UniqueControlIdx right)
+        {
+            return !left.Equals(right);
+        }
+    }
+
     class PreferenceDialogHelper
     {
         public struct DialogInfo
@@ -35,9 +77,24 @@ namespace NppMenuSearch
                 "Global");
 
             yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_TOOLBAR,
+                "Toolbar",
+                "Toolbar");
+
+            yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_TABBAR,
+                "Tab Bar",
+                "Tabbar");
+
+            yield return new DialogInfo(
                 (uint)NppResources.IDD_PREFERENCE_SUB_EDITING,
-                "Editing",
+                "Editing 1",
                 "Scintillas");
+
+            yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_EDITING2,
+                "Editing 2",
+                "Scintillas2");
 
             yield return new DialogInfo(
                 (uint)NppResources.IDD_PREFERENCE_SUB_DARKMODE,
@@ -75,9 +132,14 @@ namespace NppMenuSearch
                 "Language"); // was LangMenu
 
             yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_INDENTATION,
+                "Indentation",
+                "Indentation");
+
+            yield return new DialogInfo(
                 (uint)NppResources.IDD_PREFERENCE_SUB_HIGHLIGHTING,
-                "Tab Settings",
-                "TabSettings");
+                "Highlighting",
+                "Highlighting");
 
             yield return new DialogInfo(
                 (uint)NppResources.IDD_PREFERENCE_SUB_PRINT,
@@ -110,6 +172,11 @@ namespace NppMenuSearch
                 "Delimiter");
 
             yield return new DialogInfo(
+                (uint)NppResources.IDD_PREFERENCE_SUB_PERFORMANCE,
+                "Performance",
+                "Performance");
+
+            yield return new DialogInfo(
                 (uint)NppResources.IDD_PREFERENCE_SUB_CLOUD_LINK,
                 "Cloud & Link",
                 "Cloud");
@@ -125,18 +192,23 @@ namespace NppMenuSearch
                 "MISC");
         }
 
-        public IDictionary<uint, string> ControlTranslations;
+        public IDictionary<UniqueControlIdx, string> ControlTranslations;
         public IDictionary<string, string> PageTranslations;
+        private IDictionary<uint, string> PageIdxs;
 
         public PreferenceDialogHelper()
         {
-            ControlTranslations = new Dictionary<uint, string>();
+            ControlTranslations = new Dictionary<UniqueControlIdx, string>();
             PageTranslations = new Dictionary<string, string>();
+            PageIdxs = new Dictionary<uint, string>();
 
+            uint pageIdx = 1;
             PageTranslations[Global.InternalName] = Global.DefaultName;
             foreach (var info in GetPages())
             {
                 PageTranslations[info.InternalName] = info.DefaultName;
+                PageIdxs[pageIdx] = info.InternalName;
+                ++pageIdx;
             }
         }
 
@@ -158,7 +230,7 @@ namespace NppMenuSearch
                 XmlDocument doc = new XmlDocument();
                 doc.Load(nativeLangFile);
 
-                LoadLocalization((XmlElement)doc.SelectSingleNode("/NotepadPlus/Native-Langue/Dialog/Preference"));
+                LoadLocalization((XmlElement)doc.SelectSingleNode("/NotepadPlus/Native-Langue/Dialog/Preference"), 0);
             }
             catch (Exception ex)
             {
@@ -166,7 +238,7 @@ namespace NppMenuSearch
             }
         }
 
-        protected void LoadLocalization(XmlElement xml)
+        protected void LoadLocalization(XmlElement xml, uint pageIdx)
         {
             if (xml.Name == "Item" && xml.HasAttribute("id") && xml.HasAttribute("name"))
             {
@@ -188,19 +260,27 @@ namespace NppMenuSearch
                     controlId = (uint)id;
                 }
 
-                ControlTranslations[controlId] = xml.GetAttribute("name");
+                ControlTranslations[new UniqueControlIdx(controlId, pageIdx)] = xml.GetAttribute("name");
                 return;
             }
 
+            string pageName = xml.Name;
             if (xml.HasAttribute("title"))
-                PageTranslations[xml.Name] = xml.GetAttribute("title");
+                PageTranslations[pageName] = xml.GetAttribute("title");
+
+            pageIdx = GetPageIdx(pageName);
 
             foreach (var xmlChildNode in xml.ChildNodes)
             {
                 XmlElement xmlChild = xmlChildNode as XmlElement;
                 if (xmlChild != null)
-                    LoadLocalization(xmlChild);
+                    LoadLocalization(xmlChild, pageIdx);
             }
+        }
+
+        public uint GetPageIdx(string pageInternalName)
+        {
+            return PageIdxs.FirstOrDefault(item => item.Value == pageInternalName).Key;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace NppMenuSearch
 {
     class Main
     {
-        public static LinkedList<uint> RecentlyUsedCommands { get; } = new LinkedList<uint>();
+        public static LinkedList<UniqueControlIdx> RecentlyUsedCommands { get; } = new LinkedList<UniqueControlIdx>();
         public static int PreferredToolbarWidth = 0;
         public static Size PreferredResultsWindowSize = new Size(0, 0);
         public static bool IsClosing { get; private set; }
@@ -159,11 +159,11 @@ namespace NppMenuSearch
                 mainMenu = new MenuItem(Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_INTERNAL_GETMENU, 0, 0));
 
             return RecentlyUsedCommands
-                .Where(id => id != rlcId)
+                .Where(id => id.ControlId != rlcId)
                 .Select(id => mainMenu
                     .EnumFinalItems()
                     .Cast<MenuItem>()
-                    .Where(item => item.CommandId == id)
+                    .Where(item => item.CommandId == id.ControlId)
                     .FirstOrDefault())
                 .FirstOrDefault();
         }

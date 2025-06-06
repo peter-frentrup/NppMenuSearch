@@ -23,18 +23,21 @@ namespace NppMenuSearch
                 foreach (XmlElement xmlItem in xmlRecentlyUsedItems.ChildNodes)
                 {
                     string idString = xmlItem.GetAttribute("id");
+                    string pageIdxString = xmlItem.GetAttribute("pageIdx");
 
-                    uint uid;
-                    if (uint.TryParse(idString, out uid))
+                    uint uid, upageIdx;
+                    if (uint.TryParse(idString, out uid) && uint.TryParse(pageIdxString, out upageIdx))
                     {
-                        Main.RecentlyUsedCommands.AddLast(uid);
+                        var recentCmd = new UniqueControlIdx(uid, upageIdx);
+                        Main.RecentlyUsedCommands.AddLast(recentCmd);
                         continue;
                     }
 
-                    int id;
-                    if (int.TryParse(idString, out id))
+                    int id, ipageIdx;
+                    if (int.TryParse(idString, out id) && int.TryParse(pageIdxString, out ipageIdx))
                     {
-                        Main.RecentlyUsedCommands.AddLast((uint)id);
+                        var recentCmd = new UniqueControlIdx((uint)id, (uint)ipageIdx);
+                        Main.RecentlyUsedCommands.AddLast(recentCmd);
                         continue;
                     }
                 }
@@ -91,10 +94,11 @@ namespace NppMenuSearch
                 doc.AppendChild(xmlRoot);
                 xmlRoot.AppendChild(xmlRecentlyUsedItems);
 
-                foreach (uint id in Main.RecentlyUsedCommands)
+                foreach (var recentCmd in Main.RecentlyUsedCommands)
                 {
                     var xmlItem = doc.CreateElement("Item");
-                    xmlItem.SetAttribute("id", ((int)id).ToString());
+                    xmlItem.SetAttribute("id", ((int)recentCmd.ControlId).ToString());
+                    xmlItem.SetAttribute("pageIdx", ((int)recentCmd.PageIdx).ToString());
                     xmlRecentlyUsedItems.AppendChild(xmlItem);
                 }
 
