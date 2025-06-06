@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -34,6 +35,8 @@ namespace NppMenuSearch
 #if DEBUG
 			Win32.AllocConsole();
 			Console.WriteLine(PluginName + " debug mode");
+            //MessageBox.Show($"{PluginName}: CommandMenuInit, waiting to attach debugger", PluginName);
+            Stopwatch sw = Stopwatch.StartNew();
 #endif
 
             StringBuilder sbXmlFilePath = new StringBuilder(Win32.MAX_PATH);
@@ -48,6 +51,10 @@ namespace NppMenuSearch
             PluginBase.SetCommand(2, RepeatPreviousCommandLabel, RepeatLastCommandFunction, new ShortcutKey(false, false, false, Keys.None));
             PluginBase.SetCommand(3, "---", null);
             PluginBase.SetCommand(4, "About", AboutFunction, new ShortcutKey(false, false, false, Keys.None));
+
+#if DEBUG
+            Console.WriteLine($"{PluginName}:CommandMenuInit took {sw.ElapsedMilliseconds}ms");
+#endif
         }
 
         internal static string GetNativeLangXml()
@@ -206,6 +213,10 @@ namespace NppMenuSearch
 
         internal static void PluginReady()
         {
+#if DEBUG
+            Stopwatch sw = Stopwatch.StartNew();
+#endif
+
             DarkMode.OnChanged();
 
             NppListener = new NppListener();
@@ -219,6 +230,10 @@ namespace NppMenuSearch
             RecalcRepeatLastCommandMenuItem();
 
             Win32.SendMessage(PluginBase.GetCurrentScintilla(), SciMsg.SCI_GRABFOCUS, 0, 0);
+
+#if DEBUG
+            Console.WriteLine($"{PluginName}:PluginReady took {sw.ElapsedMilliseconds}ms");
+#endif
         }
 
         private static FlyingSearchForm NeedFlyingSearchForm()
