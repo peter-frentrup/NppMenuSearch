@@ -34,7 +34,8 @@ after_build:
 
         if ($env:CONFIGURATION -eq "Release") {
             $ZipFileName = "NppMenuSearch_$($env:APPVEYOR_REPO_TAG_NAME)_$($env:PLATFORM).zip"
-            7z a $ZipFileName bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\NppMenuSearch.dll
+            7z a $ZipFileName .\bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\NppMenuSearch.dll
+            7z a $ZipFileName .\bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\NppMenuSearch.dll.*.xml
             Push-AppveyorArtifact $ZipFileName -DeploymentName releases
         }
 
