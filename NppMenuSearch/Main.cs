@@ -224,11 +224,12 @@ namespace NppMenuSearch
             ToolbarSearchForm = new ToolbarSearchForm();
             FlyingSearchForm = null;
 
+            ToolbarSearchForm.AfterCompleteInit += (s, e) => { RecalcRepeatLastCommandMenuItem(); };
+
             NppListener.AssignHandle(PluginBase.nppData._nppHandle);
 
             ToolbarSearchForm.CheckToolbarVisiblity();
-            RecalcRepeatLastCommandMenuItem();
-
+            
             Win32.SendMessage(PluginBase.GetCurrentScintilla(), SciMsg.SCI_GRABFOCUS, 0, 0);
 
 #if DEBUG

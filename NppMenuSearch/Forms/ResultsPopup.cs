@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using NppPluginNET;
 
@@ -45,7 +47,6 @@ namespace NppMenuSearch.Forms
             PreferenceDialog = new DialogItem("Preferences");
             TabList = new List<TabItem>();
 
-            // Lazy initializing the dialog on first search then steals the keyboard focus :( So do it here.
             InitPreferencesDialog();
 
             Main.NppListener.AfterReloadNativeLang += new EventHandler(NppListener_AfterReloadNativeLang);
@@ -72,16 +73,35 @@ namespace NppMenuSearch.Forms
 
         protected void InitPreferencesDialog()
         {
+#if DEBUG
+            Stopwatch sw = Stopwatch.StartNew();
+#endif
+            var hwndDummyDialogParent = Handle;
+            Task.Factory.StartNew(() => {
+                DialogItem preferenceDialog = BackgroundLoadPreferenceDialog(hwndDummyDialogParent);
+
+                Action<DialogItem> finishOnGuiThread = newPrefsDialog => {
+                    PreferenceDialog = newPrefsDialog;
+#if DEBUG
+                    Console.WriteLine($"InitPreferencesDialog finished after {sw.ElapsedMilliseconds}ms");
+#endif
+                };
+                BeginInvoke(finishOnGuiThread, preferenceDialog);
+            });
+        }
+
+        private static DialogItem BackgroundLoadPreferenceDialog(IntPtr hwndDummyDialogParent)
+        {
             PreferenceDialogHelper pdh = new PreferenceDialogHelper();
             pdh.LoadCurrentLocalization();
 
             IntPtr hwndDialogPage;
-            PreferenceDialog = new DialogItem(pdh.PageTranslations[pdh.Global.InternalName]);
+            DialogItem preferenceDialog = new DialogItem(pdh.PageTranslations[pdh.Global.InternalName]);
 
-            hwndDialogPage = DialogHelper.LoadNppDialog(Handle, (int)pdh.Global.ResourceId);
+            hwndDialogPage = DialogHelper.LoadNppDialog(hwndDummyDialogParent, (int)pdh.Global.ResourceId);
             try
             {
-                PreferenceDialog = DialogItem.CreateFromDialogFlat(hwndDialogPage, 0, pdh.PageTranslations[pdh.Global.InternalName]);
+                preferenceDialog = DialogItem.CreateFromDialogFlat(hwndDialogPage, 0, pdh.PageTranslations[pdh.Global.InternalName]);
             }
             finally
             {
@@ -90,7 +110,7 @@ namespace NppMenuSearch.Forms
 
             foreach (var pageInfo in pdh.GetPages())
             {
-                hwndDialogPage = DialogHelper.LoadNppDialog(Handle, (int)pageInfo.ResourceId);
+                hwndDialogPage = DialogHelper.LoadNppDialog(hwndDummyDialogParent, (int)pageInfo.ResourceId);
                 try
                 {
                     uint pageIdx = pdh.GetPageIdx(pageInfo.InternalName);
@@ -98,7 +118,7 @@ namespace NppMenuSearch.Forms
 
                     pageItem.ReorderItemsByGroupBoxes(hwndDialogPage);
 
-                    PreferenceDialog.AddItem(pageItem);
+                    preferenceDialog.AddItem(pageItem);
                 }
                 finally
                 {
@@ -106,8 +126,9 @@ namespace NppMenuSearch.Forms
                 }
             }
 
-            PreferenceDialog.Translate(pdh.ControlTranslations);
-            PreferenceDialog.RemoveRedundantHeadings();
+            preferenceDialog.Translate(pdh.ControlTranslations);
+            preferenceDialog.RemoveRedundantHeadings();
+            return preferenceDialog;
         }
 
         protected override void WndProc(ref Message m)

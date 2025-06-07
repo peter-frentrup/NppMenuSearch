@@ -17,15 +17,11 @@ namespace NppMenuSearch.Forms
 
         bool currentlyCheckingToolbarVisiblity = false;
 
+        public event EventHandler AfterCompleteInit;
+
         public ToolbarSearchForm()
         {
             InitializeComponent();
-            ResultsPopup = new ResultsPopup();
-            ResultsPopup.OwnerTextBox = txtSearch;
-
-            if (components == null)
-                components = new Container();
-            components.Add(ResultsPopup);
 
             Main.NppListener.AfterHideShowToolbar += new NppListener.HideShowEventHandler(NppListener_AfterHideShowToolbar);
 
@@ -40,9 +36,30 @@ namespace NppMenuSearch.Forms
             //Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETMARGINS, Win32.EC_RIGHTMARGIN, (int)(rightMargin << 16));
 
             DarkMode.Changed += DarkMode_Changed;
-            DarkMode_Changed();
 
             txtSearch.HandleCreated += (sender, e) => DarkMode.ApplyTheme((Control)sender);
+
+            HandleCreated += ToolbarSearchForm_HandleCreated;
+        }
+
+        private void ToolbarSearchForm_HandleCreated(object sender, EventArgs e)
+        {
+            HandleCreated -= ToolbarSearchForm_HandleCreated;
+            BeginInvoke((Action)DoDelayedInit);
+        }
+
+        private void DoDelayedInit()
+        {
+            ResultsPopup = new ResultsPopup();
+            ResultsPopup.OwnerTextBox = txtSearch;
+
+            if (components == null)
+                components = new Container();
+            components.Add(ResultsPopup);
+
+            DarkMode_Changed();
+
+            AfterCompleteInit?.Invoke(this, EventArgs.Empty);
         }
 
         private void DarkMode_Changed()
