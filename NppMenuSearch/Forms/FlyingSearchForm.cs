@@ -16,6 +16,7 @@ namespace NppMenuSearch.Forms
 
             ResultsPopup = new ResultsPopup();
             ResultsPopup.OwnerTextBox = txtSearch;
+            ResultsPopup.TopMost = TopMost;
 
             if (components == null)
                 components = new Container();
