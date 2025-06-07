@@ -77,8 +77,11 @@ namespace NppMenuSearch.Forms
             Stopwatch sw = Stopwatch.StartNew();
 #endif
             var hwndDummyDialogParent = Handle;
+            PreferenceDialogHelper pdh = new PreferenceDialogHelper();
+            pdh.LoadCurrentLocalization();
+
             Task.Factory.StartNew(() => {
-                DialogItem preferenceDialog = BackgroundLoadPreferenceDialog(hwndDummyDialogParent);
+                DialogItem preferenceDialog = BackgroundLoadPreferenceDialog(hwndDummyDialogParent, pdh);
 
                 Action<DialogItem> finishOnGuiThread = newPrefsDialog => {
                     PreferenceDialog = newPrefsDialog;
@@ -90,11 +93,8 @@ namespace NppMenuSearch.Forms
             });
         }
 
-        private static DialogItem BackgroundLoadPreferenceDialog(IntPtr hwndDummyDialogParent)
+        private static DialogItem BackgroundLoadPreferenceDialog(IntPtr hwndDummyDialogParent, PreferenceDialogHelper pdh)
         {
-            PreferenceDialogHelper pdh = new PreferenceDialogHelper();
-            pdh.LoadCurrentLocalization();
-
             IntPtr hwndDialogPage;
             DialogItem preferenceDialog = new DialogItem(pdh.PageTranslations[pdh.Global.InternalName]);
 
