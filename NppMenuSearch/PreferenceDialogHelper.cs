@@ -223,14 +223,9 @@ namespace NppMenuSearch
 
         public void LoadCurrentLocalization()
         {
-            string nativeLangFile = Main.GetNativeLangXml();
-
             try
             {
-                XmlDocument doc = new XmlDocument();
-                doc.Load(nativeLangFile);
-
-                LoadLocalization((XmlElement)doc.SelectSingleNode("/NotepadPlus/Native-Langue/Dialog/Preference"), 0);
+                LoadLocalization((XmlElement)Main.Localization.NativeLang.SelectSingleNode("/NotepadPlus/Native-Langue/Dialog/Preference"), 0);
             }
             catch (Exception ex)
             {

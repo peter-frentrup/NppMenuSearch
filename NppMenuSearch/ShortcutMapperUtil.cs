@@ -48,7 +48,7 @@ namespace NppMenuSearch
                             Main.FindRepeatLastCommandMenuItem(out cmdId, out index);
                             if (menuItem.CommandId == cmdId)
                             {
-                                searchText = Main.RepeatPreviousCommandLabel;
+                                searchText = Main.RepeatPreviousCommandLabel; // Shortcut mapper uses original label registered with Notepad++ (unlocalized) 
                             }
                         }
                         break;

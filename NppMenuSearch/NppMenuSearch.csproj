@@ -66,6 +66,8 @@
     <Compile Include="Forms\FlyingSearchForm.Designer.cs">
       <DependentUpon>FlyingSearchForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Localization\Localizations.cs" />
+    <Compile Include="Localization\LocalizedStrings.cs" />
     <Compile Include="TabItem.cs" />
     <Compile Include="Forms\ResultsPopup.cs">
       <SubType>Form</SubType>

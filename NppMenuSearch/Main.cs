@@ -7,7 +7,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml;
 using NppMenuSearch.Forms;
+using NppMenuSearch.Localization;
 using NppPluginNET;
 
 namespace NppMenuSearch
@@ -22,8 +24,9 @@ namespace NppMenuSearch
         internal const string PluginName = "NppMenuSearch";
         static string xmlFilePath = null;
 
-        internal const string RepeatPreviousCommandLabel = "Repeat previous command";
-
+        internal static Localizations Localization;
+        internal const string RepeatPreviousCommandLabel = "Repeat previous command"; // Not localized, so that Npp Shortcut mapper can find it.
+        
         internal static NppListener NppListener { get; private set; }
 
         internal static ToolbarSearchForm ToolbarSearchForm { get; private set; }
@@ -136,7 +139,7 @@ namespace NppMenuSearch
 
         internal static string GetMenuSearchTitle()
         {
-            string title = "Search Notepad++";
+            string title = Localization.Strings.SearchWidgetTitle;
             string shortcut = GetMenuSearchShortcut();
             if (shortcut != "")
                 title = $"{title} ({shortcut})";
@@ -195,12 +198,12 @@ namespace NppMenuSearch
             if (lastUsedItem == null)
             {
                 Win32.EnableMenuItem(menu, rlcIndex, Win32.MF_BYPOSITION | Win32.MF_DISABLED | Win32.MF_GRAYED);
-                caption = Main.RepeatPreviousCommandLabel;
+                caption = Localization.Strings.MenuTitle_RepeatCommand_Previous; //Main.RepeatPreviousCommandLabel;
             }
             else
             {
                 Win32.EnableMenuItem(menu, rlcIndex, Win32.MF_BYPOSITION | Win32.MF_ENABLED);
-                caption = string.Format("Repeat command “{0}”", lastUsedItem);
+                caption = Localization.Strings.MenuTitle_RepeatCommand_arg.Replace("{0}", lastUsedItem.ToString());
             }
 
             IntPtr sPtr = Marshal.StringToHGlobalUni(caption);
@@ -220,6 +223,7 @@ namespace NppMenuSearch
             DarkMode.OnChanged();
 
             NppListener = new NppListener();
+            Localization = new Localizations();
 
             ToolbarSearchForm = new ToolbarSearchForm();
             FlyingSearchForm = null;

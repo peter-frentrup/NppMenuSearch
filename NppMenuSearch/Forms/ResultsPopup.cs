@@ -25,9 +25,9 @@ namespace NppMenuSearch.Forms
         public event EventHandler Finished;
 
         ListViewGroup resultGroupRecentlyUsed = new ListViewGroup("Recently Used", HorizontalAlignment.Left);
-        ListViewGroup resultGroupMenu = new ListViewGroup("Menu", HorizontalAlignment.Left);
-        ListViewGroup resultGroupPreferences = new ListViewGroup("Preferences", HorizontalAlignment.Left);
-        ListViewGroup resultGroupTabs = new ListViewGroup("Open Files", HorizontalAlignment.Left);
+        ListViewGroup resultGroupMenu         = new ListViewGroup("Menu",          HorizontalAlignment.Left);
+        ListViewGroup resultGroupPreferences  = new ListViewGroup("Preferences",   HorizontalAlignment.Left);
+        ListViewGroup resultGroupTabs         = new ListViewGroup("Open Files",    HorizontalAlignment.Left);
 
         public TextBox OwnerTextBox;
         public MenuItem MainMenu;
@@ -48,8 +48,9 @@ namespace NppMenuSearch.Forms
             TabList = new List<TabItem>();
 
             InitPreferencesDialog();
+            UpdateLocalizedStrings();
 
-            Main.NppListener.AfterReloadNativeLang += new EventHandler(NppListener_AfterReloadNativeLang);
+            Main.Localization.NativeLangChanged += Localization_NativeLangChanged;
 
             Main.MakeNppOwnerOf(this);
             DarkMode.Changed += DarkMode_Changed;
@@ -61,14 +62,25 @@ namespace NppMenuSearch.Forms
                 Size = Main.PreferredResultsWindowSize;
         }
 
+        private void Localization_NativeLangChanged(object sender, EventArgs e)
+        {
+            InitPreferencesDialog();
+            UpdateLocalizedStrings();
+        }
+
+        private void UpdateLocalizedStrings()
+        {
+            resultGroupRecentlyUsed.Header = Main.Localization.Strings.GroupTitle_RecentlyUsed;
+            resultGroupMenu.Header         = Main.Localization.Strings.GroupTitle_Menu;
+            resultGroupPreferences.Header  = Main.Localization.Strings.GroupTitle_Preferences;
+            resultGroupTabs.Header         = Main.Localization.Strings.GroupTitle_OpenFiles;
+
+            // Help text label is updated when visibility changes.
+        }
+
         private void DarkMode_Changed()
         {
             DarkMode.ApplyThemeRecursive(this);
-        }
-
-        void NppListener_AfterReloadNativeLang(object sender, EventArgs e)
-        {
-            InitPreferencesDialog();
         }
 
         protected void InitPreferencesDialog()
@@ -192,10 +204,10 @@ namespace NppMenuSearch.Forms
                     viewResults.TileSize.Width,
                     Math.Max(toolbarButtonHeight, (int)(1.2 * viewResults.Font.Height)));
 
-                string helpText = "TAB switches groups: Recently Used ↔ Menu ↔ Open Files ↔ Preferences";
+                string helpText = Main.Localization.Strings.SwitchGroupHelpText;
                 string shortcut = Main.GetMenuSearchShortcut();
                 if (shortcut != "")
-                    helpText = string.Format("Press {0} again for all results. {1}", shortcut, helpText);
+                    helpText = Main.Localization.Strings.ShortcutHelpText_arg.Replace("{0}", shortcut) + " " + helpText;
 
                 lblHelp.Text = helpText;
 
@@ -396,9 +408,9 @@ namespace NppMenuSearch.Forms
 
             viewResults.Items.Clear();
 
-            resultGroupTabs.Header = $"Open Files ({openTabsFiltered.Count})";
-            resultGroupMenu.Header = string.Format("Menu ({0})", menuItems.Length - recentlyUsed.Where(hi => hi is MenuItem).Count());
-            resultGroupPreferences.Header = string.Format("Preferences ({0})", prefDialogItems.Length - recentlyUsed.Where(hi => hi is DialogItem).Count());
+            resultGroupTabs.Header        = string.Format("{0} ({1})", Main.Localization.Strings.GroupTitle_OpenFiles,   openTabsFiltered.Count);
+            resultGroupMenu.Header        = string.Format("{0} ({1})", Main.Localization.Strings.GroupTitle_Menu,        menuItems.Length - recentlyUsed.Where(hi => hi is MenuItem).Count());
+            resultGroupPreferences.Header = string.Format("{0} ({1})", Main.Localization.Strings.GroupTitle_Preferences, prefDialogItems.Length - recentlyUsed.Where(hi => hi is DialogItem).Count());
 
             foreach (var hi in recentlyUsed)
             {

@@ -24,6 +24,7 @@ namespace NppMenuSearch.Forms
             InitializeComponent();
 
             Main.NppListener.AfterHideShowToolbar += new NppListener.HideShowEventHandler(NppListener_AfterHideShowToolbar);
+            Main.Localization.NativeLangChanged += Localization_NativeLangChanged;
 
             frmSearch.Height = txtSearch.Height;
             frmSearch.Top = (Height - frmSearch.Height) / 2;
@@ -40,6 +41,11 @@ namespace NppMenuSearch.Forms
             txtSearch.HandleCreated += (sender, e) => DarkMode.ApplyTheme((Control)sender);
 
             HandleCreated += ToolbarSearchForm_HandleCreated;
+        }
+
+        private void Localization_NativeLangChanged(object sender, EventArgs e)
+        {
+            UpdateCueBanner();
         }
 
         private void ToolbarSearchForm_HandleCreated(object sender, EventArgs e)
@@ -215,7 +221,7 @@ namespace NppMenuSearch.Forms
 
                 Win32.REBARBANDINFO band = new Win32.REBARBANDINFO();
                 band.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(band);
-                
+
                 bool show = false; //Win32.IsWindowVisible(hwndToolbar);
                 int toolbarIndex = GetRebarBandIndexByChildHandle(hwndRebar, HwndToolbar);
                 if (toolbarIndex >= 0)
@@ -266,17 +272,22 @@ namespace NppMenuSearch.Forms
 
                     Win32.SendMessage(hwndRebar, Win32.RB_SETBANDWIDTH, searchBarIndex, oldPreferredWidth);
                     int extraMargin = Width - oldPreferredWidth;
-                    if(extraMargin > 0 && extraMargin < oldPreferredWidth)
+                    if (extraMargin > 0 && extraMargin < oldPreferredWidth)
                         Win32.SendMessage(hwndRebar, Win32.RB_SETBANDWIDTH, searchBarIndex, oldPreferredWidth - extraMargin);
                 }
 
-                string cuebanner = Main.GetMenuSearchTitle();
-                Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETCUEBANNER, 0, cuebanner);
+                UpdateCueBanner();
             }
             finally
             {
                 currentlyCheckingToolbarVisiblity = false;
             }
+        }
+
+        private void UpdateCueBanner()
+        {
+            string cuebanner = Main.GetMenuSearchTitle();
+            Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETCUEBANNER, 0, cuebanner);
         }
 
         public void SelectSearchField()
