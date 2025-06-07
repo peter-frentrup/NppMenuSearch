@@ -59,9 +59,9 @@ namespace NppMenuSearch
 
         public static void ApplyTheme(Control control)
         {
-            // Does not help:
-            NppDarkModeFlags flags = NppDarkModeFlags.SetThemeDirectly | NppDarkModeFlags.SetTitleBar;// | NppDarkModeFlags.SetThemeChildren;
-            Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_DARKMODESUBCLASSANDTHEME, (int)flags, control.Handle);
+            // // Does not help:
+            // NppDarkModeFlags flags = NppDarkModeFlags.SetThemeDirectly | NppDarkModeFlags.SetTitleBar;// | NppDarkModeFlags.SetThemeChildren;
+            // Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_DARKMODESUBCLASSANDTHEME, (int)flags, control.Handle);
 
             //            // Does not help
             //            if (Has_AllowDarkModeForWindow)
