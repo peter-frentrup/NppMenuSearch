@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<NppMenuSearch>
+	<Native-Lang name="English" version="2025-06-07">
+		<General>
+			<SearchWidgetTitle>Search Notepad++</SearchWidgetTitle>
+		</General>
+		<MenuTitles>
+			<RepeatPreviousCommand>Repeat previous command</RepeatPreviousCommand>
+			<RepeatCommand>Repeat command “{0}”</RepeatCommand>
+		</MenuTitles>
+		<GroupTitles>
+			<RecentlyUsed>Recently Used</RecentlyUsed>
+			<Menu>Menu</Menu>
+			<Preferences>Preferences</Preferences>
+			<OpenFiles>Open Files</OpenFiles>
+		</GroupTitles>
+		<Help>
+			<SwitchGroup>TAB switches groups: Recently Used ↔ Menu ↔ Open Files ↔ Preferences.</SwitchGroup>
+			<RepeatForAllResults>Press {0} again for all results.</RepeatForAllResults>
+		</Help>
+	</Native-Lang>
+</NppMenuSearch>

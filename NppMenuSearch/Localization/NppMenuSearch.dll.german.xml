@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<NppMenuSearch>
+	<Native-Lang name="Deutsch" version="2025-06-07">
+		<General>
+			<SearchWidgetTitle>Notepad++ durchsuchen</SearchWidgetTitle>
+		</General>
+		<MenuTitles>
+			<RepeatPreviousCommand>Letztes Kommando wiederholen</RepeatPreviousCommand>
+			<RepeatCommand>Kommando wiederholen: „{0}“</RepeatCommand>
+		</MenuTitles>
+		<GroupTitles>
+			<RecentlyUsed>Zuletzt verwendet</RecentlyUsed>
+			<Menu>Menü</Menu>
+			<Preferences>Optionen</Preferences>
+			<OpenFiles>Geöffnete Dateien</OpenFiles>
+		</GroupTitles>
+		<Help>
+			<SwitchGroup>TAB wechselt Gruppen: Zuletzt verwendet ↔ Menü ↔ Geöffnete Dateien ↔ Optionen</SwitchGroup>
+			<RepeatForAllResults>{0} für alle Ergebnisse.</RepeatForAllResults>
+		</Help>
+	</Native-Lang>
+</NppMenuSearch>

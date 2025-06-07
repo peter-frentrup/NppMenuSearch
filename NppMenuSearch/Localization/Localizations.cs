@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 
@@ -48,26 +50,60 @@ namespace NppMenuSearch.Localization
 
         private static LocalizedStrings OpenPluginLocalization(string nppNativeLangOrigFileName)
         {
-            // TODO: load from some XML file
-            switch (nppNativeLangOrigFileName)
-            {
-                case "german.xml":
-                    return new LocalizedStrings()
-                    {
-                        SearchWidgetTitle = "Notepad++ durchsuchen",
-                        MenuTitle_RepeatCommand_Previous = "Letztes Kommando wiederholen",
-                        MenuTitle_RepeatCommand_arg = "Kommando wiederholen: „{0}“",
-                        GroupTitle_RecentlyUsed = "Zuletzt verwendet",
-                        GroupTitle_Menu = "Menü",
-                        GroupTitle_Preferences = "Optionen",
-                        GroupTitle_OpenFiles = "Geöffnete Dateien",
-                        SwitchGroupHelpText = "TAB wechselt Gruppen: Zuletzt verwendet ↔ Menü ↔ Geöffnete Dateien ↔ Optionen",
-                        ShortcutHelpText_arg = "{0} für alle Ergebnisse."
-                    };
+            string langFile = Assembly.GetExecutingAssembly().Location + "." + nppNativeLangOrigFileName;
 
-                default: return new LocalizedStrings();
+#if DEBUG
+            Console.WriteLine($"OpenPluginLocalization: search '{langFile}'");
+#endif
+
+            if (File.Exists(langFile))
+                return LoadStrings(langFile);
+
+            return new LocalizedStrings();
+        }
+
+        private static LocalizedStrings LoadStrings(string translationXmlFile)
+        {
+            try
+            {
+                var translation = new LocalizedStrings();
+
+                var doc = new XmlDocument();
+                doc.Load(translationXmlFile);
+
+                var root = (XmlElement)doc.SelectSingleNode("/NppMenuSearch/Native-Lang");
+
+                TryRead(ref translation.SearchWidgetTitle,                root, "General/SearchWidgetTitle");
+                TryRead(ref translation.MenuTitle_RepeatCommand_Previous, root, "MenuTitles/RepeatPreviousCommand");
+                TryRead(ref translation.MenuTitle_RepeatCommand_arg,      root, "MenuTitles/RepeatCommand");
+                TryRead(ref translation.GroupTitle_RecentlyUsed,          root, "GroupTitles/RecentlyUsed");
+                TryRead(ref translation.GroupTitle_Menu,                  root, "GroupTitles/Menu");
+                TryRead(ref translation.GroupTitle_Preferences,           root, "GroupTitles/Preferences");
+                TryRead(ref translation.GroupTitle_OpenFiles,             root, "GroupTitles/OpenFiles");
+                TryRead(ref translation.SwitchGroupHelpText,              root, "Help/SwitchGroup");
+                TryRead(ref translation.ShortcutHelpText_arg,             root, "Help/RepeatForAllResults");
+
+                return translation;
+            }
+            catch(Exception ex)
+            {
+                return new LocalizedStrings();
             }
         }
 
+        private static void TryRead(ref string text, XmlElement translations, string xpath)
+        {
+            var elem = translations.SelectNodes(xpath).OfType<XmlElement>().FirstOrDefault();
+            if (elem != null)
+                TryReadString(ref text, elem);
+        }
+
+        private static void TryReadString(ref string text, XmlElement elem)
+        {
+            if (elem == null)
+                return;
+
+            text = elem.InnerText;
+        }
     }
 }
