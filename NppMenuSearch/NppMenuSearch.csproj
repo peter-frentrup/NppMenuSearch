@@ -136,8 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Localization\NppMenuSearch.*.xml">
-      <Link>Localization\%(Filename)%(Extension)</Link>
-      <TargetPath>%(Filename)%(Extension)</TargetPath>
+      <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
