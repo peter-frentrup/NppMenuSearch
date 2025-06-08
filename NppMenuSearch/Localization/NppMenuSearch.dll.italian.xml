@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<NppMenuSearch>
+	<Native-Lang name="Italian" version="2025-06-08">
+		<General>
+			<SearchWidgetTitle>Ricerca Notepad++</SearchWidgetTitle>
+		</General>
+		<MenuTitles>
+			<RepeatPreviousCommand>Ripeti il comando precedente</RepeatPreviousCommand>
+			<RepeatCommand>Ripeti comando “{0}”</RepeatCommand>
+			<About>&amp;Informazioni su...</About>
+			<FixWidgetSize>&amp;Correggi la dimensione del widget</FixWidgetSize>
+		</MenuTitles>
+		<GroupTitles>
+			<RecentlyUsed>Usati di recente</RecentlyUsed>
+			<Menu>Menù</Menu>
+			<Preferences>Preferenze</Preferences>
+			<OpenFiles>File aperti</OpenFiles>
+		</GroupTitles>
+		<Help>
+			<SwitchGroup>Il tasto TAB cambia gruppo: Usati di recente ↔ Menu ↔ File aperti ↔ Preferenze.</SwitchGroup>
+			<RepeatForAllResults>Premi nuovamente {0} per tutti i risultati.</RepeatForAllResults>
+		</Help>
+	</Native-Lang>
+</NppMenuSearch>
