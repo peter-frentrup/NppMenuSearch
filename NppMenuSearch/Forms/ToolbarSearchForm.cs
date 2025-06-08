@@ -19,6 +19,8 @@ namespace NppMenuSearch.Forms
 
         public event EventHandler AfterCompleteInit;
 
+        private bool FixedWidth { get { return Main.FixedToolbarWidth; } set { menuItemFixWidgetSize.Checked = value; Main.FixedToolbarWidth = value; } }
+
         public ToolbarSearchForm()
         {
             InitializeComponent();
@@ -35,6 +37,8 @@ namespace NppMenuSearch.Forms
             //uint rightMargin = margins >> 16;
             //rightMargin+= 16;
             //Win32.SendMessage(txtSearch.Handle, (NppMsg)Win32.EM_SETMARGINS, Win32.EC_RIGHTMARGIN, (int)(rightMargin << 16));
+
+            FixedWidth = Main.FixedToolbarWidth;
 
             DarkMode.Changed += DarkMode_Changed;
 
@@ -200,9 +204,8 @@ namespace NppMenuSearch.Forms
 				0);
 		}*/
 
-        public void CheckToolbarVisiblity()
+        public void CheckToolbarVisiblity(bool force = false)
         {
-
             if (currentlyCheckingToolbarVisiblity)
                 return;
 
@@ -231,27 +234,58 @@ namespace NppMenuSearch.Forms
                     show = (band.fStyle & Win32.RBBS_HIDDEN) == 0;
                 }
 
-                if (show == Visible)
+                bool wasShown = Visible;
+                if (!force && show == wasShown)
                     return;
 
                 int oldPreferredWidth = Main.PreferredToolbarWidth;
                 int searchBarIndex = GetRebarBandIndexByChildHandle(hwndRebar, Handle);
                 if (searchBarIndex >= 0)
                 {
-                    Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_SHOWBAND, searchBarIndex, show ? 1 : 0);
-                    Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MINIMIZEBAND, searchBarIndex, 0);
-                    Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MAXIMIZEBAND, searchBarIndex, 1);
+                    band.fMask = Win32.RBBIM_STYLE | Win32.RBBIM_SIZE | Win32.RBBIM_IDEALSIZE | Win32.RBBIM_CHILDSIZE;
+                    Win32.SendMessage(hwndRebar, Win32.RB_GETBANDINFOW, searchBarIndex, ref band);
+
+#if DEBUG
+                    Console.WriteLine($"CheckToolbarVisiblity: FixedWidth={FixedWidth}, old band: cx={band.cx} cxMinChild={band.cxMinChild} cxIdeal={band.cxIdeal}");
+#endif
+                    bool wasFixed = (band.fStyle & Win32.RBBS_FIXEDSIZE) != 0;
+
+                    band.fStyle = FixedWidth ? Win32.RBBS_FIXEDSIZE | Win32.RBBS_NOGRIPPER : Win32.RBBS_GRIPPERALWAYS;
+                    if (!show)
+                        band.fStyle |= Win32.RBBS_HIDDEN;
+                    //band.cx = Main.PreferredToolbarWidth;
+                    if (wasFixed != FixedWidth)
+                    { 
+                        band.cxMinChild = FixedWidth ? Main.PreferredToolbarWidth : 170;
+                        band.cxIdeal = FixedWidth ? Main.PreferredToolbarWidth : 0;
+                    }
+#if DEBUG
+                    Console.WriteLine($"CheckToolbarVisiblity: FixedWidth={FixedWidth}, new band: cx={band.cx} cxMinChild={band.cxMinChild} cxIdeal={band.cxIdeal}");
+#endif
+
+                    Win32.SendMessage(hwndRebar, Win32.RB_SETBANDINFOW, searchBarIndex, ref band);
+
+                    if (show != wasShown)
+                    {
+                        Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_SHOWBAND, searchBarIndex, show ? 1 : 0);
+
+                        if (show && !FixedWidth)
+                        {
+                            Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MINIMIZEBAND, searchBarIndex, 0);
+                            Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MAXIMIZEBAND, searchBarIndex, 1);
+                        }
+                    }
                     return;
                 }
 
                 // not yet inserted
 
-                band.fMask = Win32.RBBIM_CHILD | Win32.RBBIM_SIZE | Win32.RBBIM_IDEALSIZE | Win32.RBBIM_CHILDSIZE;
-                band.fStyle = Win32.RBBS_GRIPPERALWAYS;
+                band.fMask = Win32.RBBIM_CHILD | Win32.RBBIM_STYLE | Win32.RBBIM_SIZE | Win32.RBBIM_IDEALSIZE | Win32.RBBIM_CHILDSIZE;
+                band.fStyle = FixedWidth ? Win32.RBBS_FIXEDSIZE : Win32.RBBS_GRIPPERALWAYS;
                 band.hwndChild = Handle;
-                band.cx = Size.Width;
-                band.cxMinChild = 170;
-                band.cxIdeal = 0;
+                band.cx = FixedWidth ? Main.PreferredToolbarWidth : Size.Width;
+                band.cxMinChild = FixedWidth ? Main.PreferredToolbarWidth : 170;
+                band.cxIdeal = FixedWidth ? Main.PreferredToolbarWidth : 0;
                 band.cyMinChild = frmSearch.Height;
                 band.cyMaxChild = frmSearch.Height;
                 band.cyChild = 0;
@@ -423,6 +457,24 @@ namespace NppMenuSearch.Forms
         {
             if (Visible)
                 Main.PreferredToolbarWidth = Width;
+        }
+
+        private void btnOptions_Click(object sender, EventArgs e)
+        {
+            //menuOptions_.Show(btnOptions, new Point(btnOptions.Width, btnOptions.Height), ToolStripDropDownDirection.BelowLeft);
+            //menuOptions_.Show(btnOptions.PointToScreen(new Point(btnOptions.Width, btnOptions.Height)), ToolStripDropDownDirection.Left);
+            menuOptions.Show(btnOptions, new Point(btnOptions.Width, btnOptions.Height), LeftRightAlignment.Left);
+        }
+
+        private void menuItemAbout_Click(object sender, EventArgs e)
+        {
+            Main.AboutFunction();
+        }
+
+        private void menuItemFixWidgetSize_Click(object sender, EventArgs e)
+        {
+            FixedWidth = !FixedWidth;
+            CheckToolbarVisiblity(force: true);
         }
     }
 }

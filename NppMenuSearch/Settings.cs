@@ -56,6 +56,20 @@ namespace NppMenuSearch
                     }
                 }
 
+                Main.FixedToolbarWidth = false;
+                {
+                    XmlElement xmlPreferredToolbarWidth = doc.SelectNodes("/Settings/FixedToolbarWidth")
+                        .OfType<XmlElement>()
+                        .FirstOrDefault();
+                    if (xmlPreferredToolbarWidth != null && xmlPreferredToolbarWidth.HasAttribute("value"))
+                    {
+                        string fixString = xmlPreferredToolbarWidth.GetAttribute("value");
+                        int fix;
+                        if (int.TryParse(fixString, out fix))
+                            Main.FixedToolbarWidth = fix != 0;
+                    }
+                }
+
                 Main.PreferredResultsWindowSize = new Size(0, 0);
                 {
                     XmlElement xmlPreferredResultsWindowSize = doc.SelectNodes("/Settings/PreferredResultsWindowSize")
@@ -105,6 +119,12 @@ namespace NppMenuSearch
                 {
                     var xmlPreferredToolbarWidth = doc.CreateElement("PreferredToolbarWidth");
                     xmlPreferredToolbarWidth.SetAttribute("value", Main.PreferredToolbarWidth.ToString());
+                    xmlRoot.AppendChild(xmlPreferredToolbarWidth);
+                }
+
+                {
+                    var xmlPreferredToolbarWidth = doc.CreateElement("FixedToolbarWidth");
+                    xmlPreferredToolbarWidth.SetAttribute("value", Main.FixedToolbarWidth ? "1" : "0");
                     xmlRoot.AppendChild(xmlPreferredToolbarWidth);
                 }
 

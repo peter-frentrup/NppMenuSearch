@@ -18,6 +18,7 @@ namespace NppMenuSearch
     {
         public static LinkedList<UniqueControlIdx> RecentlyUsedCommands { get; } = new LinkedList<UniqueControlIdx>();
         public static int PreferredToolbarWidth = 0;
+        public static bool FixedToolbarWidth = false;
         public static Size PreferredResultsWindowSize = new Size(0, 0);
         public static bool IsClosing { get; private set; }
 
