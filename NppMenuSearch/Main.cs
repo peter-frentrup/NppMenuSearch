@@ -54,7 +54,7 @@ namespace NppMenuSearch
             PluginBase.SetCommand(1, "Clear “Recently Used” List", ClearRecentlyUsedList, new ShortcutKey(false, false, false, Keys.None));
             PluginBase.SetCommand(2, RepeatPreviousCommandLabel, RepeatLastCommandFunction, new ShortcutKey(false, false, false, Keys.None));
             PluginBase.SetCommand(3, "---", null);
-            PluginBase.SetCommand(4, "About", AboutFunction, new ShortcutKey(false, false, false, Keys.None));
+            PluginBase.SetCommand(4, "About...", AboutFunction, new ShortcutKey(false, false, false, Keys.None));
 
 #if DEBUG
             Console.WriteLine($"{PluginName}:CommandMenuInit took {sw.ElapsedMilliseconds}ms");

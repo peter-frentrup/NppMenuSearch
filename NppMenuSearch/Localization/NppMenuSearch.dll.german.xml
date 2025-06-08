@@ -7,6 +7,8 @@
 		<MenuTitles>
 			<RepeatPreviousCommand>Letztes Kommando wiederholen</RepeatPreviousCommand>
 			<RepeatCommand>Kommando wiederholen: „{0}“</RepeatCommand>
+			<About>&amp;Über...</About>
+			<FixWidgetSize>Suchfeldgröße &amp;fixieren</FixWidgetSize>
 		</MenuTitles>
 		<GroupTitles>
 			<RecentlyUsed>Zuletzt verwendet</RecentlyUsed>

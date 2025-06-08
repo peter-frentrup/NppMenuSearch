@@ -7,6 +7,8 @@
 		<MenuTitles>
 			<RepeatPreviousCommand>Repeat previous command</RepeatPreviousCommand>
 			<RepeatCommand>Repeat command “{0}”</RepeatCommand>
+			<About>&amp;About...</About>
+			<FixWidgetSize>&amp;Fix widget size</FixWidgetSize>
 		</MenuTitles>
 		<GroupTitles>
 			<RecentlyUsed>Recently Used</RecentlyUsed>

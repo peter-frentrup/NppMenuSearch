@@ -45,11 +45,20 @@ namespace NppMenuSearch.Forms
             txtSearch.HandleCreated += (sender, e) => DarkMode.ApplyTheme((Control)sender);
 
             HandleCreated += ToolbarSearchForm_HandleCreated;
+
+            UpdateMenuTexts();
         }
 
         private void Localization_NativeLangChanged(object sender, EventArgs e)
         {
             UpdateCueBanner();
+            UpdateMenuTexts();
+        }
+
+        private void UpdateMenuTexts()
+        {
+            menuItemFixWidgetSize.Text = Main.Localization.Strings.MenuTitle_FixWidgetSize;
+            menuItemAbout.Text         = Main.Localization.Strings.MenuTitle_About;
         }
 
         private void ToolbarSearchForm_HandleCreated(object sender, EventArgs e)

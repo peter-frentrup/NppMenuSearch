@@ -35,9 +35,9 @@
             this.btnOptions = new System.Windows.Forms.Button();
             this.timerDelay = new System.Windows.Forms.Timer(this.components);
             this.menuOptions = new System.Windows.Forms.ContextMenu();
-            this.menuItemAbout = new System.Windows.Forms.MenuItem();
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.menuItemFixWidgetSize = new System.Windows.Forms.MenuItem();
+            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.menuItemAbout = new System.Windows.Forms.MenuItem();
             this.frmSearch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picClear)).BeginInit();
             this.SuspendLayout();
@@ -109,22 +109,22 @@
             this.menuItem1,
             this.menuItemAbout});
             // 
-            // menuItemAbout
+            // menuItemFixWidgetSize
             // 
-            this.menuItemAbout.Index = 2;
-            this.menuItemAbout.Text = "&About";
-            this.menuItemAbout.Click += new System.EventHandler(this.menuItemAbout_Click);
+            this.menuItemFixWidgetSize.Index = 0;
+            this.menuItemFixWidgetSize.Text = "&Fix widget size";
+            this.menuItemFixWidgetSize.Click += new System.EventHandler(this.menuItemFixWidgetSize_Click);
             // 
             // menuItem1
             // 
             this.menuItem1.Index = 1;
             this.menuItem1.Text = "-";
             // 
-            // menuItemFixWidgetSize
+            // menuItemAbout
             // 
-            this.menuItemFixWidgetSize.Index = 0;
-            this.menuItemFixWidgetSize.Text = "&Fix widget size";
-            this.menuItemFixWidgetSize.Click += new System.EventHandler(this.menuItemFixWidgetSize_Click);
+            this.menuItemAbout.Index = 2;
+            this.menuItemAbout.Text = "&About...";
+            this.menuItemAbout.Click += new System.EventHandler(this.menuItemAbout_Click);
             // 
             // ToolbarSearchForm
             // 
