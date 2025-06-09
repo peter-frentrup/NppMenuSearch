@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             this.timerIdle = new System.Windows.Forms.Timer(this.components);
             this.timerBlink = new System.Windows.Forms.Timer(this.components);
-            this.panInfo = new System.Windows.Forms.Panel();
             this.lblHelp = new System.Windows.Forms.Label();
             this.viewResults = new System.Windows.Forms.ListView();
             this.popupMenu = new System.Windows.Forms.ContextMenu();
@@ -39,31 +38,21 @@
             this.menuExecute = new System.Windows.Forms.MenuItem();
             this.menuSelectTab = new System.Windows.Forms.MenuItem();
             this.menuOpenDialog = new System.Windows.Forms.MenuItem();
-            this.panInfo.SuspendLayout();
             this.SuspendLayout();
             // 
             // timerIdle
             // 
             this.timerIdle.Interval = 1;
             // 
-            // panInfo
-            // 
-            this.panInfo.Controls.Add(this.lblHelp);
-            this.panInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panInfo.Location = new System.Drawing.Point(0, 453);
-            this.panInfo.Margin = new System.Windows.Forms.Padding(4);
-            this.panInfo.Name = "panInfo";
-            this.panInfo.Size = new System.Drawing.Size(592, 21);
-            this.panInfo.TabIndex = 2;
-            // 
             // lblHelp
             // 
             this.lblHelp.AutoSize = true;
+            this.lblHelp.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.lblHelp.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblHelp.Location = new System.Drawing.Point(0, 2);
-            this.lblHelp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblHelp.Location = new System.Drawing.Point(0, 456);
             this.lblHelp.Name = "lblHelp";
-            this.lblHelp.Size = new System.Drawing.Size(574, 14);
+            this.lblHelp.Padding = new System.Windows.Forms.Padding(4, 4, 4, 0);
+            this.lblHelp.Size = new System.Drawing.Size(582, 18);
             this.lblHelp.TabIndex = 0;
             this.lblHelp.Text = "Press CTRL+M again to show all results. TAB to switch groups: Recently Used ↔ Men" +
     "u ↔ Open Files ↔ Preferences";
@@ -81,7 +70,7 @@
             this.viewResults.Name = "viewResults";
             this.viewResults.OwnerDraw = true;
             this.viewResults.ShowItemToolTips = true;
-            this.viewResults.Size = new System.Drawing.Size(592, 453);
+            this.viewResults.Size = new System.Drawing.Size(592, 456);
             this.viewResults.TabIndex = 1;
             this.viewResults.TileSize = new System.Drawing.Size(317, 16);
             this.viewResults.UseCompatibleStateImageBehavior = false;
@@ -132,7 +121,7 @@
             this.ClientSize = new System.Drawing.Size(592, 474);
             this.ControlBox = false;
             this.Controls.Add(this.viewResults);
-            this.Controls.Add(this.panInfo);
+            this.Controls.Add(this.lblHelp);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -143,16 +132,14 @@
             this.SizeChanged += new System.EventHandler(this.ResultsPopup_SizeChanged);
             this.VisibleChanged += new System.EventHandler(this.ResultsPopup_VisibleChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OwnerTextBox_KeyDown);
-            this.panInfo.ResumeLayout(false);
-            this.panInfo.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
 		}
 
 		#endregion
 
 		private System.Windows.Forms.Timer timerBlink;
-		private System.Windows.Forms.Panel panInfo;
 		private System.Windows.Forms.Label lblHelp;
 		private System.Windows.Forms.ListView viewResults;
 		internal System.Windows.Forms.Timer timerIdle;

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <NppMenuSearch>
-	<Native-Lang name="Deutsch" version="2025-06-07">
+	<Native-Lang name="Deutsch" version="2025-06-09">
 		<General>
 			<SearchWidgetTitle>Notepad++ durchsuchen</SearchWidgetTitle>
 		</General>
@@ -17,8 +17,8 @@
 			<OpenFiles>Geöffnete Dateien</OpenFiles>
 		</GroupTitles>
 		<Help>
-			<SwitchGroup>TAB wechselt Gruppen: Zuletzt verwendet ↔ Menü ↔ Geöffnete Dateien ↔ Optionen</SwitchGroup>
-			<RepeatForAllResults>{0} für alle Ergebnisse.</RepeatForAllResults>
+			<SwitchGroup>TAB wechselt Gruppen: Zuletzt verwendet ↔ Menü ↔ Geöffnete Dateien ↔ Optionen.</SwitchGroup>
+			<RepeatForAllResults>{0} für alle Ergebnisse.&#10;</RepeatForAllResults>
 		</Help>
 	</Native-Lang>
 </NppMenuSearch>

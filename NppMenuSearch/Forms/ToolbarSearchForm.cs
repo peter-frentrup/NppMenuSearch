@@ -327,7 +327,7 @@ namespace NppMenuSearch.Forms
                     if (oldPreferredWidth < band.cxMinChild)
                         oldPreferredWidth = band.cxMinChild;
 
-                    // TODO: could the extra margin be received by RB_GETBANDBORDERS ?
+                    // TODO: could the extra margin be received by RB_GETBANDBORDERS and RB_GETBANDMARGINS?
 
                     Win32.SendMessage(hwndRebar, Win32.RB_SETBANDWIDTH, searchBarIndex, oldPreferredWidth);
                     int extraMargin = Width - oldPreferredWidth;

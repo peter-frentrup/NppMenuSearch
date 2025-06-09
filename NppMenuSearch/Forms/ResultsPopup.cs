@@ -174,7 +174,7 @@ namespace NppMenuSearch.Forms
         {
             MaxMenuResults = int.MaxValue;
             MaxPreferencesResults = int.MaxValue;
-            panInfo.Visible = false;
+            lblHelp.Visible = false;
             RebuildResultsList();
         }
 
@@ -207,13 +207,24 @@ namespace NppMenuSearch.Forms
                 string helpText = Main.Localization.Strings.SwitchGroupHelpText;
                 string shortcut = Main.GetMenuSearchShortcut();
                 if (shortcut != "")
-                    helpText = Main.Localization.Strings.ShortcutHelpText_arg.Replace("{0}", shortcut) + " " + helpText;
+                {
+                    string shortcutHelp = Main.Localization.Strings.ShortcutHelpText_arg.Replace("{0}", shortcut);
+                    if(shortcutHelp.Length > 0)
+                    {
+                        char lastChar = shortcutHelp[shortcutHelp.Length - 1];
+                        if(lastChar <= ' ' || lastChar == '\u2028' /* line separator */ || lastChar == '\u2029' /* paragraph separator */ || lastChar == '\u200B' /* zero width space */)
+                            helpText = shortcutHelp + helpText;
+                        else
+                            helpText = shortcutHelp + " " + helpText;
+                    }
+                }
 
                 lblHelp.Text = helpText;
 
                 MaxMenuResults = DefaultMaxMenuResults;
                 MaxPreferencesResults = DefaultMaxPreferencesResults;
-                panInfo.Visible = true;
+                lblHelp.Visible = true;
+                LineBreakHelpText();
 
                 MainMenu = new MenuItem(Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_INTERNAL_GETMENU, 0, 0));
 
@@ -485,7 +496,7 @@ namespace NppMenuSearch.Forms
         {
             MaxMenuResults = DefaultMaxMenuResults;
             MaxPreferencesResults = DefaultMaxPreferencesResults;
-            panInfo.Visible = true;
+            lblHelp.Visible = true;
 
             RebuildResultsList();
         }
@@ -894,7 +905,13 @@ namespace NppMenuSearch.Forms
             if (!Visible)
                 return;
 
+            LineBreakHelpText();
             Main.PreferredResultsWindowSize = Size;
+        }
+
+        private void LineBreakHelpText()
+        {
+            lblHelp.MaximumSize = new Size(ClientSize.Width, ClientSize.Height / 4);
         }
     }
 }
