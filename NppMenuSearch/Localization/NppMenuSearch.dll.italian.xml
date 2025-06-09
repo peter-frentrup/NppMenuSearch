@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <NppMenuSearch>
-	<Native-Lang name="Italian" version="2025-06-09">
+	<Native-Lang name="Italian" version="2025-06-08">
 		<General>
 			<!-- Info text shown in the search widget -->
 			<SearchWidgetTitle>Ricerca Notepad++</SearchWidgetTitle>
