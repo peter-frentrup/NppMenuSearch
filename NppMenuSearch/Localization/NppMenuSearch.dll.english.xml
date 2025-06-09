@@ -1,13 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <NppMenuSearch>
-	<Native-Lang name="English" version="2025-06-07">
+	<Native-Lang name="English" version="2025-06-09">
 		<General>
+			<!-- Info text shown in the search widget -->
 			<SearchWidgetTitle>Search Notepad++</SearchWidgetTitle>
 		</General>
 		<MenuTitles>
 			<RepeatPreviousCommand>Repeat previous command</RepeatPreviousCommand>
 			<RepeatCommand>Repeat command “{0}”</RepeatCommand>
+			
+			<!-- Shows version information about NppMenuSearch: -->
 			<About>&amp;About...</About>
+			
+			<!-- "Fix widget size" here means to keep the widget size fixed so it does not change dynamically. -->
 			<FixWidgetSize>&amp;Fix widget size</FixWidgetSize>
 		</MenuTitles>
 		<GroupTitles>
@@ -17,6 +22,9 @@
 			<OpenFiles>Open Files</OpenFiles>
 		</GroupTitles>
 		<Help>
+			<!-- Preferrably, the two scentences <RepeatForAllResults> and <SwitchGroup> should fit onto a single line in the bottom of the results popup.
+				Automatic line breaking is applied, but you may also force a line break by e.g. putting &#10; just before the closing tag </RepeatForAllResults> 
+				-->
 			<SwitchGroup>TAB switches groups: Recently Used ↔ Menu ↔ Open Files ↔ Preferences.</SwitchGroup>
 			<RepeatForAllResults>Press {0} again for all results.</RepeatForAllResults>
 		</Help>
