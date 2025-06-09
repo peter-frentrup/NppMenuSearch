@@ -12,8 +12,8 @@
 			<!-- Shows version information about NppMenuSearch: -->
 			<About>&amp;About...</About>
 			
-			<!-- "Fix widget size" here means to keep the widget size fixed so it does not change dynamically. -->
-			<FixWidgetSize>&amp;Fix widget size</FixWidgetSize>
+			<!-- Keep the widget size fixed so it does not change dynamically. -->
+			<FixWidgetSize>&amp;Lock widget size</FixWidgetSize>
 		</MenuTitles>
 		<GroupTitles>
 			<RecentlyUsed>Recently Used</RecentlyUsed>
