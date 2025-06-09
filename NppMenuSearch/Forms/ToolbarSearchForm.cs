@@ -276,12 +276,26 @@ namespace NppMenuSearch.Forms
 
                     if (show != wasShown)
                     {
-                        Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_SHOWBAND, searchBarIndex, show ? 1 : 0);
+                        //Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_SHOWBAND, searchBarIndex, show ? 1 : 0);
 
                         if (show && !FixedWidth)
                         {
                             Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MINIMIZEBAND, searchBarIndex, 0);
                             Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MAXIMIZEBAND, searchBarIndex, 1);
+                        }
+                    }
+
+                    if (searchBarIndex < toolbarIndex)
+                    {
+                        // Workaround: If out search widget gets put on the second line and then marked as "Fix widget size", it would be reordered by windows
+                        // before the actual toolbar, without a chance to put it back. So we move it back here. Afterwards hide and show our widget so that
+                        // the Rebar control updates the band placements (we could also resize the Rebar control)
+                        Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_MOVEBAND, toolbarIndex, 0);
+                        ++searchBarIndex;
+                        if (show)
+                        {
+                            Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_SHOWBAND, searchBarIndex, 0);
+                            Win32.SendMessage(hwndRebar, (NppMsg)Win32.RB_SHOWBAND, searchBarIndex, 1);
                         }
                     }
                     return;
@@ -312,6 +326,8 @@ namespace NppMenuSearch.Forms
                 {
                     if (oldPreferredWidth < band.cxMinChild)
                         oldPreferredWidth = band.cxMinChild;
+
+                    // TODO: could the extra margin be received by RB_GETBANDBORDERS ?
 
                     Win32.SendMessage(hwndRebar, Win32.RB_SETBANDWIDTH, searchBarIndex, oldPreferredWidth);
                     int extraMargin = Width - oldPreferredWidth;
