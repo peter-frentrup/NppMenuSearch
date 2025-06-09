@@ -1,24 +1,32 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <NppMenuSearch>
-	<Native-Lang name="Italian" version="2025-06-08">
+	<Native-Lang name="Italian" version="2025-06-09">
 		<General>
+			<!-- Info text shown in the search widget -->
 			<SearchWidgetTitle>Ricerca Notepad++</SearchWidgetTitle>
 		</General>
 		<MenuTitles>
 			<RepeatPreviousCommand>Ripeti il comando precedente</RepeatPreviousCommand>
 			<RepeatCommand>Ripeti comando “{0}”</RepeatCommand>
+
+			<!-- Shows version information about NppMenuSearch: -->
 			<About>&amp;Informazioni su...</About>
-			<FixWidgetSize>&amp;Correggi la dimensione del widget</FixWidgetSize>
+
+			<!-- Keep the widget size fixed so it does not change dynamically. -->
+			<FixWidgetSize>&amp;Blocca la dimensione del widget</FixWidgetSize>
 		</MenuTitles>
 		<GroupTitles>
-			<RecentlyUsed>Usati di recente</RecentlyUsed>
+			<RecentlyUsed>Recenti</RecentlyUsed>
 			<Menu>Menù</Menu>
 			<Preferences>Preferenze</Preferences>
 			<OpenFiles>File aperti</OpenFiles>
 		</GroupTitles>
 		<Help>
-			<SwitchGroup>Il tasto TAB cambia gruppo: Usati di recente ↔ Menu ↔ File aperti ↔ Preferenze.</SwitchGroup>
-			<RepeatForAllResults>Premi nuovamente {0} per tutti i risultati.</RepeatForAllResults>
+			<!-- Preferrably, the two scentences <RepeatForAllResults> and <SwitchGroup> should fit onto a single line in the bottom of the results popup.
+				Automatic line breaking is applied, but you may also force a line break by e.g. putting &#10; just before the closing tag </RepeatForAllResults> 
+				-->
+			<SwitchGroup>TAB per il gruppo successivo: Recenti ↔ Menù ↔ File aperti ↔ Preferenze.</SwitchGroup>
+			<RepeatForAllResults>Premi {0} per tutti i risultati.</RepeatForAllResults>
 		</Help>
 	</Native-Lang>
 </NppMenuSearch>
