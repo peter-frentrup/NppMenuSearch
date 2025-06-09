@@ -189,7 +189,7 @@ namespace NppMenuSearch.Forms
                     Bounds = area;
                 }
 
-                int toolbarButtonHeight = 0;
+                int toolbarButtonHeight = 1;
                 if (Main.ToolbarSearchForm != null && Main.ToolbarSearchForm.HwndToolbar != IntPtr.Zero)
                 {
                     IntPtr hImgList = Win32.SendMessage(Main.ToolbarSearchForm.HwndToolbar, Win32.TB_GETIMAGELIST, 0, 0);
@@ -674,7 +674,7 @@ namespace NppMenuSearch.Forms
 
         private void viewResults_Resize(object sender, EventArgs e)
         {
-            viewResults.TileSize = new Size(viewResults.ClientSize.Width - 20, viewResults.TileSize.Height);
+            viewResults.TileSize = new Size(Math.Max(20, viewResults.ClientSize.Width - 20), viewResults.TileSize.Height);
         }
 
         private void viewResults_DrawItem(object sender, DrawListViewItemEventArgs e)
