@@ -30,8 +30,7 @@ build_script:
 
 after_build:
     - cd "%APPVEYOR_BUILD_FOLDER%"\NppMenuSearch
-    - ps: >-
-
+    - ps: |
         $ZipFileName = "NppMenuSearch_$($env:APPVEYOR_REPO_TAG_NAME)_$($env:PLATFORM).zip"
         7z a $ZipFileName .\bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\NppMenuSearch.dll
         7z a $ZipFileName .\bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\NppMenuSearch.dll.*.xml
