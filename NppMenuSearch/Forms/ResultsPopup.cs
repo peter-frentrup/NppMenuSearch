@@ -34,6 +34,8 @@ namespace NppMenuSearch.Forms
         private DialogItem PreferenceDialog;
         private List<TabItem> TabList;
 
+        private int ReloadCounter = 0;
+
         public ResultsPopup()
         {
             InitializeComponent();
@@ -92,26 +94,86 @@ namespace NppMenuSearch.Forms
         {
 #if DEBUG
             Stopwatch sw = Stopwatch.StartNew();
+            int stepIndex = 0;
 #endif
             var hwndDummyDialogParent = Handle;
+
+            int myCounter = ++ReloadCounter;
+
+            //PreferenceDialog = LoadPreferenceDialogSteps(hwndDummyDialogParent);
+            var loadStepEnumerator = LoadPreferenceDialogSteps(hwndDummyDialogParent).GetEnumerator();
+            EventHandler handleStep = null;
+            handleStep = (object sender, EventArgs e) =>
+            {
+#if DEBUG
+                Stopwatch swStep = Stopwatch.StartNew();
+#endif
+
+                Timer sendingTimer = (Timer)sender;
+                sendingTimer.Stop();
+                sendingTimer.Tick -= handleStep;
+
+                bool done = false;
+                if(myCounter != ReloadCounter)
+                {
+                    done = true;
+#if DEBUG
+                    Console.WriteLine($"InitPreferencesDialog [{myCounter}]: cancelled at step {stepIndex} due to a newer InitPreferencesDialog request");
+#endif
+                }
+                else if (loadStepEnumerator.MoveNext())
+                {
+                    var current = loadStepEnumerator.Current;
+                    if (current.Key == LoadStep.Finished)
+                    {
+#if DEBUG
+                        Console.WriteLine($"InitPreferencesDialog [{myCounter}]: final deferred step {stepIndex}");
+#endif
+                        PreferenceDialog = current.Value;
+                    }
+
+#if DEBUG
+                    Console.WriteLine($"InitPreferencesDialog [{myCounter}]: deferred step {stepIndex} took {swStep.ElapsedMilliseconds}ms; {sw.ElapsedMilliseconds}ms after begin");
+                    ++stepIndex;
+#endif
+
+                    sendingTimer.Tick += handleStep;
+                    sendingTimer.Start();
+                }
+                else
+                    done = true;
+
+                if(done)
+                {
+
+#if DEBUG
+                    Console.WriteLine($"InitPreferencesDialog [{myCounter}]: no more deferred steps; {sw.ElapsedMilliseconds}ms after begin");
+                    ++stepIndex;
+#endif
+
+                    loadStepEnumerator.Dispose();
+                    loadStepEnumerator = null;
+                }
+            };
+
+            timerIdle.Tick += handleStep;
+            timerIdle.Start();
+
+#if DEBUG
+            Console.WriteLine($"InitPreferencesDialog returns after {sw.ElapsedMilliseconds}ms");
+#endif
+        }
+
+        enum LoadStep { More, Finished }
+        private static IEnumerable<KeyValuePair<LoadStep, DialogItem>> LoadPreferenceDialogSteps(IntPtr hwndDummyDialogParent)
+        {
+            var ContinueLater = new KeyValuePair<LoadStep, DialogItem>(LoadStep.More, null);
+
+            yield return ContinueLater;
+
             PreferenceDialogHelper pdh = new PreferenceDialogHelper();
             pdh.LoadCurrentLocalization();
 
-            Task.Factory.StartNew(() => {
-                DialogItem preferenceDialog = BackgroundLoadPreferenceDialog(hwndDummyDialogParent, pdh);
-
-                Action<DialogItem> finishOnGuiThread = newPrefsDialog => {
-                    PreferenceDialog = newPrefsDialog;
-#if DEBUG
-                    Console.WriteLine($"InitPreferencesDialog finished after {sw.ElapsedMilliseconds}ms");
-#endif
-                };
-                BeginInvoke(finishOnGuiThread, preferenceDialog);
-            });
-        }
-
-        private static DialogItem BackgroundLoadPreferenceDialog(IntPtr hwndDummyDialogParent, PreferenceDialogHelper pdh)
-        {
             IntPtr hwndDialogPage;
             DialogItem preferenceDialog = new DialogItem(pdh.PageTranslations[pdh.Global.InternalName]);
 
@@ -127,6 +189,8 @@ namespace NppMenuSearch.Forms
 
             foreach (var pageInfo in pdh.GetPages())
             {
+                yield return ContinueLater;
+
                 hwndDialogPage = DialogHelper.LoadNppDialog(hwndDummyDialogParent, (int)pageInfo.ResourceId);
                 try
                 {
@@ -143,9 +207,12 @@ namespace NppMenuSearch.Forms
                 }
             }
 
+            yield return ContinueLater;
+
             preferenceDialog.Translate(pdh.ControlTranslations);
             preferenceDialog.RemoveRedundantHeadings();
-            return preferenceDialog;
+
+            yield return new KeyValuePair<LoadStep, DialogItem>(LoadStep.Finished, preferenceDialog);
         }
 
         protected override void WndProc(ref Message m)

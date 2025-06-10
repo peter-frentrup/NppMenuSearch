@@ -11,6 +11,9 @@ namespace NppMenuSearch
         public event HideShowEventHandler BeforeHideShowToolbar;
         public event HideShowEventHandler AfterHideShowToolbar;
 
+        /// <summary>
+        /// Note that this event normally fires twice in a row: N++ first switches to English and then to the selected language.
+        /// </summary>
         public event EventHandler AfterReloadNativeLang;
 
         protected override void WndProc(ref Message m)
