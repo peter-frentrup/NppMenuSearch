@@ -75,6 +75,11 @@ namespace NppMenuSearch.Forms
             resultGroupPreferences.Header  = Main.Localization.Strings.GroupTitle_Preferences;
             resultGroupTabs.Header         = Main.Localization.Strings.GroupTitle_OpenFiles;
 
+            menuGotoShortcutDefinition.Text = Main.Localization.Strings.MenuTitle_ChangeShortcut;
+            menuExecute.Text                = Main.Localization.Strings.MenuTitle_Execute;
+            menuOpenDialog.Text             = Main.Localization.Strings.MenuTitle_OpenDialog;
+            menuSelectTab.Text              = Main.Localization.Strings.MenuTitle_SelectTab;
+
             // Help text label is updated when visibility changes.
         }
 

@@ -9,6 +9,10 @@
 			<RepeatCommand>Kommando wiederholen: „{0}“</RepeatCommand>
 			<About>&amp;Über...</About>
 			<FixWidgetSize>Suchfeldgröße &amp;fixieren</FixWidgetSize>
+			<ChangeShortcut>&amp;Tastenkombination ändern...</ChangeShortcut>
+			<Execute>&amp;Ausführen</Execute>
+			<SelectTab>&amp;Dateireiter öffnen</SelectTab>
+			<OpenDialog>&amp;Dialog öffnen</OpenDialog>
 		</MenuTitles>
 		<GroupTitles>
 			<RecentlyUsed>Zuletzt verwendet</RecentlyUsed>

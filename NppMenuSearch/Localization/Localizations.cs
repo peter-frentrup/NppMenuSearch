@@ -78,6 +78,10 @@ namespace NppMenuSearch.Localization
                 TryRead(ref translation.MenuTitle_RepeatCommand_arg,      root, "MenuTitles/RepeatCommand");
                 TryRead(ref translation.MenuTitle_About,                  root, "MenuTitles/About");
                 TryRead(ref translation.MenuTitle_FixWidgetSize,          root, "MenuTitles/FixWidgetSize");
+                TryRead(ref translation.MenuTitle_ChangeShortcut,         root, "MenuTitles/ChangeShortcut");
+                TryRead(ref translation.MenuTitle_Execute,                root, "MenuTitles/Execute");
+                TryRead(ref translation.MenuTitle_SelectTab,              root, "MenuTitles/SelectTab");
+                TryRead(ref translation.MenuTitle_OpenDialog,             root, "MenuTitles/OpenDialog");
                 TryRead(ref translation.GroupTitle_RecentlyUsed,          root, "GroupTitles/RecentlyUsed");
                 TryRead(ref translation.GroupTitle_Menu,                  root, "GroupTitles/Menu");
                 TryRead(ref translation.GroupTitle_Preferences,           root, "GroupTitles/Preferences");

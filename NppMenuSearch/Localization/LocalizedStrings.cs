@@ -12,6 +12,10 @@ namespace NppMenuSearch.Localization
         public string MenuTitle_RepeatCommand_arg = "Repeat command “{0}”";
         public string MenuTitle_About = "&About...";
         public string MenuTitle_FixWidgetSize = "&Lock widget size";
+        public string MenuTitle_ChangeShortcut = "Change &Shortcut...";
+        public string MenuTitle_Execute = "E&xecute";
+        public string MenuTitle_SelectTab = "Select &Tab";
+        public string MenuTitle_OpenDialog = "&Open Dialog";
         public string GroupTitle_RecentlyUsed = "Recently Used";
         public string GroupTitle_Menu = "Menu";
         public string GroupTitle_Preferences = "Preferences";

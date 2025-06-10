@@ -91,7 +91,7 @@
             // menuGotoShortcutDefinition
             // 
             this.menuGotoShortcutDefinition.Index = 0;
-            this.menuGotoShortcutDefinition.Text = "Change &Shortcut";
+            this.menuGotoShortcutDefinition.Text = "Change &Shortcut...";
             this.menuGotoShortcutDefinition.Click += new System.EventHandler(this.menuGotoShortcutDefinition_Click);
             // 
             // menuExecute
@@ -105,7 +105,7 @@
             // 
             this.menuSelectTab.DefaultItem = true;
             this.menuSelectTab.Index = 2;
-            this.menuSelectTab.Text = "&Select Tab";
+            this.menuSelectTab.Text = "Select &Tab";
             this.menuSelectTab.Click += new System.EventHandler(this.menuExecute_Click);
             // 
             // menuOpenDialog

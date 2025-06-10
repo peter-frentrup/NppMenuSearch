@@ -14,6 +14,12 @@
 			
 			<!-- Keep the widget size fixed so it does not change dynamically. -->
 			<FixWidgetSize>&amp;Lock widget size</FixWidgetSize>
+			
+			<!-- Context menu in the list of search results: Only one of <Execute>/<SelectTab>/<OpenDialog> is shown at once, depending on the selected result item -->
+			<ChangeShortcut>Change &amp;Shortcut</ChangeShortcut>
+			<Execute>E&amp;xecute</Execute>
+			<SelectTab>Select &amp;Tab</SelectTab>
+			<OpenDialog>&amp;Open Dialog</OpenDialog>
 		</MenuTitles>
 		<GroupTitles>
 			<RecentlyUsed>Recently Used</RecentlyUsed>
