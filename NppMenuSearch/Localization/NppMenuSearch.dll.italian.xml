@@ -16,8 +16,8 @@
 			<FixWidgetSize>&amp;Blocca la dimensione del widget</FixWidgetSize>
 			
 			<!-- Context menu in the list of search results: Only one of <Execute>/<SelectTab>/<OpenDialog> is shown at once, depending on the selected result item -->
-			<ChangeShortcut>&amp;Modifica la tasti di scelta rapida...</ChangeShortcut>
-			<Execute>&amp;Eseguire</Execute>
+			<ChangeShortcut>&amp;Modifica i tasti di scelta rapida...</ChangeShortcut>
+			<Execute>&amp;Esegui</Execute>
 			<SelectTab>Apri &amp;scheda</SelectTab>
 			<OpenDialog>Apri &amp;finestra</OpenDialog>
 		</MenuTitles>
