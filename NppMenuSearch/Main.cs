@@ -229,7 +229,8 @@ namespace NppMenuSearch
             ToolbarSearchForm = new ToolbarSearchForm();
             FlyingSearchForm = null;
 
-            ToolbarSearchForm.AfterCompleteInit += (s, e) => { RecalcRepeatLastCommandMenuItem(); };
+            Localization.NativeLangChanged += Localization_NativeLangChanged;
+            ToolbarSearchForm.AfterCompleteInit += Localization_NativeLangChanged;
 
             NppListener.AssignHandle(PluginBase.nppData._nppHandle);
 
@@ -240,6 +241,11 @@ namespace NppMenuSearch
 #if DEBUG
             Console.WriteLine($"{PluginName}:PluginReady took {sw.ElapsedMilliseconds}ms");
 #endif
+        }
+
+        private static void Localization_NativeLangChanged(object sender, EventArgs e)
+        {
+            RecalcRepeatLastCommandMenuItem();
         }
 
         private static FlyingSearchForm NeedFlyingSearchForm()
