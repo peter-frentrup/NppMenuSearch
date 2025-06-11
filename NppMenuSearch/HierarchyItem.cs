@@ -89,11 +89,11 @@ namespace NppMenuSearch
             foreach (string word in words)
             {
                 wordCharsCount += word.Length;
-                int pos = text.IndexOf(word, 0, text.Length, StringComparison.InvariantCultureIgnoreCase);
+                int pos = text.IndexOf(word, 0, text.Length, StringComparison.InvariantCultureIgnoreCase); // caution: "ss" matches "ß", so the lengths may be different
                 if (pos >= 0)
                 {
                     matchedWordCharsCount += word.Length;
-                    for (int i = pos; i < pos + word.Length; ++i)
+                    for (int i = pos; i < pos + word.Length && i < matched.Length; ++i)
                         matched[i] = true;
                 }
                 else
