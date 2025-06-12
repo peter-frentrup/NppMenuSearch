@@ -40,15 +40,15 @@ after_build:
             Push-AppveyorArtifact $ZipFileName -DeploymentName builds
         }
 
-deploy:
-    provider: GitHub
-    auth_token:
-        secure: VsOooQwPfiGJ32FFjrxnoRPEFOzeFaBWkhjADfhIF2lxb8K2JunV2DEppw5zHpXj
-    artifact: releases
-    draft: false
-    prerelease: false
-    force_update: true
-    on:
-        appveyor_repo_tag: true
-        PlatformToolset: v141_xp
-        configuration: Release
+#deploy:
+#    provider: GitHub
+#    auth_token:
+#        secure: VsOooQwPfiGJ32FFjrxnoRPEFOzeFaBWkhjADfhIF2lxb8K2JunV2DEppw5zHpXj
+#    artifact: releases
+#    draft: false
+#    prerelease: false
+#    force_update: true
+#    on:
+#        appveyor_repo_tag: true
+#        PlatformToolset: v141_xp
+#        configuration: Release
