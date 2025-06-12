@@ -10,7 +10,7 @@
 			<RepeatCommand>Ripeti comando “{0}”</RepeatCommand>
 
 			<!-- Shows version information about NppMenuSearch: -->
-			<About>&amp;Informazioni su...</About>
+			<About>&amp;Informazioni su NppMenuSearch</About>
 
 			<!-- Keep the widget size fixed so it does not change dynamically. -->
 			<FixWidgetSize>&amp;Blocca la dimensione del widget</FixWidgetSize>

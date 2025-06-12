@@ -10,7 +10,7 @@ namespace NppMenuSearch.Localization
         public string SearchWidgetTitle = "Search Notepad++";
         public string MenuTitle_RepeatCommand_Previous = "Repeat previous command";
         public string MenuTitle_RepeatCommand_arg = "Repeat command “{0}”";
-        public string MenuTitle_About = "&About...";
+        public string MenuTitle_About = "&About NppMenuSearch";
         public string MenuTitle_FixWidgetSize = "&Lock widget size";
         public string MenuTitle_ChangeShortcut = "Change &Shortcut...";
         public string MenuTitle_Execute = "E&xecute";

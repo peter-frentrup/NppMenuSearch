@@ -7,7 +7,7 @@
 		<MenuTitles>
 			<RepeatPreviousCommand>Letztes Kommando wiederholen</RepeatPreviousCommand>
 			<RepeatCommand>Kommando wiederholen: „{0}“</RepeatCommand>
-			<About>&amp;Über...</About>
+			<About>&amp;Über NppMenuSearch</About>
 			<FixWidgetSize>Suchfeldgröße &amp;fixieren</FixWidgetSize>
 			<ChangeShortcut>&amp;Tastenkombination ändern...</ChangeShortcut>
 			<Execute>&amp;Ausführen</Execute>
