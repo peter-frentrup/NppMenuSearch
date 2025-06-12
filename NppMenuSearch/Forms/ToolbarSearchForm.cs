@@ -351,6 +351,20 @@ namespace NppMenuSearch.Forms
 
         public void SelectSearchField()
         {
+            if(ResultsPopup == null)
+            {
+                // Hack for when someone invokes the 'Main.MenuSearchFunction' too quickly after startup (e.g. programmatically).
+                EventHandler afterCompleteInit_SelectSearchField = null;
+                afterCompleteInit_SelectSearchField = (sender, e) =>
+                {
+                    AfterCompleteInit -= afterCompleteInit_SelectSearchField;
+                    if (ResultsPopup != null)
+                        SelectSearchField();
+                };
+                AfterCompleteInit += afterCompleteInit_SelectSearchField;
+                return;
+            }
+
             if (ResultsPopup.Visible)
             {
                 ResultsPopup.ShowMoreResults();
@@ -365,6 +379,9 @@ namespace NppMenuSearch.Forms
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
+            if (ResultsPopup == null) // Someone changes the search text before initilization completed. Ignore that.
+                return;
+
             if (txtSearch.TextLength == 0)
             {
                 SetClearImage(null);
@@ -409,7 +426,7 @@ namespace NppMenuSearch.Forms
                     e.Handled = true;
                     suppressKeyPress = true;
                     //txtSearch.Text 	 = "";
-                    ResultsPopup.Hide();
+                    ResultsPopup?.Hide();
                     Win32.SetFocus(PluginBase.GetCurrentScintilla());
                     break;
 
