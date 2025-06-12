@@ -13,7 +13,7 @@ Installation
 ------------
 
 Binaries are available on [Sourceforge](https://sourceforge.net/projects/nppmenusearch/files/).
-Put `NppMenuSearch.dll` into the plugins subfolder of the Notepad++ installation folder as `plugins\NppMenuSearch\NppMenuSearch.dll`.
+Put `NppMenuSearch.dll` (and optionally the translation files `NppMenuSearch.dll.*.xml`) into the plugins subfolder of the Notepad++ installation folder as `plugins\NppMenuSearch\NppMenuSearch.dll` etc.
 
 Usage
 -----
@@ -31,3 +31,4 @@ The plugin adds a text box to the Notepad++ toolbar.
 * There is a menu item to repeat the most recently used command. You should assign a keyboard 
     shortcut to this if you need it often. This would effectively save you two keystrokes.
 * The search results window has a popup menu for changing shortcuts. 
+* You can lock the search widget size via the `⁞` button on the right.
