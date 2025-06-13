@@ -23,14 +23,7 @@ namespace NppMenuSearch
 
         static IntPtr DialogProcedure(IntPtr hwndDlg, uint uMsg, IntPtr wParam, IntPtr lParam)
         {
-            switch (uMsg)
-            {
-                case (uint)Win32.WM_INITDIALOG:
-                    return (IntPtr)1;
-
-                default:
-                    return IntPtr.Zero;
-            }
+            return IntPtr.Zero;
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]

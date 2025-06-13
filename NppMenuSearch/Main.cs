@@ -235,8 +235,6 @@ namespace NppMenuSearch
             NppListener.AssignHandle(PluginBase.nppData._nppHandle);
 
             ToolbarSearchForm.CheckToolbarVisiblity();
-            
-            Win32.SendMessage(PluginBase.GetCurrentScintilla(), SciMsg.SCI_GRABFOCUS, 0, 0);
 
 #if DEBUG
             Console.WriteLine($"{PluginName}:PluginReady took {sw.ElapsedMilliseconds}ms");
