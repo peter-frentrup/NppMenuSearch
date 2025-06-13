@@ -826,7 +826,7 @@ namespace NppMenuSearch.Forms
                 }
 
                 e.Graphics.DrawString(
-                    e.Item.Text,
+                    e.Item.Text.Replace('\n', ' ').Replace("\r", ""),
                     e.Item.Font ?? e.Item.ListView.Font,
                     foreground,
                     textBounds.Location,
