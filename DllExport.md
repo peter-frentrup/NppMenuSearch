@@ -12,7 +12,7 @@ See [Quick start] page for bootstrap instructions.
 > Set it up just once! you don't have to do this every time.
 
 [DllExport.bat] will automatically add required changes to your selected project.  
-*Last updated on 2025-10-25.*  
+*[Local copy](https://github.com/peter-frentrup/NppMenuSearch/blob/master/DllExport.bat) last updated on 2025-10-25.*  
 
 The changes include:
 1. `PropertyGroup` with `DllExport*` properties.
