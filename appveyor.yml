@@ -19,9 +19,13 @@ build_script:
     - msbuild NppMenuSearch.sln /m /p:Configuration="%configuration%" /p:Platform="%platform%" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
     - ps: |
         # Update AppVeyor build version from assembly version + build number
-        $dllPath = ".\NppMenuSearch\bin\$env:PLATFORM\$env:CONFIGURATION\NppMenuSearch.dll"
-        $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($dllPath).FileVersion
-        Update-AppveyorBuild -Version "$version-$env:APPVEYOR_BUILD_NUMBER"
+        $dllPath = "$env:APPVEYOR_BUILD_FOLDER\NppMenuSearch\bin\$env:PLATFORM\$env:CONFIGURATION\NppMenuSearch.dll"
+        if (Test-Path $dllPath) {
+            $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($dllPath).FileVersion
+            Update-AppveyorBuild -Version "$version-$env:APPVEYOR_BUILD_NUMBER"
+        } else {
+            Write-Warning "DLL not found at: $dllPath"
+        }
 
 after_build:
     - cd "%APPVEYOR_BUILD_FOLDER%"\NppMenuSearch
