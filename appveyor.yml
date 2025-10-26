@@ -8,10 +8,6 @@ configuration:
     - Release
     - Debug
 
-install:
-    # Install .NET Framework 4.0.3 targeting pack
-    - choco install netfx-4.0.3-devpack -y
-
 build_script:
     - cd "%APPVEYOR_BUILD_FOLDER%"
     - msbuild NppMenuSearch.sln /m /p:Configuration="%configuration%" /p:Platform="%platform%" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
