@@ -32,7 +32,7 @@ after_build:
     - cd "%APPVEYOR_BUILD_FOLDER%"\NppMenuSearch
     - ps: |
         $ZipFileName = "NppMenuSearch_$($env:APPVEYOR_REPO_TAG_NAME)_$($env:PLATFORM).zip"
-        # SDK-style project output path includes target framework
+        # SDK-style project output path without target framework
         $OutputPath = ".\bin\$env:PLATFORM\$env:CONFIGURATION"
         7z a $ZipFileName "$OutputPath\NppMenuSearch.dll"
         7z a $ZipFileName "$OutputPath\NppMenuSearch.dll.*.xml"
