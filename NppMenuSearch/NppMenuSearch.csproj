@@ -15,12 +15,21 @@
     <Copyright>Copyright © Peter Frentrup 2013-2025</Copyright>
   </PropertyGroup>
 
+  <!--
+    DllExport will warn when using DebugType=portable (default for .NET SDK projects).
+    net.r_eg.DllExport.targets : Export warning EXP0022: RunIlAsm: Possibly invalid PDB. Check the DebugType or use a different assembler
+    Set DebugType to 'full' for Debug and 'pdbonly' for Release to avoid this warning until DllExport is fixed.
+  -->
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DefineConstants>TRACE</DefineConstants>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
@@ -49,8 +58,11 @@
 
   <ItemGroup>
     <Content Include="Localization\NppMenuSearch.*.xml">
+      <!-- Link is used to flatten the output structure -->
       <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <!-- Hide links in Solution Explorer so they don't show up twice -->
+      <Visible>false</Visible>
     </Content>
   </ItemGroup>
 
