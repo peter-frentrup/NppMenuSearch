@@ -11,7 +11,8 @@ See [Quick start] page for bootstrap instructions.
 > [!NOTE]
 > Set it up just once! you don't have to do this every time.
 
-[DllExport.bat] will automatically add required changes to your selected project.
+[DllExport.bat] will automatically add required changes to your selected project.  
+*Last updated on 2025-10-25.*  
 
 The changes include:
 1. `PropertyGroup` with `DllExport*` properties.
@@ -34,5 +35,3 @@ Setup example:
 [DllExport Manager]: <https://github.com/3F/DllExport/wiki/DllExport-Manager>
 [Quick start]: <https://github.com/3F/DllExport/wiki/Quick-start>
 [DllExport.bat]: <https://3f.github.io/DllExport/releases/latest/manager/>
-
-
