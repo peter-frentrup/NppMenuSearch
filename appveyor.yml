@@ -1,10 +1,4 @@
-version: 0.9.3.{build}
-image: Visual Studio 2017
-
-
-environment:
-  matrix:
-    - PlatformToolset: v141_xp
+image: Visual Studio 2022
 
 platform:
     - x64
@@ -14,26 +8,23 @@ configuration:
     - Release
     - Debug
 
-install:
-    - if "%platform%"=="x64" set archi=amd64
-    - if "%platform%"=="x64" set platform_input=x64
-
-    - if "%platform%"=="x86" set archi=x86
-    - if "%platform%"=="x86" set platform_input=x86
-
-    - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" %archi%
-    - nuget restore "%APPVEYOR_BUILD_FOLDER%"\NppMenuSearch\packages.config -PackagesDirectory "%APPVEYOR_BUILD_FOLDER%"\packages
-
 build_script:
     - cd "%APPVEYOR_BUILD_FOLDER%"
-    - msbuild NppMenuSearch.sln /m /p:configuration="%configuration%" /p:platform="%platform_input%" /p:PlatformToolset="%PlatformToolset%" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+    - msbuild NppMenuSearch.sln /m /p:Configuration="%configuration%" /p:Platform="%platform%" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+    - ps: |
+        # Update AppVeyor build version from assembly
+        $dllPath = ".\NppMenuSearch\bin\$env:PLATFORM\$env:CONFIGURATION\NppMenuSearch.dll"
+        $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($dllPath).FileVersion
+        Update-AppveyorBuild -Version "$version-$env:APPVEYOR_BUILD_NUMBER"
 
 after_build:
     - cd "%APPVEYOR_BUILD_FOLDER%"\NppMenuSearch
     - ps: |
         $ZipFileName = "NppMenuSearch_$($env:APPVEYOR_REPO_TAG_NAME)_$($env:PLATFORM).zip"
-        7z a $ZipFileName .\bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\NppMenuSearch.dll
-        7z a $ZipFileName .\bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\NppMenuSearch.dll.*.xml
+        # SDK-style project output path includes target framework
+        $OutputPath = ".\bin\$env:PLATFORM\$env:CONFIGURATION"
+        7z a $ZipFileName "$OutputPath\NppMenuSearch.dll"
+        7z a $ZipFileName "$OutputPath\NppMenuSearch.dll.*.xml"
         if ($env:CONFIGURATION -eq "Release") {
             Push-AppveyorArtifact $ZipFileName -DeploymentName releases
         } else {
@@ -50,5 +41,4 @@ after_build:
 #    force_update: true
 #    on:
 #        appveyor_repo_tag: true
-#        PlatformToolset: v141_xp
 #        configuration: Release
