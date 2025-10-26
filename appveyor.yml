@@ -8,6 +8,12 @@ configuration:
     - Release
     - Debug
 
+before_build:
+    # Restore NuGet packages including Microsoft.NETFramework.ReferenceAssemblies.net40
+    # which provides .NET Framework 4.0 reference assemblies for building on VS 2022
+    - cd "%APPVEYOR_BUILD_FOLDER%"
+    - nuget restore NppMenuSearch.sln
+
 build_script:
     - cd "%APPVEYOR_BUILD_FOLDER%"
     - msbuild NppMenuSearch.sln /m /p:Configuration="%configuration%" /p:Platform="%platform%" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
