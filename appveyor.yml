@@ -9,8 +9,8 @@ configuration:
     - Debug
 
 install:
-    # Install .NET Framework 4.0 targeting pack
-    - choco install netfx-4.0-devpack -y
+    # Install .NET Framework 4.0.3 targeting pack
+    - choco install netfx-4.0.3-devpack -y
 
 build_script:
     - cd "%APPVEYOR_BUILD_FOLDER%"
