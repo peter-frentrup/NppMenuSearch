@@ -35,6 +35,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!--
+      .NET SDK auto-includes the following files as None items by default.
+      https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview#default-includes-and-excludes
+      To preserve them in their original location in Solution Explorer and copy flattened to output,
+      re-add these files as Content with Visible=false (visually hide duplication) and Link (flatten on output).
+    -->
     <Content Include="Localization\NppMenuSearch.*.xml">
       <!-- Link is used to flatten the output structure -->
       <Link>%(Filename)%(Extension)</Link>
