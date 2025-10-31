@@ -17,6 +17,7 @@
       https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview#code-quality-analysis
     -->
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>Recommended</AnalysisMode>
     <!--
       Code-style analysis via .editorconfig
       https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview#code-style-analysis
