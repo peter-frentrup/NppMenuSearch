@@ -135,10 +135,10 @@
     <None Include="Resources\ClearPressed_DarkMode.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Localization\NppMenuSearch.*.xml">
-      <Link>%(Filename)%(Extension)</Link>
+    <None Include="Localization\NppMenuSearch.*.xml">
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="../packages/UnmanagedExports.1.2.7/tools/RGiesecke.DllExport.targets" Condition="Exists('../packages/UnmanagedExports.1.2.7/tools/RGiesecke.DllExport.targets')" />
