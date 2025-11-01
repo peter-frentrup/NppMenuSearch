@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using NppPluginNET;
+using RGiesecke.DllExport;
 
 namespace NppMenuSearch
 {
