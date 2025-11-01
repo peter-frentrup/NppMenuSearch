@@ -57,29 +57,31 @@ namespace NppMenuSearch
                 ApplyThemeRecursive(child);
         }
 
+        //static bool Has_AllowDarkModeForWindow = true;
+
         public static void ApplyTheme(Control control)
         {
             // // Does not help:
             // NppDarkModeFlags flags = NppDarkModeFlags.SetThemeDirectly | NppDarkModeFlags.SetTitleBar;// | NppDarkModeFlags.SetThemeChildren;
             // Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_DARKMODESUBCLASSANDTHEME, (int)flags, control.Handle);
 
-            //            // Does not help
-            //            if (Has_AllowDarkModeForWindow)
-            //            {
-            //                try
-            //                {
-            //                    _AllowDarkModeForWindow(control.Handle, Enabled);
-            //                }
-            //                catch (MissingMethodException ex)
-            //                {
+            //// Does not help
+            //if (Has_AllowDarkModeForWindow)
+            //{
+            //    try
+            //    {
+            //        _AllowDarkModeForWindow(control.Handle, Enabled);
+            //    }
+            //    catch (MissingMethodException ex)
+            //    {
             //#if DEBUG
-            //                    Console.WriteLine(ex);
+            //         Console.WriteLine(ex);
             //#endif
-            //                    Has_AllowDarkModeForWindow = false;
-            //                }
-            //            }
+            //        Has_AllowDarkModeForWindow = false;
+            //    }
+            //}
             //
-            //            Win32.SendMessage(control.Handle, Win32.WM_THEMECHANGED, 0, 0);
+            //Win32.SendMessage(control.Handle, Win32.WM_THEMECHANGED, 0, 0);
             
             ApplyCustomColors(control);
         }
@@ -104,8 +106,6 @@ namespace NppMenuSearch
                 control.ForeColor = ControlForeColor;
             }
         }
-
-        static bool Has_AllowDarkModeForWindow = true;
 
         [DllImport("uxtheme.dll", EntryPoint = "#133")]
         private extern static bool _AllowDarkModeForWindow(IntPtr hwnd, bool allow);
