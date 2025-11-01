@@ -62,7 +62,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="UnmanagedExports" Version="1.2.7" />
+    <PackageReference Include="UnmanagedExports.Repack" Version="1.0.4" IncludeAssets="build" PrivateAssets="All" />
     <!-- Add net40 .NET Framework Reference Assemblies which are no longer available in Visual Studio 2022+ -->
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.3" PrivateAssets="All" />
     <!-- Enable .NET code quality analyzers for .NET Framework (not needed for .NET 5+) -->
