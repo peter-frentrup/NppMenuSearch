@@ -62,11 +62,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="UnmanagedExports.Repack" Version="1.0.4" IncludeAssets="build" PrivateAssets="All" />
+    <PackageReference Include="UnmanagedExports.Repack" Version="1.0.4" IncludeAssets="build" PrivateAssets="All" GeneratePathProperty="true" />
     <!-- Add net40 .NET Framework Reference Assemblies which are no longer available in Visual Studio 2022+ -->
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.3" PrivateAssets="All" />
     <!-- Enable .NET code quality analyzers for .NET Framework (not needed for .NET 5+) -->
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="RGiesecke.DllExport.Metadata">
+      <HintPath>$(PkgUnmanagedExports_Repack)\lib\net452\RGiesecke.DllExport.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>
