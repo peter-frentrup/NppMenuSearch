@@ -32,11 +32,6 @@
     <Copyright>Copyright © Peter Frentrup 2013-2025</Copyright>
   </PropertyGroup>
 
-  <!--
-    DllExport will warn when using DebugType=portable (default for .NET SDK projects).
-    net.r_eg.DllExport.targets : Export warning EXP0022: RunIlAsm: Possibly invalid PDB. Check the DebugType or use a different assembler
-    Set DebugType to 'full' for Debug and 'pdbonly' for Release to avoid this warning until DllExport is fixed.
-  -->
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
