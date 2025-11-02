@@ -22,14 +22,14 @@ install:
     - if "%platform%"=="x86" set platform_input=x86
 
     - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" %archi%
-    - nuget restore "%APPVEYOR_BUILD_FOLDER%"\NppMenuSearch\packages.config -PackagesDirectory "%APPVEYOR_BUILD_FOLDER%"\packages
+    #- nuget restore "%APPVEYOR_BUILD_FOLDER%"\NppMenuSearch\packages.config -PackagesDirectory "%APPVEYOR_BUILD_FOLDER%"\packages
 
 build_script:
     - cd "%APPVEYOR_BUILD_FOLDER%"
     - msbuild NppMenuSearch.sln /m /p:configuration="%configuration%" /p:platform="%platform_input%" /p:PlatformToolset="%PlatformToolset%" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 after_build:
-    - cd "%APPVEYOR_BUILD_FOLDER%"\NppMenuSearch
+    - cd "%APPVEYOR_BUILD_FOLDER%"
     - ps: |
         $ZipFileName = "NppMenuSearch_$($env:APPVEYOR_REPO_TAG_NAME)_$($env:PLATFORM).zip"
         7z a $ZipFileName .\bin\$env:PLATFORM_INPUT\$env:CONFIGURATION\NppMenuSearch.dll

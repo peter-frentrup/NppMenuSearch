@@ -1,49 +1,29 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using NppPluginNET;
-using RGiesecke.DllExport;
 
 namespace NppMenuSearch
 {
-    class UnmanagedExports
+    public static class UnmanagedExports
     {
-        [DllExport(CallingConvention = CallingConvention.Cdecl)]
-        static bool isUnicode()
+        public static void SetInfo(IntPtr nppHandle, IntPtr scintillaMainHandle, IntPtr scintillaSecondHandle)
         {
-            return true;
-        }
-
-        [DllExport(CallingConvention = CallingConvention.Cdecl)]
-        static void setInfo(NppData notepadPlusData)
-        {
-            PluginBase.nppData = notepadPlusData;
+            PluginBase.nppData = new NppData { _nppHandle = nppHandle, _scintillaMainHandle = scintillaMainHandle, _scintillaSecondHandle = scintillaSecondHandle };
             Main.CommandMenuInit();
         }
 
-        [DllExport(CallingConvention = CallingConvention.Cdecl)]
-        static IntPtr getFuncsArray(ref int nbF)
+        public static IntPtr GetFuncsArray(ref int nbF)
         {
             nbF = PluginBase._funcItems.Items.Count;
             return PluginBase._funcItems.NativePointer;
         }
 
-        [DllExport(CallingConvention = CallingConvention.Cdecl)]
-        static uint messageProc(uint Message, IntPtr wParam, IntPtr lParam)
+        public static string GetName()
         {
-            return 1;
+            return Main.PluginName;
         }
 
-        static IntPtr _ptrPluginName = IntPtr.Zero;
-        [DllExport(CallingConvention = CallingConvention.Cdecl)]
-        static IntPtr getName()
-        {
-            if (_ptrPluginName == IntPtr.Zero)
-                _ptrPluginName = Marshal.StringToHGlobalUni(Main.PluginName);
-            return _ptrPluginName;
-        }
-
-        [DllExport(CallingConvention = CallingConvention.Cdecl)]
-        static void beNotified(IntPtr notifyCode)
+        public static void BeNotified(IntPtr notifyCode)
         {
             SCNotification nc = (SCNotification)Marshal.PtrToStructure(notifyCode, typeof(SCNotification));
 
@@ -62,7 +42,6 @@ namespace NppMenuSearch
 
                     case (uint)NppMsg.NPPN_SHUTDOWN:
                         Main.PluginCleanUp();
-                        Marshal.FreeHGlobal(_ptrPluginName);
                         break;
 
                     case (uint)NppMsg.NPPN_DARKMODECHANGED:

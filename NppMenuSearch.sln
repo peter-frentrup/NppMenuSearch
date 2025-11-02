@@ -1,26 +1,44 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NppMenuSearch", "NppMenuSearch\NppMenuSearch.csproj", "{E56F6E12-089C-40ED-BCFD-923E5FA121A1}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.35425.106
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NppMenuSearchImpl", "NppMenuSearch\NppMenuSearchImpl.csproj", "{E56F6E12-089C-40ED-BCFD-923E5FA121A1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NppMenuSearch", "UnmanagedExports\NppMenuSearch.vcxproj", "{B258C1C2-1A8B-41DD-9F2C-AFC998D34878}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E56F6E12-089C-40ED-BCFD-923E5FA121A1} = {E56F6E12-089C-40ED-BCFD-923E5FA121A1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x86 = Debug|x86
-		Release|x86 = Release|x86
 		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Debug|x86.ActiveCfg = Debug|x86
-		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Debug|x86.Build.0 = Debug|x86
-		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Release|x86.ActiveCfg = Release|x86
-		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Release|x86.Build.0 = Release|x86
 		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Debug|x64.ActiveCfg = Debug|x64
 		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Debug|x64.Build.0 = Debug|x64
+		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Debug|x86.ActiveCfg = Debug|x86
+		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Debug|x86.Build.0 = Debug|x86
 		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Release|x64.ActiveCfg = Release|x64
 		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Release|x64.Build.0 = Release|x64
+		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Release|x86.ActiveCfg = Release|x86
+		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Release|x86.Build.0 = Release|x86
+		{B258C1C2-1A8B-41DD-9F2C-AFC998D34878}.Debug|x64.ActiveCfg = Debug|x64
+		{B258C1C2-1A8B-41DD-9F2C-AFC998D34878}.Debug|x64.Build.0 = Debug|x64
+		{B258C1C2-1A8B-41DD-9F2C-AFC998D34878}.Debug|x86.ActiveCfg = Debug|Win32
+		{B258C1C2-1A8B-41DD-9F2C-AFC998D34878}.Debug|x86.Build.0 = Debug|Win32
+		{B258C1C2-1A8B-41DD-9F2C-AFC998D34878}.Release|x64.ActiveCfg = Release|x64
+		{B258C1C2-1A8B-41DD-9F2C-AFC998D34878}.Release|x64.Build.0 = Release|x64
+		{B258C1C2-1A8B-41DD-9F2C-AFC998D34878}.Release|x86.ActiveCfg = Release|Win32
+		{B258C1C2-1A8B-41DD-9F2C-AFC998D34878}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1C46DD94-20BF-478E-BC2C-AD1CC4C327CF}
 	EndGlobalSection
 EndGlobal

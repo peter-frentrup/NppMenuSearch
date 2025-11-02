@@ -50,7 +50,8 @@ namespace NppMenuSearch.Localization
 
         private static LocalizedStrings OpenPluginLocalization(string nppNativeLangOrigFileName)
         {
-            string langFile = Assembly.GetExecutingAssembly().Location + "." + nppNativeLangOrigFileName;
+            string dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string langFile = Path.Combine(dir, Main.PluginName + ".dll." + nppNativeLangOrigFileName);
 
 #if DEBUG
             Console.WriteLine($"OpenPluginLocalization: search '{langFile}'");
