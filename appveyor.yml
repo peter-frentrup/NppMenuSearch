@@ -24,6 +24,12 @@ install:
     - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" %archi%
     #- nuget restore "%APPVEYOR_BUILD_FOLDER%"\NppMenuSearch\packages.config -PackagesDirectory "%APPVEYOR_BUILD_FOLDER%"\packages
 
+before_build:
+    # Restore NuGet packages including Microsoft.NETFramework.ReferenceAssemblies.net40
+    # which provides .NET Framework 4.0 reference assemblies for building on VS 2022
+    - cd "%APPVEYOR_BUILD_FOLDER%"
+    - nuget restore NppMenuSearch.sln
+
 build_script:
     - cd "%APPVEYOR_BUILD_FOLDER%"
     - msbuild NppMenuSearch.sln /m /p:configuration="%configuration%" /p:platform="%platform_input%" /p:PlatformToolset="%PlatformToolset%" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
