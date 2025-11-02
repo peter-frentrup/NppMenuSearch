@@ -62,6 +62,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Original UnmanagedExports logs a false positive error which fails the build. error : Microsoft.Build.Utilities.ToolLocationHelper could not find ildasm.exe. -->
     <PackageReference Include="UnmanagedExports.Repack" Version="1.0.4" IncludeAssets="build" PrivateAssets="All" GeneratePathProperty="true" />
     <!-- Add net40 .NET Framework Reference Assemblies which are no longer available in Visual Studio 2022+ -->
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.3" PrivateAssets="All" />
@@ -70,6 +71,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Needed just for DllExportAttribute and is not required at runtime. Alternatively, DllExportAttribute can be defined directly in the code. -->
     <Reference Include="RGiesecke.DllExport.Metadata">
       <HintPath>$(PkgUnmanagedExports_Repack)\lib\net452\RGiesecke.DllExport.Metadata.dll</HintPath>
       <Private>False</Private>
