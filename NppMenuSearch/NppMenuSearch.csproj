@@ -74,5 +74,9 @@
 
   <!-- Make the implicit bottom import explicit, then import DllExport AFTER -->
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <!--
+    UnmanagedExports does actually work fine but shows this misleading error during build:
+    error : Microsoft.Build.Utilities.ToolLocationHelper could not find ildasm.exe.
+  -->
   <Import Project="$(PkgUnmanagedExports)/tools/RGiesecke.DllExport.targets" />
 </Project>
