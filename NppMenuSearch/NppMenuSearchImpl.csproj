@@ -1,145 +1,68 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    MSBuild reference for .NET SDK projects
+    https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props
+  -->
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{E56F6E12-089C-40ED-BCFD-923E5FA121A1}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NppMenuSearch</RootNamespace>
-    <AssemblyName>NppMenuSearchImpl</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation />
-    <TargetFrameworkProfile />
+    <TargetFramework>net40</TargetFramework>
     <OutputPath>..\bin\$(Platform)\$(Configuration)\</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
+    <!-- Prevent 'net40' subfolder in output path -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Platforms>x86;x64</Platforms>
+    <RootNamespace>NppMenuSearch</RootNamespace>
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- .NET Framework 4.0 -> C# 7.3 (the last version officially supported) -->
+    <LangVersion>7.3</LangVersion>
+    <!--
+      Code quality analysis (requires Microsoft.CodeAnalysis.NetAnalyzers package for .NET Framework)
+      https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview#code-quality-analysis
+    -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>Recommended</AnalysisMode>
+    <!--
+      Code-style analysis via .editorconfig
+      https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview#code-style-analysis
+    -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+
+  <!-- Assembly Information. Replacement for AssemblyInfo.cs -->
+  <PropertyGroup>
+    <Version>0.9.8</Version>
+    <AssemblyTitle>Notepad++ Menu Search Plugin</AssemblyTitle>
+    <Copyright>Copyright © Peter Frentrup 2013-2025</Copyright>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <DebugSymbols>true</DebugSymbols>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DefineConstants>TRACE</DefineConstants>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)' == 'x86'">
-    <PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)' == 'x64'">
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.Linq" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="DarkMode.cs" />
-    <Compile Include="DialogHelper.cs" />
-    <Compile Include="DialogItem.cs" />
-    <Compile Include="Forms\FlyingSearchForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FlyingSearchForm.Designer.cs">
-      <DependentUpon>FlyingSearchForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Localization\Localizations.cs" />
-    <Compile Include="Localization\LocalizedStrings.cs" />
-    <Compile Include="TabItem.cs" />
-    <Compile Include="Forms\ResultsPopup.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ResultsPopup.Designer.cs">
-      <DependentUpon>ResultsPopup.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HierarchyItem.cs" />
-    <Compile Include="MenuItem.cs" />
-    <Compile Include="Forms\ToolbarSearchForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ToolbarSearchForm.Designer.cs">
-      <DependentUpon>ToolbarSearchForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Main.cs" />
-    <Compile Include="NppListener.cs" />
-    <Compile Include="NppPluginNETBase.cs" />
-    <Compile Include="NppPluginNETHelper.cs" />
-    <Compile Include="PreferenceDialogHelper.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Settings.cs" />
-    <Compile Include="ShortcutMapperUtil.cs" />
-    <Compile Include="StringUtil.cs" />
-    <Compile Include="UnmanagedExports.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Forms\FlyingSearchForm.resx">
-      <DependentUpon>FlyingSearchForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ResultsPopup.resx">
-      <DependentUpon>ResultsPopup.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ToolbarSearchForm.resx">
-      <DependentUpon>ToolbarSearchForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Gear.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ClearPressed.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ClearNormal.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Gear_DarkMode.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ClearNormal_DarkMode.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ClearPressed_DarkMode.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Localization\NppMenuSearch.*.xml">
+    <!--
+      .NET SDK auto-includes the following files as None items by default, thus use `Update` instead of `Include`.
+      https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview#default-includes-and-excludes
+    -->
+    <None Update="Localization\NppMenuSearch.*.xml">
+      <!-- Link is used to flatten the output structure -->
       <TargetPath>%(Filename)%(Extension)</TargetPath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <ItemGroup>
+    <!-- Add net40 .NET Framework Reference Assemblies which are no longer available in Visual Studio 2022+ -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.3" PrivateAssets="All" />
+    <!-- Enable .NET code quality analyzers for .NET Framework (not needed for .NET 5+) -->
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
 </Project>

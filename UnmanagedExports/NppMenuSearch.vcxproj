@@ -28,7 +28,6 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{B258C1C2-1A8B-41DD-9F2C-AFC998D34878}</ProjectGuid>
     <RootNamespace>NppMenuSearch</RootNamespace>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
@@ -85,6 +84,9 @@
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="UnmanagedExports.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NppMenuSearch\NppMenuSearchImpl.csproj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
