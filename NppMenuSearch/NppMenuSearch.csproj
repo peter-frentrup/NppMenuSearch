@@ -1,4 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
+  <!-- Make the implicit top import explicit -->
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
   <!--
     MSBuild reference for .NET SDK projects
     https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props
@@ -62,11 +65,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="UnmanagedExports.Repack" Version="1.0.4" IncludeAssets="build" PrivateAssets="All" />
+    <PackageReference Include="UnmanagedExports" Version="1.2.7" PrivateAssets="All" GeneratePathProperty="true" IncludeAssets="compile" />
     <!-- Add net40 .NET Framework Reference Assemblies which are no longer available in Visual Studio 2022+ -->
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.3" PrivateAssets="All" />
     <!-- Enable .NET code quality analyzers for .NET Framework (not needed for .NET 5+) -->
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0" PrivateAssets="All" />
   </ItemGroup>
 
+  <!-- Make the implicit bottom import explicit, then import DllExport AFTER -->
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(PkgUnmanagedExports)/tools/RGiesecke.DllExport.targets" />
 </Project>
