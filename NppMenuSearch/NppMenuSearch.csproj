@@ -35,11 +35,6 @@
     <Copyright>Copyright © Peter Frentrup 2013-2025</Copyright>
   </PropertyGroup>
 
-  <!--
-    DllExport will warn when using DebugType=portable (default for .NET SDK projects).
-    net.r_eg.DllExport.targets : Export warning EXP0022: RunIlAsm: Possibly invalid PDB. Check the DebugType or use a different assembler
-    Set DebugType to 'full' for Debug and 'pdbonly' for Release to avoid this warning until DllExport is fixed.
-  -->
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
@@ -51,7 +46,6 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
   </PropertyGroup>
-
   <ItemGroup>
     <!--
       .NET SDK auto-includes the following files as None items by default, thus use `Update` instead of `Include`.
@@ -75,8 +69,9 @@
   <!-- Make the implicit bottom import explicit, then import DllExport AFTER -->
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <!--
-    UnmanagedExports does actually work fine but shows this misleading error during build:
+    UnmanagedExports does actually work fine but logs this misleading error during build:
     error : Microsoft.Build.Utilities.ToolLocationHelper could not find ildasm.exe.
+    and fails the build.
   -->
   <Import Project="$(PkgUnmanagedExports)/tools/RGiesecke.DllExport.targets" />
 </Project>
