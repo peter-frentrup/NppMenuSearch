@@ -28,6 +28,8 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{B258C1C2-1A8B-41DD-9F2C-AFC998D34878}</ProjectGuid>
     <RootNamespace>NppMenuSearch</RootNamespace>
+    <!-- Fixes an issue with MSB3644: The reference assemblies for .NETFramework,Version=v4.0 were not found. -->
+    <TargetFrameworkVersion />
     <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
