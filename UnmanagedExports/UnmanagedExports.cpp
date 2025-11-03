@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include <Vcclr.h>
 
-#using <NppMenuSearchImpl.dll>
+#using "NppMenuSearchImpl.dll"
 
 
 struct NppData
