@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NppMenuSearchImpl", "NppMenuSearch\NppMenuSearchImpl.csproj", "{E56F6E12-089C-40ED-BCFD-923E5FA121A1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NppMenuSearch", "UnmanagedExports\NppMenuSearch.vcxproj", "{B258C1C2-1A8B-41DD-9F2C-AFC998D34878}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E56F6E12-089C-40ED-BCFD-923E5FA121A1} = {E56F6E12-089C-40ED-BCFD-923E5FA121A1}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

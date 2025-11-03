@@ -64,8 +64,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <!--<AdditionalUsingDirectories>..\NppMenuSearch\bin\$(Platform_x)\$(Configuration)\;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>-->
-      <AdditionalUsingDirectories>..\bin\$(Platform_x)\$(Configuration)\;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>$(OutDir)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <AdditionalOptions>/NOEXP /NOIMPLIB %(AdditionalOptions)</AdditionalOptions>
@@ -87,7 +86,10 @@
     <ClCompile Include="UnmanagedExports.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NppMenuSearch\NppMenuSearchImpl.csproj" />
+    <ProjectReference Include="..\NppMenuSearch\NppMenuSearchImpl.csproj">
+      <Project>{e56f6e12-089c-40ed-bcfd-923e5fa121a1}</Project>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
