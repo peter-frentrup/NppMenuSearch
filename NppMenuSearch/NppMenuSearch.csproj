@@ -18,6 +18,16 @@
     <TargetFrameworkProfile />
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
+	
+	<!-- Workaround for an annoyance in RGiesecke.DllExport.MSBuild.ExportTaskImplementation<TTask>.ValidateToolPath(...): 
+		- By default, ildasm.exe is searched in the TargetFrameworkVersion tools directory
+		- If that is not found (because it is not the TargetFrameworkSDKToolsDirectory), an error is generated:
+			"Microsoft.Build.Utilities.ToolLocationHelper could not find ildasm.exe"
+		- But afterwards, as a fallback, ValidateToolPath() looks in DllExportSdkPath 
+			(=TargetFrameworkSDKToolsDirectory), finds ildasm.exe there and continues normally.
+		- The problematic search is skipped if DllExportTargetFrameworkVersion contains "*Undefined*"
+		-->
+	<DllExportTargetFrameworkVersion>*Undefined*</DllExportTargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
   </PropertyGroup>
