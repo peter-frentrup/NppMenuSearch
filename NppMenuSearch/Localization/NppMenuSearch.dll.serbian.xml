@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Author: Radoš Milićev (https://github.com/rammba) -->
+<NppMenuSearch>
+	<Native-Lang name="Srpski" version="2025-06-09">
+		<General>
+			<!-- Info text shown in the search widget -->
+			<SearchWidgetTitle>Pretraži Notepad++</SearchWidgetTitle>
+		</General>
+		<MenuTitles>
+			<RepeatPreviousCommand>Ponovi prethodnu komandu</RepeatPreviousCommand>
+			<RepeatCommand>Ponovi komandu “{0}”</RepeatCommand>
+			
+			<!-- Shows version information about NppMenuSearch: -->
+			<About>O NppMenuSearch</About>
+			
+			<!-- Keep the widget size fixed so it does not change dynamically. -->
+			<FixWidgetSize>Ograniči veličinu widget-a</FixWidgetSize>
+			
+			<!-- Context menu in the list of search results: Only one of <Execute>/<SelectTab>/<OpenDialog> is shown at once, depending on the selected result item -->
+			<ChangeShortcut>Izmeni prečicu</ChangeShortcut>
+			<Execute>Izvrši</Execute>
+			<SelectTab>Izaberi tab</SelectTab>
+			<OpenDialog>Otvori dijalog</OpenDialog>
+		</MenuTitles>
+		<GroupTitles>
+			<RecentlyUsed>Nedavno korišćeno</RecentlyUsed>
+			<Menu>Meni</Menu>
+			<Preferences>Preference</Preferences>
+			<OpenFiles>Otvorene datoteke</OpenFiles>
+		</GroupTitles>
+		<Help>
+			<!-- Preferrably, the two scentences <RepeatForAllResults> and <SwitchGroup> should fit onto a single line in the bottom of the results popup.
+				Automatic line breaking is applied, but you may also force a line break by e.g. putting &#10; just before the closing tag </RepeatForAllResults> 
+				-->
+			<SwitchGroup>TAB menja grupe: Nedavno korišćeno ↔ Meni ↔ Otvorene datoteke ↔ Preference.</SwitchGroup>
+			<RepeatForAllResults>Pritisni {0} ponovo za sve rezultate.</RepeatForAllResults>
+		</Help>
+	</Native-Lang>
+</NppMenuSearch>
