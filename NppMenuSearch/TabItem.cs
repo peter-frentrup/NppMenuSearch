@@ -18,7 +18,7 @@ namespace NppMenuSearch
             return Path.GetFileName(FullFileName).IndexOf(search, StringComparison.InvariantCultureIgnoreCase) >= 0;
         }
 
-        private string ViewName { get { return Index == (int)NppMsg.MAIN_VIEW ? "Primary View" : "Secondary View"; } }
+        private string ViewName { get { return ViewNumber == (int)NppMsg.MAIN_VIEW ? "Primary View" : "Secondary View"; } }
 
         public string ToolTipText { get { return $"{ViewName}: {FullFileName}"; } }
 
