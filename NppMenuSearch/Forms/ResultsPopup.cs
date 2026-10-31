@@ -60,8 +60,24 @@ namespace NppMenuSearch.Forms
 
             viewResults.ContextMenu = popupMenu;
 
+            // This window is shown without activation so that the search box keeps focus.
+            // But a tooltip control only shows when its owner is active - unless you force it.
+            viewResults.HandleCreated += (sender, e) => MakeItemToolTipsAlwaysShow();
+            if (viewResults.IsHandleCreated)
+                MakeItemToolTipsAlwaysShow();
+
             if (Main.PreferredResultsWindowSize.Width > 0 && Main.PreferredResultsWindowSize.Height > 0)
                 Size = Main.PreferredResultsWindowSize;
+        }
+
+        private void MakeItemToolTipsAlwaysShow()
+        {
+            IntPtr hwndToolTip = Win32.SendMessage(viewResults.Handle, Win32.LVM_GETTOOLTIPS, 0, 0);
+            if (hwndToolTip == IntPtr.Zero)
+                return;
+
+            // Force a tooltip to always show with the the TTS_ALWAYSTIP style.
+            Win32.SetWindowLong(hwndToolTip, Win32.GWL_STYLE, Win32.GetWindowLong(hwndToolTip, Win32.GWL_STYLE) | Win32.TTS_ALWAYSTIP);
         }
 
         private void Localization_NativeLangChanged(object sender, EventArgs e)
