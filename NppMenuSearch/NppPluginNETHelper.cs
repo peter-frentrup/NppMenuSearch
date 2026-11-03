@@ -2447,7 +2447,7 @@ namespace NppPluginNET
         public const int WM_UNINITMENUPOPUP = 0x0125;
         public const int WM_THEMECHANGED = 0x031A;
 
-        public const int WM_REFLECT = 0x2000;
+        public const int LVM_GETTOOLTIPS = 0x104E;
 
         public const int EM_SETCUEBANNER = 0x1501;
 
@@ -2580,8 +2580,6 @@ namespace NppPluginNET
         public const int GWL_HINSTANCE = -6;
         public const int GWL_HWNDPARENT = -8;
         public const int GWL_STYLE = -16;
-        public const int LVM_GETTOOLTIPS = 0x104E;
-        public const int TTS_ALWAYSTIP = 0x01;
         public const int GWL_EXSTYLE = -20;
         public const int GWL_USERDATA = -21;
         public const int GWL_ID = -12;
@@ -2619,6 +2617,7 @@ namespace NppPluginNET
         public const int BS_NOTIFY = 0x00004000;
         public const int BS_FLAT = 0x00008000;
         public const int BS_RIGHTBUTTON = BS_LEFTTEXT;
+        public const int TTS_ALWAYSTIP = 0x01;
 
         public const int WS_EX_DLGMODALFRAME = 0x00000001;
         public const int WS_EX_NOPARENTNOTIFY = 0x00000004;
